@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta name="google-site-verification" content="EVz8fPxueqGzMmY9eHSIQeK1I_DiGBOh4ZpwNBj4DAo" />  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UDS Hub | Academic Search</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1B365D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link class="apple-touch-icon" href="/app-logo.jpg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Theme logic
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        tailwind.config = {
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { DEFAULT: '#1B365D', 800: '#152947', 900: '#0F1E33' },
+                        scholarGreen: '#006621', 
+                        scholarBlue: '#1a0dab'   
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #ffffff; 
+            color: #202124; 
+            font-family: Arial, sans-serif; 
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .theme-bg { background-color: #1B365D; } 
+        .theme-text { color: #1B365D; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .whatsapp-float { animation: pulse-glow 3s infinite ease-in-out; }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(27, 54, 93, 0.3); }
+            50% { transform: scale(1.04); box-shadow: 0 6px 20px rgba(27, 54, 93, 0.5); }
+        }
+
+        .scholar-title { font-size: 18px; line-height: 1.2; color: #1B365D; font-weight: normal; }
+        .scholar-title:hover { text-decoration: underline; cursor: pointer; }
+        .scholar-meta { color: #006621; font-size: 14px; margin-top: 2px; }
+        .scholar-snippet { color: #4d5156; font-size: 13px; line-height: 1.5; margin-top: 4px; }
+        .scholar-action { color: #1a0dab; font-size: 13px; cursor: pointer; }
+        .scholar-action:hover { text-decoration: underline; }
+
+        html.dark body { background-color: #202124; color: #bdc1c6; }
+        html.dark .scholar-title { color: #8ab4f8; }
+        html.dark .scholar-meta { color: #81c995; }
+        html.dark .scholar-snippet { color: #9aa0a6; }
+        html.dark .scholar-action { color: #8ab4f8; }
+        html.dark #doc-reader-iframe { background-color: #ffffff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20 md:pb-0">
+
+    <nav class="bg-white dark:bg-[#202124] border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-between items-center z-50 sticky top-0 transition-colors">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('dashboard')">
+            <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-2xl"></i>
+            <span class="text-2xl font-normal tracking-tight text-gray-700 dark:text-gray-200">UDS<span class="font-bold text-navy dark:text-blue-400">Hub</span></span>
+        </div>
+        
+        <div class="flex items-center gap-4 text-sm">
+            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-gray-600 dark:text-gray-300 hover:underline">Admin Config</button>
+            <button onclick="toggleTheme()" class="text-gray-600 dark:text-gray-300 hover:text-navy text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
+            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-navy hover:bg-blue-800 text-white px-5 py-2 rounded text-sm font-bold shadow-sm transition">Sign In</button>
+        </div>
+    </nav>
+
+    <a href="https://wa.me/233592632127" target="_blank" class="whatsapp-float fixed z-40 bottom-24 right-4 md:bottom-6 md:right-6 bg-[#25D366] text-white px-5 py-3 rounded-full flex items-center gap-2 shadow-lg hover:opacity-90 transition font-bold text-sm">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+    </a>
+
+    <main class="flex-grow container mx-auto max-w-[1200px] py-8 px-4 flex flex-col lg:flex-row gap-8 items-start">
+
+        <div id="guest-onboarding-view" class="w-full text-center py-32 flex flex-col items-center">
+            <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-7xl mb-4"></i>
+            <h1 class="text-4xl sm:text-5xl font-normal text-gray-800 dark:text-gray-100 mb-8 tracking-tight">UDS <span class="font-bold text-navy dark:text-blue-400">Scholar</span></h1>
+            <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-md">Access academic databases, verify campus notices, and calculate GPA performance.</p>
+            <button onclick="openAuthModal()" class="theme-bg text-white font-bold px-8 py-3.5 rounded shadow-sm hover:shadow-md transition text-lg w-full max-w-sm">Access Academic Profile</button>
+        </div>
+
+        <div id="portal-workspace" class="hidden w-full flex-col lg:flex-row gap-8">
+            <div class="w-full lg:w-64 flex-shrink-0 space-y-6">
+                <div class="border-l-4 border-navy dark:border-blue-400 pl-4 py-1">
+                    <h3 class="font-bold text-gray-900 dark:text-white text-base" id="profile-name">Loading...</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1" id="profile-index">Index: --</p>
+                    <p class="text-xs text-scholarGreen dark:text-[#81c995]">Level <span id="profile-level">--</span> • <span id="profile-dept">--</span></p>
+                </div>
+
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Academic Tools</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><button onclick="openGpaModal()" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-calculator w-4"></i> GPA Engine</button></li>
+                        <li><button onclick="openResearchModal()" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-flask w-4"></i> ANOVA Toolkit</button></li>
+                        <li><button onclick="navigateTo('announcements')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-bullhorn w-4"></i> Campus Notices</button></li>
+                    </ul>
+                </div>
+
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Countdown</h4>
+                    <div class="text-lg font-bold text-navy dark:text-blue-400 tracking-tight" id="widget-countdown-clock">--:--:--:--</div>
+                    <p class="text-xs text-gray-500">Until Resumption</p>
+                </div>
+            </div>
+
+            <div class="w-full flex-grow flex flex-col min-w-0">
+                <div class="relative w-full max-w-2xl mb-8 group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-navy transition"></i>
+                    </div>
+                    <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-[#303134] border border-gray-300 dark:border-gray-600 rounded-full text-base shadow-sm hover:shadow focus:shadow-md outline-none text-gray-800 dark:text-gray-100 transition">
+                </div>
+
+                <section id="admin-dashboard-panel" class="hidden bg-gray-50 dark:bg-[#303134] rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm mb-8 space-y-6">
+                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-3">
+                        <h2 class="text-sm font-bold text-gray-800 dark:text-white uppercase"><i class="fa-solid fa-sliders mr-2"></i>Admin Terminal</h2>
+                        <button onclick="lockAdminSession()" class="text-xs text-blue-600 hover:underline">Close Terminal</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div class="col-span-1 xl:col-span-2 mb-2 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
+                            <span class="text-sm font-bold text-navy dark:text-blue-400 block mb-2">Automated Google Drive Sync</span>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mb-3">Drop folders directly into your Google Drive, then click this button. The system will scan your Drive and add all new files to the database automatically.</p>
+                            <button onclick="triggerDriveSync(this)" class="w-full py-2 bg-blue-600 text-white text-xs font-bold rounded hover:bg-blue-800 transition">Start Deep Sync</button>
+                        </div>
+
+                        <form onsubmit="handleSecureUpload(event)" class="space-y-3">
+                            <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">1. Manual Sync Resource</span>
+                            <select id="adm-level" class="w-full px-3 py-2 border rounded text-xs"><option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option></select>
+                            <input type="text" id="adm-resource-title" required placeholder="Resource Title..." class="w-full px-3 py-2 border rounded text-xs">
+                            <input type="text" id="adm-search-tags" placeholder="Keywords (biology, math...)" class="w-full px-3 py-2 border rounded text-xs">
+                            <input type="text" id="adm-drive-link" required placeholder="Drive Link..." class="w-full px-3 py-2 border rounded text-xs">
+                            <button type="submit" id="adm-upload-btn" class="w-full py-2 bg-navy text-white text-xs font-bold rounded">Publish</button>
+                        </form>
+
+                        <div class="space-y-4">
+                            <form onsubmit="handleCalendarUpdate(event)" class="space-y-2">
+                                <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">2. Target Date</span>
+                                <input type="date" id="set-exam-date" class="w-full px-3 py-2 border rounded text-xs">
+                                <button type="submit" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded">Set Date</button>
+                            </form>
+                            <form onsubmit="handleBroadcastAnnouncement(event)" class="space-y-2">
+                                <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">3. Broadcast Notice</span>
+                                <input type="text" id="ann-title" required placeholder="Heading" class="w-full px-3 py-2 border rounded text-xs">
+                                <textarea id="ann-content" required rows="2" placeholder="Details..." class="w-full px-3 py-2 border rounded text-xs"></textarea>
+                                <button type="submit" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded">Broadcast</button>
+                            </form>
+                        </div>
+
+                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2">
+                            <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">4. Manage Files</span>
+                            <input type="text" id="admin-file-search" onkeyup="filterAdminFiles()" placeholder="Search to manage..." class="w-full px-3 py-2 border rounded text-xs">
+                            <div id="admin-file-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="text-sm text-gray-500 mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">
+                    Showing results from Cloud Archive (<span id="material-count-badge">...</span> items)
+                </div>
+
+                <div id="smart-materials-grid" class="flex flex-col gap-6 w-full max-w-3xl pb-20"></div>
+
+                <div id="section-announcements" class="hidden w-full max-w-3xl">
+                    <h2 class="text-xl font-normal text-navy dark:text-blue-400 mb-6 pb-2 border-b">Campus Notifications</h2>
+                    <div id="announcements-yield-box" class="space-y-6"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="pwa-install-footer" class="hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-4 z-50 flex items-center justify-between shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.1)]">
+        <span class="text-sm font-bold text-gray-800 dark:text-white">Install UDS Hub App</span>
+        <div class="flex gap-3">
+            <button onclick="document.getElementById('pwa-install-footer').classList.add('hidden')" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-white">Later</button>
+            <button onclick="installPWA()" class="px-5 py-2 bg-navy text-white rounded text-sm font-bold shadow hover:bg-blue-800">Install</button>
+        </div>
+    </div>
+
+    <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-gray-900/50 flex justify-center items-center p-4">
+        <div class="bg-white dark:bg-[#202124] rounded border dark:border-gray-600 shadow-xl max-w-md w-full p-8 relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-4xl mb-2"></i>
+                <h2 class="text-2xl font-normal text-gray-800 dark:text-gray-100">Sign in</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Use your UDS Profile</p>
+            </div>
+            <div class="flex gap-4 border-b border-gray-200 dark:border-gray-700 pb-2 mb-6 text-sm">
+                <button id="tab-login-btn" onclick="toggleAuthTab('login')" class="text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1">Sign In</button>
+                <button id="tab-register-btn" onclick="toggleAuthTab('register')" class="text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1">Create Account</button>
+            </div>
+            <form id="form-login" onsubmit="executeImmediateLogin(event)" class="space-y-4">
+                <input type="text" id="login-identifier" required placeholder="Index Number or Email" class="w-full px-4 py-3 bg-transparent border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white">
+                <input type="password" id="login-pass" required placeholder="Password" class="w-full px-4 py-3 bg-transparent border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white">
+                <button type="submit" class="w-full py-3 bg-navy text-white font-bold text-sm rounded hover:bg-blue-800 transition">Next</button>
+            </form>
+            <form id="form-register" onsubmit="executeImmediateRegistration(event)" class="hidden space-y-4">
+                <div class="flex gap-3">
+                    <input type="text" id="reg-name" required placeholder="Full Name" class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                    <input type="text" id="reg-index" required placeholder="Index No." class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                </div>
+                <input type="email" id="reg-email" placeholder="Email (Optional)" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                <div class="flex gap-3">
+                    <input type="text" id="reg-dept" required placeholder="Department" class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                    <select id="reg-level" class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                        <option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option>
+                    </select>
+                </div>
+                <input type="password" id="reg-pass" required placeholder="Password" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                <button type="submit" class="w-full py-3 bg-navy text-white font-bold text-sm rounded hover:bg-blue-800 transition">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[250] bg-white flex flex-col">
+        <div class="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
+            <h3 id="doc-reader-header-title" class="text-gray-800 font-bold text-sm truncate">Loading...</h3>
+            <div class="flex gap-4">
+                <a id="doc-reader-download-trigger" href="#" target="_blank" class="text-sm text-blue-600 hover:underline">Open in Drive</a>
+                <button onclick="terminateDocViewer()" class="text-sm text-red-600 hover:underline">Close</button>
+            </div>
+        </div>
+        <div class="flex-grow w-full bg-gray-100"><iframe id="doc-reader-iframe" class="w-full h-full border-none bg-white" src=""></iframe></div>
+    </div>
+
+    <div id="gpa-calculator-modal" class="hidden fixed inset-0 z-[120] bg-gray-900/50 flex justify-center items-center p-4">
+        <div class="bg-white dark:bg-[#202124] rounded shadow-xl max-w-xl w-full border border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 class="font-normal text-xl text-gray-800 dark:text-gray-100">GPA Calculator</h3>
+                <button onclick="closeGpaModal()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6">
+                <div class="flex gap-4 border-b pb-4 dark:border-gray-700">
+                    <div class="w-1/2"><label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Previous Credits</label><input type="number" id="gpa-past-credits" value="0" onkeyup="recalculateStudentGpaMetrics()" onchange="recalculateStudentGpaMetrics()" class="w-full p-2 border rounded dark:bg-transparent dark:border-gray-600 dark:text-white"></div>
+                    <div class="w-1/2"><label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Previous Points</label><input type="number" step="0.1" id="gpa-past-points" value="0" onkeyup="recalculateStudentGpaMetrics()" onchange="recalculateStudentGpaMetrics()" class="w-full p-2 border rounded dark:bg-transparent dark:border-gray-600 dark:text-white"></div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-2"><h4 class="text-sm text-gray-800 dark:text-gray-200">Current Courses</h4><button onclick="addCourseGpaRow()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">+ Add Course</button></div>
+                    <div class="flex gap-2 px-1 text-xs text-gray-500 mb-1"><div class="w-1/3">Course</div><div class="w-1/4">Score</div><div class="w-1/4">Cr</div><div class="w-12">Gr</div><div class="w-6"></div></div>
+                    <div id="gpa-rows-stack" class="space-y-2"></div>
+                </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-[#303134] border-t dark:border-gray-700 p-4 flex justify-between">
+                <div><span class="text-xs text-gray-500 block">Trimester</span><span id="gpa-output-tri" class="text-xl font-bold text-navy dark:text-blue-400">0.00</span></div>
+                <div class="text-right"><span class="text-xs text-gray-500 block">Cumulative</span><span id="gpa-output-cgpa" class="text-2xl font-bold text-navy dark:text-blue-400">0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="research-toolkit-modal" class="hidden fixed inset-0 z-[125] bg-gray-900/50 flex justify-center items-center p-4">
+        <div class="bg-white dark:bg-[#202124] rounded shadow-xl max-w-[95vw] lg:max-w-[1200px] w-full border border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden max-h-[95vh]">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 class="font-normal text-xl text-gray-800 dark:text-gray-100">ANOVA Toolkit & Comprehensive Statistical Parameters</h3>
+                <button onclick="closeResearchModal()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 flex-grow overflow-y-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-3 space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Experimental Design</label>
+                            <select id="anova-design-type" class="w-full p-2 border rounded dark:bg-transparent dark:border-gray-600 dark:text-white text-sm">
+                                <option value="crd">CRD</option><option value="rcbd">RCBD</option><option value="lsd">LSD</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Matrix (CSV)</label>
+                            <textarea id="anova-raw-data" rows="8" class="w-full p-2 border rounded font-mono text-sm dark:bg-transparent dark:border-gray-600 dark:text-white"></textarea>
+                            <button onclick="runAnovaAnalysis()" class="w-full mt-2 py-2 bg-navy text-white text-sm rounded hover:bg-blue-800 transition">Compute Variance & Parameters</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-9 flex flex-col gap-6">
+                        <div id="anova-table-container" class="text-sm dark:text-gray-200 rounded min-h-[200px]">Awaiting data...</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-40">
+                            <div><canvas id="anova-chart-bar"></canvas></div><div><canvas id="anova-chart-line"></canvas></div><div><canvas id="anova-chart-box"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-deck" class="fixed bottom-5 left-5 z-[300] space-y-2 pointer-events-none"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyDXS37SUTMwr_8zaTsgW4PApzqWqrCbYvY", authDomain: "uds-data-base.firebaseapp.com", projectId: "uds-data-base", storageBucket: "uds-data-base.firebasestorage.app", messagingSenderId: "511461186280", appId: "1:511461186280:web:6e55e4030440dfc5cc475d", measurementId: "G-W7KYCT8F3K" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc;
+
+        let currentUserProfile = null; let globalMaterialsCache = [];
+        try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (docSnap.exists()) { currentUserProfile = docSnap.data(); } else { currentUserProfile = { name: user.email.split('@')[0], indexNumber: "Unknown", department: "General", level: "100", email: user.email }; }
+                document.getElementById('guest-onboarding-view').classList.add('hidden');
+                document.getElementById('portal-workspace').classList.remove('hidden');
+                document.getElementById('portal-workspace').classList.add('flex');
+                document.getElementById('auth-action-btn').innerText = "Sign Out";
+                document.getElementById('profile-name').innerText = currentUserProfile.name;
+                document.getElementById('profile-index').innerText = `Index: ${currentUserProfile.indexNumber}`;
+                document.getElementById('profile-dept').innerText = currentUserProfile.department;
+                document.getElementById('profile-level').innerText = currentUserProfile.level;
+                if(currentUserProfile.email === "emmanuelahyia2000@gmail.com") { document.getElementById('admin-panel-btn').classList.remove('hidden'); } else { document.getElementById('admin-panel-btn').classList.add('hidden'); }
+                if(window.globalMaterialsCache.length > 0) window.renderMaterialsGrid(window.globalMaterialsCache);
+            } else {
+                currentUserProfile = null;
+                document.getElementById('portal-workspace').classList.add('hidden');
+                document.getElementById('portal-workspace').classList.remove('flex');
+                document.getElementById('guest-onboarding-view').classList.remove('hidden');
+                document.getElementById('auth-action-btn').innerText = "Sign In";
+                document.getElementById('admin-panel-btn').classList.add('hidden');
+            }
+            window.currentUserProfile = currentUserProfile; 
+        });
+
+        onSnapshot(collection(db, "materials"), (snapshot) => {
+            const items = []; snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
+            globalMaterialsCache = items; window.globalMaterialsCache = items; localStorage.setItem('uds_materials_cache', JSON.stringify(items));
+            const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
+            if(currentQuery) { window.executeSearchingAI(); } else { window.renderMaterialsGrid(items); }
+            if(window.filterAdminFiles) window.filterAdminFiles();
+        });
+
+        onSnapshot(collection(db, "announcements"), (snapshot) => {
+            const container = document.getElementById('announcements-yield-box'); container.innerHTML = '';
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                container.innerHTML += `
+                    <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
+                        <h4 class="scholar-title text-base mb-1">${data.title}</h4>
+                        <div class="scholar-meta text-xs mb-2">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
+                        <p class="scholar-snippet">${data.content}</p>
+                    </div>`;
+            });
+        });
+
+        onSnapshot(doc(db, "system", "deadlines"), (snapshot) => {
+            if(snapshot.exists()) {
+                const target = new Date(snapshot.data().targetDate).getTime();
+                if(window.countdownClockThread) clearInterval(window.countdownClockThread);
+                window.countdownClockThread = setInterval(() => {
+                    const diff = target - new Date().getTime();
+                    if(diff <= 0) { document.getElementById('widget-countdown-clock').innerText = "00:00:00:00"; clearInterval(window.countdownClockThread); return; }
+                    const d = Math.floor(diff/(1000*60*60*24)); const h = Math.floor((diff%(1000*60*60*24))/(1000*60*60)); const m = Math.floor((diff%(1000*60*60))/(1000*60)); const s = Math.floor((diff%(1000*60))/1000);
+                    document.getElementById('widget-countdown-clock').innerText = `${d.toString().padStart(2,'0')}:${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                }, 1000);
+            }
+        });
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err)); }); }
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('pwa-install-footer').classList.remove('hidden'); });
+        window.installPWA = async () => { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') document.getElementById('pwa-install-footer').classList.add('hidden'); deferredPrompt = null; } else { alert("App is already installed or browser blocked automatic install."); } };
+
+        window.toggleTheme = function() {
+            const html = document.documentElement; const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.theme = 'light'; if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } } 
+            else { html.classList.add('dark'); localStorage.theme = 'dark'; if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } }
+        };
+        document.addEventListener('DOMContentLoaded', () => { if (document.documentElement.classList.contains('dark')) { const icon = document.getElementById('theme-icon'); if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } } });
+
+        window.showToast = function(msg, type='success') {
+            const deck = document.getElementById('toast-deck'); const toast = document.createElement('div');
+            toast.className = `p-3 rounded shadow text-white text-sm font-bold flex items-center gap-2 ${type==='success'?'bg-gray-800':'bg-red-600'}`;
+            toast.innerHTML = `<span>${msg}</span>`; deck.appendChild(toast);
+            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        };
+
+        window.navigateTo = function(v) {
+            document.getElementById('smart-materials-grid').classList.add('hidden');
+            document.getElementById('section-announcements').classList.add('hidden');
+            if(v === 'dashboard') { document.getElementById('smart-materials-grid').classList.remove('hidden'); } 
+            else if(v === 'announcements') { document.getElementById('section-announcements').classList.remove('hidden'); }
+        };
+
+        window.toggleAdminDashboard = function() { const el = document.getElementById('admin-dashboard-panel'); el.classList.contains('hidden') ? el.classList.remove('hidden') : el.classList.add('hidden'); if(!el.classList.contains('hidden')) window.filterAdminFiles(); };
+        window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
+        
+        window.openDocument = function(title, url) { document.getElementById('doc-reader-header-title').innerText = title; document.getElementById('doc-reader-iframe').src = url; document.getElementById('doc-reader-download-trigger').href = url.replace('/preview', '/view'); document.getElementById('google-document-reader-modal').classList.remove('hidden'); };
+        window.terminateDocViewer = function() { document.getElementById('doc-reader-iframe').src = ''; document.getElementById('google-document-reader-modal').classList.add('hidden'); };
+        
+        window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
+        window.closeAuthModal = function() { document.getElementById('auth-gateway-modal').classList.add('hidden'); };
+        window.toggleAuthTab = function(tab) {
+            if(tab === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('tab-login-btn').className = "text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1"; document.getElementById('tab-register-btn').className = "text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1"; } 
+            else { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.remove('hidden'); document.getElementById('tab-login-btn').className = "text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1"; document.getElementById('tab-register-btn').className = "text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1"; }
+        };
+
+        window.renderMaterialsGrid = function(items) {
+            const grid = document.getElementById('smart-materials-grid');
+            document.getElementById('material-count-badge').innerText = items ? items.length : '0';
+            grid.innerHTML = '';
+            
+            if(!items || items.length === 0) { grid.innerHTML = `<p class="text-gray-500 text-sm italic">Your search did not match any documents in the database.</p>`; return; }
+            const isAdmin = window.currentUserProfile && window.currentUserProfile.email === "emmanuelahyia2000@gmail.com";
+
+            items.forEach(item => {
+                let deleteBtnHtml = isAdmin ? `<span class="mx-2 text-gray-300">|</span><button onclick="deleteFileFromDatabase('${item.id}')" class="scholar-action text-red-600 hover:text-red-800">Delete</button>` : '';
+                
+                let metaLabel = item.subject ? `${item.subject} Department` : `Level ${item.level} Database`;
+
+                grid.innerHTML += `
+                    <div class="mb-4">
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-[10px] border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-1 rounded-sm uppercase tracking-wider">[PDF]</span>
+                            <h3 class="scholar-title" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
+                        </div>
+                        <div class="scholar-meta">${metaLabel} ${item.keywords ? '- Tags: ' + item.keywords : ''}</div>
+                        <div class="scholar-snippet">Secure academic file stored in UDS Cloud Repository. Click the title to preview or the action links below to view raw file data.</div>
+                        <div class="mt-1 flex items-center">
+                            <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="scholar-action">View Document</button>
+                            ${deleteBtnHtml}
+                        </div>
+                    </div>`;
+            });
+        };
+
+        // NEW AI DEEP SEARCH AND DRIVE SYNC LOGIC
+        window.searchDebounceTimer = null;
+        window.executeSearchingAI = async function() {
+            clearTimeout(window.searchDebounceTimer);
+            
+            // Wait half a second after they stop typing before hitting the server
+            window.searchDebounceTimer = setTimeout(async () => {
+                const query = document.getElementById('ai-search-bar').value.trim();
+                window.navigateTo('dashboard'); 
+                const grid = document.getElementById('smart-materials-grid');
+                
+                if (query === '') { window.renderMaterialsGrid(window.globalMaterialsCache); return; }
+
+                // Show loading text while Google Drive reads inside the PDFs
+                grid.innerHTML = `<p class="text-blue-600 dark:text-blue-400 text-sm font-bold animate-pulse">Deep scanning inside documents for "${query}"...</p>`;
+                
+                try {
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        body: JSON.stringify({ query: query })
+                    });
+                    const data = await response.json();
+                    
+                    if (data.results && data.results.length > 0) {
+                        const formattedResults = data.results.map(file => ({
+                            id: file.id,
+                            title: file.name,
+                            subject: 'DEEP MATCH',
+                            driveUrl: file.webViewLink,
+                            keywords: 'Found inside text'
+                        }));
+                        window.renderMaterialsGrid(formattedResults);
+                    } else {
+                        grid.innerHTML = `<p class="text-gray-500 text-sm italic">No documents contain the word "${query}".</p>`;
+                    }
+                } catch (error) {
+                    console.error("Deep search failed, falling back to basic database search", error);
+                    // Fallback to searching basic Firebase titles if the deep search fails
+                    const records = window.globalMaterialsCache.filter(item => 
+                        (item.title && item.title.toLowerCase().includes(query.toLowerCase())) || 
+                        (item.keywords && item.keywords.toLowerCase().includes(query.toLowerCase())) ||
+                        (item.level && item.level.toLowerCase().includes(query.toLowerCase())) ||
+                        (item.subject && item.subject.toLowerCase().includes(query.toLowerCase()))
+                    );
+                    window.renderMaterialsGrid(records);
+                }
+            }, 500); 
+        };
+
+        window.triggerDriveSync = async function(btn) {
+            btn.innerText = "Scanning Google Drive... Please wait.";
+            btn.disabled = true;
+            try {
+                const response = await fetch('/api/sync', { method: 'POST' });
+                const data = await response.json();
+                if (data.success) {
+                    window.showToast(`Success! Found and added ${data.synced} new files.`, "success");
+                } else {
+                    window.showToast("Sync failed. Check Vercel logs.", "error");
+                }
+            } catch (err) {
+                window.showToast("Network pipeline issue.", "error");
+            } finally {
+                btn.innerText = "Start Deep Sync";
+                btn.disabled = false;
+            }
+        };
+
+        window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
+        window.deleteFileFromDatabase = async function(fileId) { if(confirm("Permanently delete?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "materials", fileId)); window.showToast("Deleted", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
+        window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b pb-1 mb-1"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-bold truncate text-gray-800">${item.title}</span> <span class="text-[9px] text-gray-500 truncate">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
+        window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate }); window.showToast("Date set!", "success"); } catch(err) {} };
+        window.handleBroadcastAnnouncement = async function(e) { e.preventDefault(); const title = document.getElementById('ann-title').value; const content = document.getElementById('ann-content').value; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "announcements"), { title, content, timestamp: new Date().getTime() }); window.showToast("Broadcasted!", "success"); document.getElementById('ann-title').value = ''; document.getElementById('ann-content').value = ''; } catch(err) {} };
+        window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
+        window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
+
+        // GPA Calcs
+        window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
+        window.closeGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.add('hidden'); };
+        window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-2"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white uppercase"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-navy">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 text-xs px-1"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
+        window.recalculateStudentGpaMetrics = function() { try { let p=0, c=0; const rows = document.getElementById('gpa-rows-stack').children; for(let row of rows) { const sv = parseFloat(row.querySelector('.gpa-score-field').value); const cv = parseFloat(row.querySelector('.gpa-credit-field').value); const label = row.querySelector('.gpa-grade-yield'); if(!isNaN(sv) && !isNaN(cv) && cv > 0) { let pt = 0; let grd = "-"; if (sv >= 80) { pt = 5.0; grd = "A+"; } else if (sv >= 70) { pt = 4.5; grd = "A"; } else if (sv >= 65) { pt = 4.0; grd = "B+"; } else if (sv >= 60) { pt = 3.5; grd = "B"; } else if (sv >= 55) { pt = 3.0; grd = "C+"; } else if (sv >= 50) { pt = 2.5; grd = "C"; } else if (sv >= 45) { pt = 2.0; grd = "D+"; } else if (sv >= 40) { pt = 1.5; grd = "D"; } else { pt = 0.0; grd = "F"; } label.innerText = grd; p += (pt * cv); c += cv; } else { label.innerText = "-"; } } const triGpa = c > 0 ? (p / c) : 0; document.getElementById('gpa-output-tri').innerText = triGpa.toFixed(2); const pc = parseFloat(document.getElementById('gpa-past-credits').value) || 0; const pp = parseFloat(document.getElementById('gpa-past-points').value) || 0; const cgpa = (pc + c) > 0 ? ((pp + p) / (pc + c)) : 0; document.getElementById('gpa-output-cgpa').innerText = cgpa.toFixed(2); } catch(e) {} };
+        
+        // Comprehensive ANOVA Toolkit
+        window.openResearchModal = function() { document.getElementById('research-toolkit-modal').classList.remove('hidden'); }; window.closeResearchModal = function() { document.getElementById('research-toolkit-modal').classList.add('hidden'); };
+        window.anovaCharts = {};
+        
+        window.runAnovaAnalysis = function() { 
+            const type = document.getElementById('anova-design-type').value; 
+            const raw = document.getElementById('anova-raw-data').value.trim(); 
+            if(!raw) return; 
+            
+            const naAdv = "Requires Advanced Module";
+            const naForm = "N/A (Design Specific)";
+
+            if (['graeco', 'factorial', 'split', 'splitsplit', 'strip', 'nested', 'repeated'].includes(type)) { 
+                document.getElementById('anova-table-container').innerHTML = `
+                    <div class="bg-red-50 text-red-700 p-4 rounded border border-red-200">
+                        <b>Advanced design selected.</b> Requires explicit factor mapping externally to generate the full parameter list.
+                    </div>`; 
+                return; 
+            } 
+            
+            try { 
+                const grid = raw.split('\n').map(r => r.split(',').map(n => Number(n.trim()))); 
+                const t = grid.length; const r = grid[0].length; 
+                
+                if (type === 'lsd' && t !== r) { alert("LSD needs square matrix"); return; } 
+                
+                const N = t * r; 
+                let gt = 0, sst = 0; 
+                let T_tot = new Array(t).fill(0); 
+                let R_tot = new Array(t).fill(0); 
+                let C_tot = new Array(r).fill(0); 
+                
+                grid.forEach((row, i) => { 
+                    row.forEach((v, j) => { 
+                        gt += v; sst += (v * v); 
+                        if (type === 'lsd') { R_tot[i] += v; C_tot[j] += v; T_tot[(i + j) % t] += v; } 
+                        else { T_tot[i] += v; C_tot[j] += v; } 
+                    }); 
+                }); 
+                
+                const gm = gt / N; 
+                const CF = (gt * gt) / N; 
+                const SS_Total = sst - CF; 
+                const SS_Treat = (type === 'lsd') ? ((T_tot.reduce((a,b)=>a+(b*b),0)/t) - CF) : ((T_tot.reduce((a,b)=>a+(b*b),0)/r) - CF); 
+                
+                let df_Tr = t - 1, df_Tot = N - 1, df_Err = 0, SS_Err = 0, SS_Blk = 0, df_Bl = r - 1, SS_Row = 0, df_Row = t - 1, SS_Col = 0, df_Col = r - 1; 
+                
+                if (type === 'rcbd') { 
+                    SS_Blk = (C_tot.reduce((a,b)=>a+(b*b),0)/t) - CF; 
+                    SS_Err = SS_Total - SS_Treat - SS_Blk; df_Err = (t - 1) * (r - 1); 
+                } else if (type === 'lsd') { 
+                    SS_Row = (R_tot.reduce((a,b)=>a+(b*b),0)/t) - CF; 
+                    SS_Col = (C_tot.reduce((a,b)=>a+(b*b),0)/t) - CF; 
+                    SS_Err = SS_Total - SS_Treat - SS_Row - SS_Col; df_Err = (t - 1) * (t - 2); 
+                } else { 
+                    SS_Err = SS_Total - SS_Treat; df_Err = N - t; 
+                } 
+                
+                const MS_Tr = SS_Treat / df_Tr; 
+                const MS_Err = Math.abs(SS_Err / df_Err); 
+                const F_Val = MS_Tr / MS_Err; 
+
+                function getFThreshold(df1, df2, alpha) {
+                    const z = alpha === 0.01 ? 2.326 : 1.645;
+                    const d = 2 / (9 * df1); const e = 2 / (9 * df2);
+                    const num = 1 - e + z * Math.sqrt(d + e - d * e);
+                    const den = 1 - d;
+                    return Math.pow(num / (den || 1), 3);
+                }
+                const f05 = getFThreshold(df_Tr, df_Err, 0.05);
+                const f01 = getFThreshold(df_Tr, df_Err, 0.01);
+                
+                const variance = SS_Total / df_Tot;
+                const sd = Math.sqrt(MS_Err);
+                const sem = sd / Math.sqrt(type === 'lsd' ? t : r);
+                const sed = Math.sqrt((2 * MS_Err) / (type === 'lsd' ? t : r));
+                const cv = (sd / gm) * 100;
+                
+                let t05 = 0, t01 = 0, lsd05 = "N/A", lsd01 = "N/A", moe = "N/A", lcl = "N/A", ucl = "N/A";
+                if(df_Err > 0) {
+                    t05 = Math.sqrt(getFThreshold(1, df_Err, 0.05));
+                    t01 = Math.sqrt(getFThreshold(1, df_Err, 0.01));
+                    lsd05 = (t05 * sed).toFixed(4);
+                    lsd01 = (t01 * sed).toFixed(4);
+                    moe = (t05 * sem).toFixed(4);
+                    lcl = (gm - (t05 * sem)).toFixed(4);
+                    ucl = (gm + (t05 * sem)).toFixed(4);
+                }
+
+                const trtTotalStr = T_tot.map(v => v.toFixed(2)).join(', ');
+                const trtMeanStr = T_tot.map(v => (v/(type==='lsd'?t:r)).toFixed(2)).join(', ');
+                let blkTotalStr = naForm, blkMeanStr = naForm, rowTotalStr = naForm, rowMeanStr = naForm, colTotalStr = naForm, colMeanStr = naForm, repTotalStr = naForm, repMeanStr = naForm;
+
+                if(type === 'rcbd') {
+                    blkTotalStr = C_tot.map(v => v.toFixed(2)).join(', ');
+                    blkMeanStr = C_tot.map(v => (v/t).toFixed(2)).join(', ');
+                    repTotalStr = blkTotalStr; repMeanStr = blkMeanStr;
+                } else if (type === 'lsd') {
+                    rowTotalStr = R_tot.map(v => v.toFixed(2)).join(', ');
+                    rowMeanStr = R_tot.map(v => (v/t).toFixed(2)).join(', ');
+                    colTotalStr = C_tot.map(v => v.toFixed(2)).join(', ');
+                    colMeanStr = C_tot.map(v => (v/t).toFixed(2)).join(', ');
+                }
+
+                const pValApprox = F_Val >= f01 ? "< 0.01" : (F_Val >= f05 ? "< 0.05" : "> 0.05");
+                const makeRow = (label, val) => `<div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 py-1 hover:bg-gray-50 dark:hover:bg-[#303134] px-1 rounded transition"><span class="text-gray-600 dark:text-gray-400 truncate pr-2" title="${label}">${label}</span><span class="font-mono text-navy dark:text-blue-300 text-right truncate pl-2" style="max-width: 50%;" title="${val}">${val}</span></div>`;
+
+                let resHtml = ` 
+                <table class="w-full text-left text-xs mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"> 
+                    <thead class="bg-gray-100 dark:bg-gray-800">
+                        <tr><th class="py-2 px-3">Source</th><th class="py-2 px-3">DF</th><th class="py-2 px-3">SS</th><th class="py-2 px-3">MS</th><th class="py-2 px-3">F</th></tr> 
+                    </thead>
+                    <tbody>
+                        <tr class="border-b dark:border-gray-700"><td class="py-2 px-3 font-bold">Treatments</td><td class="py-2 px-3">${df_Tr}</td><td class="py-2 px-3">${SS_Treat.toFixed(4)}</td><td class="py-2 px-3">${MS_Tr.toFixed(4)}</td><td class="py-2 px-3 font-bold text-navy dark:text-blue-400">${F_Val.toFixed(4)}</td></tr> 
+                `; 
+                if (type === 'rcbd') resHtml += `<tr class="border-b dark:border-gray-700"><td class="py-2 px-3 font-bold">Blocks</td><td class="py-2 px-3">${df_Bl}</td><td class="py-2 px-3">${SS_Blk.toFixed(4)}</td><td class="py-2 px-3">${(SS_Blk/df_Bl).toFixed(4)}</td><td class="py-2 px-3">${(MS_Err===0?0:((SS_Blk/df_Bl)/MS_Err)).toFixed(4)}</td></tr>`; 
+                else if (type === 'lsd') { 
+                    resHtml += `<tr class="border-b dark:border-gray-700"><td class="py-2 px-3 font-bold">Row Blk</td><td class="py-2 px-3">${df_Row}</td><td class="py-2 px-3">${SS_Row.toFixed(4)}</td><td class="py-2 px-3">${(SS_Row/df_Row).toFixed(4)}</td><td class="py-2 px-3">${(MS_Err===0?0:((SS_Row/df_Row)/MS_Err)).toFixed(4)}</td></tr>
+                                <tr class="border-b dark:border-gray-700"><td class="py-2 px-3 font-bold">Col Blk</td><td class="py-2 px-3">${df_Col}</td><td class="py-2 px-3">${SS_Col.toFixed(4)}</td><td class="py-2 px-3">${(SS_Col/df_Col).toFixed(4)}</td><td class="py-2 px-3">${(MS_Err===0?0:((SS_Col/df_Col)/MS_Err)).toFixed(4)}</td></tr>`; 
+                } 
+                resHtml += ` 
+                        <tr class="border-b dark:border-gray-700"><td class="py-2 px-3 font-bold">Error</td><td class="py-2 px-3">${df_Err}</td><td class="py-2 px-3">${SS_Err.toFixed(4)}</td><td class="py-2 px-3">${MS_Err.toFixed(4)}</td><td class="py-2 px-3">-</td></tr> 
+                        <tr><td class="py-2 px-3 font-bold">Total</td><td class="py-2 px-3">${df_Tot}</td><td class="py-2 px-3">${SS_Total.toFixed(4)}</td><td class="py-2 px-3">-</td><td class="py-2 px-3">-</td></tr> 
+                    </tbody>
+                </table> 
+
+                <div class="mt-8">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200 text-sm mb-4 pb-2 border-b dark:border-gray-700">Comprehensive Statistical Parameters</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-xs">
+                        ${makeRow('Grand Total', gt.toFixed(4))}
+                        ${makeRow('Correction Factor', CF.toFixed(4))}
+                        ${makeRow('Grand Mean', gm.toFixed(4))}
+                        ${makeRow('Treatment Total', trtTotalStr)}
+                        ${makeRow('Treatment Mean', trtMeanStr)}
+                        ${makeRow('Block Total', blkTotalStr)}
+                        ${makeRow('Block Mean', blkMeanStr)}
+                        ${makeRow('Replication Total', repTotalStr)}
+                        ${makeRow('Replication Mean', repMeanStr)}
+                        ${makeRow('Row Total', rowTotalStr)}
+                        ${makeRow('Row Mean', rowMeanStr)}
+                        ${makeRow('Column Total', colTotalStr)}
+                        ${makeRow('Column Mean', colMeanStr)}
+                        ${makeRow('Cell Mean', 'See Matrix')}
+                        
+                        ${makeRow('Total Sum of Squares (SST)', SS_Total.toFixed(4))}
+                        ${makeRow('Treatment Sum of Squares (SSTr)', SS_Treat.toFixed(4))}
+                        ${makeRow('Error Sum of Squares (SSE)', SS_Err.toFixed(4))}
+                        ${makeRow('Block Sum of Squares (SSB)', type === 'rcbd' ? SS_Blk.toFixed(4) : naForm)}
+                        ${makeRow('Replication Sum of Squares (SSR)', type === 'rcbd' ? SS_Blk.toFixed(4) : naForm)}
+                        ${makeRow('Row Sum of Squares', type === 'lsd' ? SS_Row.toFixed(4) : naForm)}
+                        ${makeRow('Column Sum of Squares', type === 'lsd' ? SS_Col.toFixed(4) : naForm)}
+                        ${makeRow('Interaction Sum of Squares (SSAB)', naAdv)}
+                        ${makeRow('Factor A Sum of Squares', naAdv)}
+                        ${makeRow('Factor B Sum of Squares', naAdv)}
+                        ${makeRow('Factor C Sum of Squares', naAdv)}
+                        ${makeRow('Residual Sum of Squares', SS_Err.toFixed(4))}
+                        
+                        ${makeRow('Total Degrees of Freedom', df_Tot)}
+                        ${makeRow('Treatment Degrees of Freedom', df_Tr)}
+                        ${makeRow('Error Degrees of Freedom', df_Err)}
+                        ${makeRow('Block Degrees of Freedom', type === 'rcbd' ? df_Bl : naForm)}
+                        ${makeRow('Replication Degrees of Freedom', type === 'rcbd' ? df_Bl : naForm)}
+                        ${makeRow('Row Degrees of Freedom', type === 'lsd' ? df_Row : naForm)}
+                        ${makeRow('Column Degrees of Freedom', type === 'lsd' ? df_Col : naForm)}
+                        ${makeRow('Interaction Degrees of Freedom', naAdv)}
+                        ${makeRow('Residual Degrees of Freedom', df_Err)}
+                        ${makeRow('Factor A Degrees of Freedom', naAdv)}
+                        ${makeRow('Factor B Degrees of Freedom', naAdv)}
+                        ${makeRow('Factor C Degrees of Freedom', naAdv)}
+                        
+                        ${makeRow('Mean Square Treatment (MST)', MS_Tr.toFixed(4))}
+                        ${makeRow('Mean Square Error (MSE)', MS_Err.toFixed(4))}
+                        ${makeRow('Mean Square Block (MSB)', type === 'rcbd' ? (SS_Blk/df_Bl).toFixed(4) : naForm)}
+                        ${makeRow('Mean Square Replication (MSR)', type === 'rcbd' ? (SS_Blk/df_Bl).toFixed(4) : naForm)}
+                        ${makeRow('Mean Square Interaction (MSAB)', naAdv)}
+                        ${makeRow('Mean Square Residual', MS_Err.toFixed(4))}
+                        ${makeRow('Mean Square Factor A', naAdv)}
+                        ${makeRow('Mean Square Factor B', naAdv)}
+                        ${makeRow('Mean Square Factor C', naAdv)}
+                        
+                        ${makeRow('F Calculated (Fcal)', F_Val.toFixed(4))}
+                        ${makeRow('F Critical at 5% (F₀.₀₅)', f05.toFixed(4))}
+                        ${makeRow('F Critical at 1% (F₀.₀₁)', f01.toFixed(4))}
+                        ${makeRow('P-Value', pValApprox)}
+                        ${makeRow('Variance', variance.toFixed(4))}
+                        ${makeRow('Standard Deviation (SD)', sd.toFixed(4))}
+                        ${makeRow('Standard Error (SE)', sem.toFixed(4))}
+                        ${makeRow('Standard Error of Mean (SEM)', sem.toFixed(4))}
+                        ${makeRow('Standard Error of Difference (SED)', sed.toFixed(4))}
+                        ${makeRow('Coefficient of Variation (CV%)', cv.toFixed(2) + '%')}
+                        ${makeRow('Relative Standard Deviation (RSD)', cv.toFixed(2) + '%')}
+                        
+                        ${makeRow('Least Significant Difference (LSD)', lsd05)}
+                        ${makeRow('Highly Significant LSD', lsd01)}
+                        ${makeRow('Duncan Multiple Range Test (DMRT)', naAdv)}
+                        ${makeRow('Tukey HSD', naAdv)}
+                        ${makeRow('Student-Newman-Keuls (SNK)', naAdv)}
+                        ${makeRow('Scheffe Test', naAdv)}
+                        ${makeRow('Bonferroni Test', naAdv)}
+                        ${makeRow('Dunnett Test', naAdv)}
+                        ${makeRow('Confidence Interval', gm.toFixed(2) + ' ± ' + moe)}
+                        ${makeRow('Margin of Error', moe)}
+                        ${makeRow('Lower Confidence Limit', lcl)}
+                        ${makeRow('Upper Confidence Limit', ucl)}
+                        ${makeRow('Main Effect', naAdv)}
+                        ${makeRow('Interaction Effect', naAdv)}
+                        ${makeRow('Simple Effect', naAdv)}
+                        ${makeRow('Orthogonal Contrast', naAdv)}
+                        ${makeRow('Polynomial Contrast', naAdv)}
+                        ${makeRow('Linear Trend', naAdv)}
+                        ${makeRow('Quadratic Trend', naAdv)}
+                        ${makeRow('Cubic Trend', naAdv)}
+                    </div>
+                </div>`; 
+
+                document.getElementById('anova-table-container').innerHTML = resHtml; 
+                
+                if(window.anovaCharts.bar) window.anovaCharts.bar.destroy(); 
+                if(window.anovaCharts.line) window.anovaCharts.line.destroy(); 
+                if(window.anovaCharts.box) window.anovaCharts.box.destroy(); 
+                
+                const tMeans = T_tot.map(v => v / (type==='lsd'?t:r)); 
+                const labels = tMeans.map((_, i) => `T${i+1}`); 
+                
+                window.anovaCharts.bar = new Chart(document.getElementById('anova-chart-bar').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ label: 'Means', data: tMeans, backgroundColor: '#1B365D' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); 
+                window.anovaCharts.line = new Chart(document.getElementById('anova-chart-line').getContext('2d'), { type: 'line', data: { labels: labels, datasets: [{ label: 'Trend', data: tMeans, borderColor: '#d97706', fill: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); 
+                const boxData = grid.map(row => { const s = [...row].sort((a,b)=>a-b); return [s[0], s[s.length-1]]; }); 
+                window.anovaCharts.box = new Chart(document.getElementById('anova-chart-box').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ label: 'Spread', data: boxData, backgroundColor: '#cbd5e1' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); 
+            } catch(e) { console.error("Data error", e); } 
+        };
+    </script>
+</body>
+</html>
