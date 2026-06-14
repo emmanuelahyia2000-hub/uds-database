@@ -759,6 +759,45 @@
                 window.anovaCharts.box = new Chart(document.getElementById('anova-chart-box').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ label: 'Spread', data: boxData, backgroundColor: '#cbd5e1' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); 
             } catch(e) { console.error("Data error", e); } 
         };
+         async function loadGoogleDriveMaterials() {
+  try {
+    const response = await fetch('/api/materials');
+    const files = await response.json();
+
+    const container = document.getElementById('smart-materials-grid');
+
+    container.innerHTML = '';
+
+    files.forEach(file => {
+      const icon =
+        file.mimeType === 'application/vnd.google-apps.folder'
+          ? '📁'
+          : '📄';
+
+      container.innerHTML += `
+        <div class="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition">
+          <div class="font-bold text-lg">${icon} ${file.name}</div>
+          <a
+            href="${file.webViewLink}"
+            target="_blank"
+            class="text-blue-600 hover:underline text-sm"
+          >
+            Open
+          </a>
+        </div>
+      `;
+    });
+
+    document.getElementById('material-count-badge').textContent =
+      files.length;
+  } catch (error) {
+    console.error(error);
+  }
+}  
+window.addEventListener('load', () => {
+  loadGoogleDriveMaterials();
+});
+
     </script>
 </body>
 </html>
