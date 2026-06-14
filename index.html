@@ -60,11 +60,15 @@
 
         .scholar-title { font-size: 18px; line-height: 1.2; color: #1B365D; font-weight: normal; }
         .scholar-title:hover { text-decoration: underline; cursor: pointer; }
+        .scholar-meta { color: #006621; font-size: 14px; margin-top: 2px; }
+        .scholar-snippet { color: #4d5156; font-size: 13px; line-height: 1.5; margin-top: 4px; }
         .scholar-action { color: #1a0dab; font-size: 13px; cursor: pointer; }
         .scholar-action:hover { text-decoration: underline; }
 
         html.dark body { background-color: #202124; color: #bdc1c6; }
         html.dark .scholar-title { color: #8ab4f8; }
+        html.dark .scholar-meta { color: #81c995; }
+        html.dark .scholar-snippet { color: #9aa0a6; }
         html.dark .scholar-action { color: #8ab4f8; }
         html.dark #doc-reader-iframe { background-color: #ffffff; }
     </style>
@@ -122,6 +126,18 @@
             </div>
 
             <div class="w-full flex-grow flex flex-col min-w-0">
+                
+                <!-- NEW FEATURE: Slideshow Panel -->
+                <div id="slideshow-panel" class="w-full max-w-2xl mb-6 relative rounded-xl overflow-hidden shadow-sm bg-gray-100 dark:bg-gray-800 h-48 md:h-64 hidden group">
+                    <div id="slideshow-container" class="w-full h-full relative">
+                        <!-- Slides will be injected here via JS -->
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                    <div id="slideshow-indicators" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10">
+                        <!-- Indicators will be injected here via JS -->
+                    </div>
+                </div>
+
                 <div class="relative w-full max-w-2xl mb-8 group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-navy transition"></i>
@@ -168,7 +184,17 @@
                         <div class="col-span-1 xl:col-span-2 space-y-2 mt-2">
                             <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">4. Manage Files</span>
                             <input type="text" id="admin-file-search" onkeyup="filterAdminFiles()" placeholder="Search to manage..." class="w-full px-3 py-2 border rounded text-xs">
-                            <div id="admin-file-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs"></div>
+                            <div id="admin-file-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:text-gray-200"></div>
+                        </div>
+
+                        <!-- NEW FEATURE: Manage Slideshow Flyers -->
+                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
+                            <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">5. Manage Slideshow Flyers</span>
+                            <form onsubmit="handleAddFlyer(event)" class="flex gap-2 mb-2">
+                                <input type="url" id="admin-flyer-url" required placeholder="Paste Flyer Image URL (e.g. Imgur link)..." class="w-full px-3 py-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white">
+                                <button type="submit" class="px-4 py-2 bg-navy hover:bg-blue-800 transition text-white text-xs font-bold rounded">Add Flyer</button>
+                            </form>
+                            <div id="admin-flyer-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600"></div>
                         </div>
                     </div>
                 </section>
@@ -227,6 +253,17 @@
                 <input type="password" id="reg-pass" required placeholder="Password" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
                 <button type="submit" class="w-full py-3 bg-navy text-white font-bold text-sm rounded hover:bg-blue-800 transition">Create</button>
             </form>
+        </div>
+    </div>
+
+    <!-- NEW FEATURE: Learning Quote Modal -->
+    <div id="quote-modal" class="hidden fixed inset-0 z-[250] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-lg w-full p-8 relative text-center border-t-4 border-navy dark:border-blue-400">
+            <button onclick="closeQuoteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <i class="fa-solid fa-quote-left text-4xl text-gray-300 dark:text-gray-600 mb-4 block"></i>
+            <h2 class="text-2xl font-normal text-navy dark:text-blue-400 mb-4">Daily Inspiration</h2>
+            <p id="quote-text" class="text-lg text-gray-700 dark:text-gray-200 italic mb-6 font-serif">Loading quote...</p>
+            <button onclick="closeQuoteModal()" class="bg-navy hover:bg-blue-800 text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-md transition">Let's Learn!</button>
         </div>
     </div>
 
@@ -329,6 +366,10 @@
                 document.getElementById('profile-index').innerText = `Index: ${currentUserProfile.indexNumber}`;
                 document.getElementById('profile-dept').innerText = currentUserProfile.department;
                 document.getElementById('profile-level').innerText = currentUserProfile.level;
+                
+                // Show Daily Inspiration Quote once upon login
+                window.showRandomQuote();
+
                 if(currentUserProfile.email === "emmanuelahyia2000@gmail.com") { document.getElementById('admin-panel-btn').classList.remove('hidden'); } else { document.getElementById('admin-panel-btn').classList.add('hidden'); }
                 
                 const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
@@ -340,6 +381,7 @@
                 document.getElementById('guest-onboarding-view').classList.remove('hidden');
                 document.getElementById('auth-action-btn').innerText = "Sign In";
                 document.getElementById('admin-panel-btn').classList.add('hidden');
+                window.hasShownQuote = false; // Reset quote flag on logout
             }
             window.currentUserProfile = currentUserProfile; 
         });
@@ -362,8 +404,8 @@
                 container.innerHTML += `
                     <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
                         <h4 class="scholar-title text-base mb-1">${data.title}</h4>
-                        <div class="text-xs text-gray-500 mb-2">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
-                        <p class="text-gray-700 dark:text-gray-300 text-sm line-height-relaxed">${data.content}</p>
+                        <div class="scholar-meta text-xs mb-2">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
+                        <p class="scholar-snippet">${data.content}</p>
                     </div>`;
             });
         });
@@ -379,6 +421,31 @@
                     document.getElementById('widget-countdown-clock').innerText = `${d.toString().padStart(2,'0')}:${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
                 }, 1000);
             }
+        });
+
+        // NEW FEATURE: Sync Slideshow Flyers
+        onSnapshot(collection(db, "slideshow"), (snapshot) => {
+            window.slideshowData = [];
+            const adminList = document.getElementById('admin-flyer-list');
+            if(adminList) adminList.innerHTML = '';
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                window.slideshowData.push({ id: doc.id, ...data });
+
+                if(adminList) {
+                    adminList.innerHTML += `
+                        <div class="flex justify-between items-center border-b dark:border-gray-600 pb-2 mb-2">
+                            <div class="flex items-center gap-2 truncate pr-2 w-full">
+                                <img src="${data.url}" class="w-10 h-10 object-cover rounded shadow-sm border border-gray-200 dark:border-gray-600">
+                                <a href="${data.url}" target="_blank" class="truncate text-blue-600 dark:text-blue-400 hover:underline flex-grow">${data.url}</a>
+                            </div>
+                            <button onclick="deleteFlyer('${doc.id}')" class="text-red-500 hover:text-red-700 shrink-0 px-2"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                }
+            });
+            window.renderSlideshow();
         });
     </script>
 
@@ -422,6 +489,108 @@
             else { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.remove('hidden'); document.getElementById('tab-login-btn').className = "text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1"; document.getElementById('tab-register-btn').className = "text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1"; }
         };
 
+        // NEW FEATURE: Logic for the Daily Inspirational Quotes
+        const learningQuotes = [
+            "The beautiful thing about learning is that no one can take it away from you. - B.B. King",
+            "Education is the most powerful weapon which you can use to change the world. - Nelson Mandela",
+            "Success is no accident. It is hard work, perseverance, learning, studying, sacrifice and most of all, love of what you are doing. - Pelé",
+            "Strive for progress, not perfection.",
+            "There are no shortcuts to any place worth going. - Beverly Sills",
+            "The expert in anything was once a beginner. - Helen Hayes",
+            "It always seems impossible until it's done. - Nelson Mandela"
+        ];
+        window.hasShownQuote = false;
+        window.showRandomQuote = function() {
+            if(window.hasShownQuote) return;
+            const quote = learningQuotes[Math.floor(Math.random() * learningQuotes.length)];
+            document.getElementById('quote-text').innerText = `"${quote}"`;
+            document.getElementById('quote-modal').classList.remove('hidden');
+            window.hasShownQuote = true;
+        };
+        window.closeQuoteModal = function() {
+            document.getElementById('quote-modal').classList.add('hidden');
+        };
+
+        // NEW FEATURE: Logic for the 3-Second Automated Slider
+        window.slideshowData = [];
+        window.currentSlideIndex = 0;
+        window.slideIntervalThread = null;
+
+        window.renderSlideshow = function() {
+            const container = document.getElementById('slideshow-container');
+            const indicators = document.getElementById('slideshow-indicators');
+            const panel = document.getElementById('slideshow-panel');
+
+            if (!window.slideshowData || window.slideshowData.length === 0) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            panel.classList.remove('hidden');
+            container.innerHTML = '';
+            indicators.innerHTML = '';
+
+            window.slideshowData.forEach((slide, index) => {
+                const img = document.createElement('img');
+                img.src = slide.url;
+                img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+                img.id = `slide-img-${index}`;
+                container.appendChild(img);
+
+                const dot = document.createElement('div');
+                dot.className = `w-2 h-2 rounded-full transition-colors duration-500 ${index === 0 ? 'bg-white scale-125' : 'bg-white/40'}`;
+                dot.id = `slide-dot-${index}`;
+                indicators.appendChild(dot);
+            });
+
+            window.currentSlideIndex = 0;
+            if (window.slideIntervalThread) clearInterval(window.slideIntervalThread);
+            window.slideIntervalThread = setInterval(window.advanceSlide, 3000); // 3 seconds loop
+        };
+
+        window.advanceSlide = function() {
+            if (!window.slideshowData || window.slideshowData.length <= 1) return;
+            const prevIndex = window.currentSlideIndex;
+            window.currentSlideIndex = (window.currentSlideIndex + 1) % window.slideshowData.length;
+            
+            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0');
+            document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40');
+            document.getElementById(`slide-dot-${prevIndex}`).classList.remove('scale-125');
+            
+            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100');
+            document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white');
+            document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('scale-125');
+        };
+
+        window.handleAddFlyer = async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('admin-flyer-url');
+            const url = input.value.trim();
+            if(!url) return;
+            
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), {
+                    url: url,
+                    timestamp: new Date().getTime()
+                });
+                window.showToast("Flyer Added Successfully!", "success");
+                input.value = '';
+            } catch(error) {
+                window.showToast("Failed to add flyer.", "error");
+            }
+        };
+
+        window.deleteFlyer = async function(id) {
+            if(confirm("Are you sure you want to delete this flyer from the slideshow?")) {
+                try {
+                    await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "slideshow", id));
+                    window.showToast("Flyer Removed", "success");
+                } catch(e) {
+                    window.showToast("Failed to delete", "error");
+                }
+            }
+        };
+
         window.renderMaterialsGrid = function(items) {
             const grid = document.getElementById('smart-materials-grid');
             document.getElementById('material-count-badge').innerText = items ? items.length : '0';
@@ -431,22 +600,21 @@
             const isAdmin = window.currentUserProfile && window.currentUserProfile.email === "emmanuelahyia2000@gmail.com";
 
             items.forEach(item => {
-                let deleteBtnHtml = isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-sm text-red-600 hover:text-red-800 px-3 py-1 font-bold transition">Delete</button>` : '';
+                let deleteBtnHtml = isAdmin ? `<span class="mx-2 text-gray-300">|</span><button onclick="deleteFileFromDatabase('${item.id}')" class="scholar-action text-red-600 hover:text-red-800">Delete</button>` : '';
                 
-                // Add thumbnail picture if available from the API mapping, otherwise show a clean document icon
-                let thumbnailHtml = item.thumbnailLink 
-                    ? `<img src="${item.thumbnailLink}" alt="File Preview" class="w-16 h-20 object-cover border border-gray-200 dark:border-gray-600 rounded shadow-sm flex-shrink-0 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">`
-                    : `<div class="w-16 h-20 bg-gray-100 dark:bg-[#202124] border border-gray-200 dark:border-gray-600 rounded shadow-sm flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition" onclick="openDocument('${item.title}', '${item.driveUrl}')"><i class="fa-solid fa-file-pdf text-red-500 text-2xl"></i></div>`;
+                let metaLabel = item.subject ? `${item.subject} Department` : `Level ${item.level} Database`;
 
                 grid.innerHTML += `
-                    <div class="mb-4 flex gap-4 items-start bg-white dark:bg-[#303134] p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
-                        ${thumbnailHtml}
-                        <div class="flex-grow min-w-0">
-                            <h3 class="scholar-title text-base font-bold truncate mb-3" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
-                            <div class="flex items-center gap-3">
-                                <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="text-sm text-white bg-navy hover:bg-blue-800 px-4 py-1.5 rounded shadow transition font-bold">Open File</button>
-                                ${deleteBtnHtml}
-                            </div>
+                    <div class="mb-4">
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-[10px] border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-1 rounded-sm uppercase tracking-wider">[PDF]</span>
+                            <h3 class="scholar-title" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
+                        </div>
+                        <div class="scholar-meta">${metaLabel} ${item.keywords ? '- Tags: ' + item.keywords : ''}</div>
+                        <div class="scholar-snippet">Secure academic file stored in UDS Cloud Repository. Click the title to preview or the action links below to view raw file data.</div>
+                        <div class="mt-1 flex items-center">
+                            <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="scholar-action">View Document</button>
+                            ${deleteBtnHtml}
                         </div>
                     </div>`;
             });
@@ -492,7 +660,6 @@
                                 title: file.name,
                                 subject: 'DEEP MATCH',
                                 driveUrl: embedUrl,
-                                thumbnailLink: file.thumbnailLink || file.iconLink,
                                 keywords: 'Found inside text'
                             };
                         });
@@ -535,7 +702,7 @@
 
         window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
         window.deleteFileFromDatabase = async function(fileId) { if(confirm("Permanently delete?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "materials", fileId)); window.showToast("Deleted", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
-        window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b pb-1 mb-1"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-bold truncate text-gray-800">${item.title}</span> <span class="text-[9px] text-gray-500 truncate">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
+        window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b pb-1 mb-1"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
         window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate }); window.showToast("Date set!", "success"); } catch(err) {} };
         window.handleBroadcastAnnouncement = async function(e) { e.preventDefault(); const title = document.getElementById('ann-title').value; const content = document.getElementById('ann-content').value; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "announcements"), { title, content, timestamp: new Date().getTime() }); window.showToast("Broadcasted!", "success"); document.getElementById('ann-title').value = ''; document.getElementById('ann-content').value = ''; } catch(err) {} };
         window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
@@ -782,18 +949,15 @@
                 const response = await fetch('/api/materials');
                 const files = await response.json();
 
-                // Map Drive files and automatically format view links to preview structures
                 window.driveMaterialsCache = files.map(file => {
                     let embedUrl = file.webViewLink;
                     
                     if (file.mimeType === 'application/vnd.google-apps.folder') {
-                        // Extract target Folder ID and append grid-embed layout parameters
                         const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/);
                         if (folderIdMatch) {
                             embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`;
                         }
                     } else {
-                        // Swap standard view link with CSP preview formatting for iframes
                         embedUrl = file.webViewLink.replace('/view', '/preview');
                     }
 
@@ -801,7 +965,6 @@
                         id: file.id,
                         title: file.name,
                         driveUrl: embedUrl,
-                        thumbnailLink: file.thumbnailLink || file.iconLink, // Grab the picture from API
                         subject: 'Google Drive', 
                         level: 'Cloud', 
                         keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document'
@@ -823,8 +986,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadGoogleDriveMaterials();
         });
-        // ------------------------------------
-
     </script>
 </body>
 </html>
