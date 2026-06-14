@@ -253,12 +253,33 @@
         </div>
     </div>
 
-    <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[250] bg-white flex flex-col">
-        <div class="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200 shadow-sm">
-            <h3 id="doc-reader-header-title" class="text-gray-800 font-bold text-sm truncate pr-4">Loading...</h3>
-            <button onclick="terminateDocViewer()" class="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-4 py-1.5 rounded transition font-bold">Close Viewer</button>
+    <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[300] bg-[#f8f9fa] dark:bg-[#121212] flex flex-col transition-opacity duration-300">
+        
+        <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div id="doc-reader-icon" class="text-2xl drop-shadow-sm">📄</div>
+                <div class="flex flex-col min-w-0">
+                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-bold text-base md:text-lg truncate max-w-[60vw]">Document Loading...</h3>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Secure UDS Hub Viewer</span>
+                </div>
+            </div>
+            <div class="flex gap-3 shrink-0">
+                <button onclick="terminateDocViewer()" class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 text-gray-700 dark:text-gray-300 px-5 py-2.5 rounded-full transition-all duration-200 font-bold text-sm shadow-sm border border-gray-200 dark:border-gray-700">
+                    <i class="fa-solid fa-xmark text-lg"></i> <span class="hidden md:inline">Close File</span>
+                </button>
+            </div>
         </div>
-        <div class="flex-grow w-full bg-gray-100"><iframe id="doc-reader-iframe" class="w-full h-full border-none bg-white" src=""></iframe></div>
+
+        <div class="relative flex-grow w-full bg-gray-200 dark:bg-[#0a0a0a] overflow-hidden">
+            
+            <div id="doc-reader-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#202124] z-20 transition-opacity duration-300">
+                <div class="w-14 h-14 border-4 border-gray-200 border-t-navy dark:border-t-blue-500 rounded-full animate-spin mb-4 shadow-sm"></div>
+                <p class="text-sm font-bold text-navy dark:text-blue-400 animate-pulse tracking-wide">Rendering Document...</p>
+                <p class="text-xs text-gray-500 mt-2">Optimizing for your screen</p>
+            </div>
+            
+            <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
+        </div>
     </div>
 
     <div id="gpa-calculator-modal" class="hidden fixed inset-0 z-[120] bg-gray-900/50 flex justify-center items-center p-4">
@@ -461,14 +482,57 @@
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
         
         window.openDocument = function(title, url) { 
-            document.getElementById('doc-reader-header-title').innerText = title; 
-            document.getElementById('doc-reader-iframe').src = url; 
-            document.getElementById('google-document-reader-modal').classList.remove('hidden'); 
+            const modal = document.getElementById('google-document-reader-modal');
+            const iframe = document.getElementById('doc-reader-iframe');
+            const loader = document.getElementById('doc-reader-loader');
+            const titleEl = document.getElementById('doc-reader-header-title');
+            const iconEl = document.getElementById('doc-reader-icon');
+
+            // 1. Reset the UI state immediately
+            loader.classList.remove('hidden');
+            iframe.classList.add('opacity-0');
+            iframe.src = ''; 
+            
+            // 2. Set the title
+            titleEl.innerText = title; 
+            
+            // 3. Intelligently set a beautiful icon based on file type
+            let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-8 h-8 object-contain">'; // Default
+            const titleLower = title.toLowerCase();
+            
+            if (titleLower.includes('.pdf')) {
+                iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" class="w-8 h-8 object-contain">';
+            } else if (titleLower.includes('.ppt') || titleLower.includes('.pptx')) {
+                iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-8 h-8 object-contain">';
+            } else if (titleLower.includes('.doc') || titleLower.includes('.docx')) {
+                iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-8 h-8 object-contain">';
+            }
+            iconEl.innerHTML = iconHtml;
+
+            // 4. Ensure the URL is optimized for embedding
+            let finalUrl = url;
+            // If it's a standard Drive view link, force it into preview mode
+            if (finalUrl.includes('/view')) {
+                finalUrl = finalUrl.replace('/view', '/preview');
+            }
+
+            // 5. Load the document and show the modal
+            iframe.src = finalUrl; 
+            modal.classList.remove('hidden'); 
+            
+            // Prevent background scrolling while viewing
+            document.body.style.overflow = 'hidden';
         };
         
         window.terminateDocViewer = function() { 
-            document.getElementById('doc-reader-iframe').src = ''; 
-            document.getElementById('google-document-reader-modal').classList.add('hidden'); 
+            const modal = document.getElementById('google-document-reader-modal');
+            const iframe = document.getElementById('doc-reader-iframe');
+            
+            iframe.src = ''; 
+            modal.classList.add('hidden'); 
+            
+            // Restore background scrolling
+            document.body.style.overflow = 'auto';
         };
         
         window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
