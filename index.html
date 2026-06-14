@@ -60,15 +60,11 @@
 
         .scholar-title { font-size: 18px; line-height: 1.2; color: #1B365D; font-weight: normal; }
         .scholar-title:hover { text-decoration: underline; cursor: pointer; }
-        .scholar-meta { color: #006621; font-size: 14px; margin-top: 2px; }
-        .scholar-snippet { color: #4d5156; font-size: 13px; line-height: 1.5; margin-top: 4px; }
         .scholar-action { color: #1a0dab; font-size: 13px; cursor: pointer; }
         .scholar-action:hover { text-decoration: underline; }
 
         html.dark body { background-color: #202124; color: #bdc1c6; }
         html.dark .scholar-title { color: #8ab4f8; }
-        html.dark .scholar-meta { color: #81c995; }
-        html.dark .scholar-snippet { color: #9aa0a6; }
         html.dark .scholar-action { color: #8ab4f8; }
         html.dark #doc-reader-iframe { background-color: #ffffff; }
     </style>
@@ -163,7 +159,7 @@
                             </form>
                             <form onsubmit="handleBroadcastAnnouncement(event)" class="space-y-2">
                                 <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">3. Broadcast Notice</span>
-                                <input type="text" id="ann-title" required placeholder="Heading" class="w-full px-3 py-2 border rounded text-xs">
+                                <input type="text" id="ann-title" required placeholder="Heading" class="w-full px-3 py-2 border rounded text-xs"></input>
                                 <textarea id="ann-content" required rows="2" placeholder="Details..." class="w-full px-3 py-2 border rounded text-xs"></textarea>
                                 <button type="submit" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded">Broadcast</button>
                             </form>
@@ -317,7 +313,7 @@
 
         let currentUserProfile = null; 
         let globalMaterialsCache = [];
-        window.driveMaterialsCache = []; // Shared cache for Google Drive materials
+        window.driveMaterialsCache = []; 
 
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
 
@@ -352,7 +348,6 @@
             const items = []; snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
             globalMaterialsCache = items; window.globalMaterialsCache = items; localStorage.setItem('uds_materials_cache', JSON.stringify(items));
             
-            // Merge Firebase files with Drive files
             const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
             
             const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
@@ -367,8 +362,8 @@
                 container.innerHTML += `
                     <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
                         <h4 class="scholar-title text-base mb-1">${data.title}</h4>
-                        <div class="scholar-meta text-xs mb-2">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
-                        <p class="scholar-snippet">${data.content}</p>
+                        <div class="text-xs text-gray-500 mb-2">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm line-height-relaxed">${data.content}</p>
                     </div>`;
             });
         });
@@ -436,32 +431,31 @@
             const isAdmin = window.currentUserProfile && window.currentUserProfile.email === "emmanuelahyia2000@gmail.com";
 
             items.forEach(item => {
-                let deleteBtnHtml = isAdmin ? `<span class="mx-2 text-gray-300">|</span><button onclick="deleteFileFromDatabase('${item.id}')" class="scholar-action text-red-600 hover:text-red-800">Delete</button>` : '';
+                let deleteBtnHtml = isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-sm text-red-600 hover:text-red-800 px-3 py-1 font-bold transition">Delete</button>` : '';
                 
-                let metaLabel = item.subject ? `${item.subject} Department` : `Level ${item.level} Database`;
+                // Add thumbnail picture if available from the API mapping, otherwise show a clean document icon
+                let thumbnailHtml = item.thumbnailLink 
+                    ? `<img src="${item.thumbnailLink}" alt="File Preview" class="w-16 h-20 object-cover border border-gray-200 dark:border-gray-600 rounded shadow-sm flex-shrink-0 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">`
+                    : `<div class="w-16 h-20 bg-gray-100 dark:bg-[#202124] border border-gray-200 dark:border-gray-600 rounded shadow-sm flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition" onclick="openDocument('${item.title}', '${item.driveUrl}')"><i class="fa-solid fa-file-pdf text-red-500 text-2xl"></i></div>`;
 
                 grid.innerHTML += `
-                    <div class="mb-4">
-                        <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[10px] border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-1 rounded-sm uppercase tracking-wider">[PDF]</span>
-                            <h3 class="scholar-title" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
-                        </div>
-                        <div class="scholar-meta">${metaLabel} ${item.keywords ? '- Tags: ' + item.keywords : ''}</div>
-                        <div class="scholar-snippet">Secure academic file stored in UDS Cloud Repository. Click the title to preview or the action links below to view raw file data.</div>
-                        <div class="mt-1 flex items-center">
-                            <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="scholar-action">View Document</button>
-                            ${deleteBtnHtml}
+                    <div class="mb-4 flex gap-4 items-start bg-white dark:bg-[#303134] p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                        ${thumbnailHtml}
+                        <div class="flex-grow min-w-0">
+                            <h3 class="scholar-title text-base font-bold truncate mb-3" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
+                            <div class="flex items-center gap-3">
+                                <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="text-sm text-white bg-navy hover:bg-blue-800 px-4 py-1.5 rounded shadow transition font-bold">Open File</button>
+                                ${deleteBtnHtml}
+                            </div>
                         </div>
                     </div>`;
             });
         };
 
-        // NEW AI DEEP SEARCH AND DRIVE SYNC LOGIC
         window.searchDebounceTimer = null;
         window.executeSearchingAI = async function() {
             clearTimeout(window.searchDebounceTimer);
             
-            // Wait half a second after they stop typing before hitting the server
             window.searchDebounceTimer = setTimeout(async () => {
                 const query = document.getElementById('ai-search-bar').value.trim();
                 window.navigateTo('dashboard'); 
@@ -473,7 +467,6 @@
                     return; 
                 }
 
-                // Show loading text while Google Drive reads inside the PDFs
                 grid.innerHTML = `<p class="text-blue-600 dark:text-blue-400 text-sm font-bold animate-pulse">Deep scanning inside documents for "${query}"...</p>`;
                 
                 try {
@@ -484,20 +477,31 @@
                     const data = await response.json();
                     
                     if (data.results && data.results.length > 0) {
-                        const formattedResults = data.results.map(file => ({
-                            id: file.id,
-                            title: file.name,
-                            subject: 'DEEP MATCH',
-                            driveUrl: file.webViewLink,
-                            keywords: 'Found inside text'
-                        }));
+                        const formattedResults = data.results.map(file => {
+                            // Automatically fix CSP Frame policies for runtime search hits
+                            let embedUrl = file.webViewLink;
+                            if (file.mimeType === 'application/vnd.google-apps.folder') {
+                                const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/);
+                                if (folderIdMatch) embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`;
+                            } else {
+                                embedUrl = file.webViewLink.replace('/view', '/preview');
+                            }
+
+                            return {
+                                id: file.id,
+                                title: file.name,
+                                subject: 'DEEP MATCH',
+                                driveUrl: embedUrl,
+                                thumbnailLink: file.thumbnailLink || file.iconLink,
+                                keywords: 'Found inside text'
+                            };
+                        });
                         window.renderMaterialsGrid(formattedResults);
                     } else {
                         grid.innerHTML = `<p class="text-gray-500 text-sm italic">No documents contain the word "${query}".</p>`;
                     }
                 } catch (error) {
                     console.error("Deep search failed, falling back to basic database search", error);
-                    // Fallback to searching basic Firebase + Drive titles if the deep search fails
                     const allAvailableMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
                     const records = allAvailableMaterials.filter(item => 
                         (item.title && item.title.toLowerCase().includes(query.toLowerCase())) || 
@@ -537,13 +541,11 @@
         window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
         window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
 
-        // GPA Calcs
         window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
         window.closeGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.add('hidden'); };
         window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-2"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white uppercase"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-navy">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 text-xs px-1"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
         window.recalculateStudentGpaMetrics = function() { try { let p=0, c=0; const rows = document.getElementById('gpa-rows-stack').children; for(let row of rows) { const sv = parseFloat(row.querySelector('.gpa-score-field').value); const cv = parseFloat(row.querySelector('.gpa-credit-field').value); const label = row.querySelector('.gpa-grade-yield'); if(!isNaN(sv) && !isNaN(cv) && cv > 0) { let pt = 0; let grd = "-"; if (sv >= 80) { pt = 5.0; grd = "A+"; } else if (sv >= 70) { pt = 4.5; grd = "A"; } else if (sv >= 65) { pt = 4.0; grd = "B+"; } else if (sv >= 60) { pt = 3.5; grd = "B"; } else if (sv >= 55) { pt = 3.0; grd = "C+"; } else if (sv >= 50) { pt = 2.5; grd = "C"; } else if (sv >= 45) { pt = 2.0; grd = "D+"; } else if (sv >= 40) { pt = 1.5; grd = "D"; } else { pt = 0.0; grd = "F"; } label.innerText = grd; p += (pt * cv); c += cv; } else { label.innerText = "-"; } } const triGpa = c > 0 ? (p / c) : 0; document.getElementById('gpa-output-tri').innerText = triGpa.toFixed(2); const pc = parseFloat(document.getElementById('gpa-past-credits').value) || 0; const pp = parseFloat(document.getElementById('gpa-past-points').value) || 0; const cgpa = (pc + c) > 0 ? ((pp + p) / (pc + c)) : 0; document.getElementById('gpa-output-cgpa').innerText = cgpa.toFixed(2); } catch(e) {} };
         
-        // Comprehensive ANOVA Toolkit
         window.openResearchModal = function() { document.getElementById('research-toolkit-modal').classList.remove('hidden'); }; window.closeResearchModal = function() { document.getElementById('research-toolkit-modal').classList.add('hidden'); };
         window.anovaCharts = {};
         
@@ -780,20 +782,34 @@
                 const response = await fetch('/api/materials');
                 const files = await response.json();
 
-                // Map Drive files to match the exact structure of your Firebase materials
-                window.driveMaterialsCache = files.map(file => ({
-                    id: file.id,
-                    title: file.name,
-                    driveUrl: file.webViewLink,
-                    subject: 'Google Drive', // Identifies the source
-                    level: 'Cloud', 
-                    keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document'
-                }));
+                // Map Drive files and automatically format view links to preview structures
+                window.driveMaterialsCache = files.map(file => {
+                    let embedUrl = file.webViewLink;
+                    
+                    if (file.mimeType === 'application/vnd.google-apps.folder') {
+                        // Extract target Folder ID and append grid-embed layout parameters
+                        const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/);
+                        if (folderIdMatch) {
+                            embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`;
+                        }
+                    } else {
+                        // Swap standard view link with CSP preview formatting for iframes
+                        embedUrl = file.webViewLink.replace('/view', '/preview');
+                    }
 
-                // Combine Firebase and newly loaded Drive files
+                    return {
+                        id: file.id,
+                        title: file.name,
+                        driveUrl: embedUrl,
+                        thumbnailLink: file.thumbnailLink || file.iconLink, // Grab the picture from API
+                        subject: 'Google Drive', 
+                        level: 'Cloud', 
+                        keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document'
+                    };
+                });
+
                 const combinedMaterials = [...(window.globalMaterialsCache || []), ...window.driveMaterialsCache];
                 
-                // Render them all together
                 const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
                 if(!currentQuery) {
                     window.renderMaterialsGrid(combinedMaterials);
