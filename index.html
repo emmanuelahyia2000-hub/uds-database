@@ -509,11 +509,30 @@
             }
             iconEl.innerHTML = iconHtml;
 
-            // 4. Ensure the URL is optimized for embedding
+            // 4. Force optimal rendering based on file type using Google's cloud conversion endpoints
             let finalUrl = url;
-            // If it's a standard Drive view link, force it into preview mode
-            if (finalUrl.includes('/view')) {
-                finalUrl = finalUrl.replace('/view', '/preview');
+            const fileIdMatch = url.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+
+            if (fileIdMatch && fileIdMatch[1]) {
+                const fileId = fileIdMatch[1];
+                
+                // If it's a PowerPoint, force Google Slides to render it as continuous images/slides
+                if (titleLower.includes('.ppt') || titleLower.includes('.pptx')) {
+                    finalUrl = `https://docs.google.com/presentation/d/${fileId}/embed?start=false&loop=false&delayms=3000`;
+                } 
+                // If it's a Word Doc, force Google Docs to render it as a fast PDF preview
+                else if (titleLower.includes('.doc') || titleLower.includes('.docx')) {
+                    finalUrl = `https://docs.google.com/document/d/${fileId}/preview`;
+                }
+                // Fallback for PDF and other files to ensure they are in preview mode
+                else {
+                    finalUrl = url.includes('/view') ? url.replace('/view', '/preview') : url;
+                }
+            } else {
+                // If we couldn't parse the ID, fallback to the standard preview logic
+                if (finalUrl.includes('/view')) {
+                    finalUrl = finalUrl.replace('/view', '/preview');
+                }
             }
 
             // 5. Load the document and show the modal
@@ -668,7 +687,6 @@
                     iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-10 h-10 object-contain" alt="PPT">';
                 }
 
-                // Removed the long snippet and the meta tag info, replaced with a clean layout and image icon.
                 grid.innerHTML += `
                     <div class="mb-2 bg-white dark:bg-[#303134] p-4 rounded border border-gray-200 dark:border-gray-700 hover:shadow-md transition flex items-center gap-4">
                         <div class="flex-shrink-0 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">
