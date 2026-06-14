@@ -315,7 +315,10 @@
 
         window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc;
 
-        let currentUserProfile = null; let globalMaterialsCache = [];
+        let currentUserProfile = null; 
+        let globalMaterialsCache = [];
+        window.driveMaterialsCache = []; // Shared cache for Google Drive materials
+
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
 
         onAuthStateChanged(auth, async (user) => {
@@ -331,7 +334,9 @@
                 document.getElementById('profile-dept').innerText = currentUserProfile.department;
                 document.getElementById('profile-level').innerText = currentUserProfile.level;
                 if(currentUserProfile.email === "emmanuelahyia2000@gmail.com") { document.getElementById('admin-panel-btn').classList.remove('hidden'); } else { document.getElementById('admin-panel-btn').classList.add('hidden'); }
-                if(window.globalMaterialsCache.length > 0) window.renderMaterialsGrid(window.globalMaterialsCache);
+                
+                const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+                if(combinedMaterials.length > 0) window.renderMaterialsGrid(combinedMaterials);
             } else {
                 currentUserProfile = null;
                 document.getElementById('portal-workspace').classList.add('hidden');
@@ -346,8 +351,12 @@
         onSnapshot(collection(db, "materials"), (snapshot) => {
             const items = []; snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
             globalMaterialsCache = items; window.globalMaterialsCache = items; localStorage.setItem('uds_materials_cache', JSON.stringify(items));
+            
+            // Merge Firebase files with Drive files
+            const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+            
             const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
-            if(currentQuery) { window.executeSearchingAI(); } else { window.renderMaterialsGrid(items); }
+            if(currentQuery) { window.executeSearchingAI(); } else { window.renderMaterialsGrid(combinedMaterials); }
             if(window.filterAdminFiles) window.filterAdminFiles();
         });
 
@@ -458,7 +467,11 @@
                 window.navigateTo('dashboard'); 
                 const grid = document.getElementById('smart-materials-grid');
                 
-                if (query === '') { window.renderMaterialsGrid(window.globalMaterialsCache); return; }
+                if (query === '') { 
+                    const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+                    window.renderMaterialsGrid(combinedMaterials); 
+                    return; 
+                }
 
                 // Show loading text while Google Drive reads inside the PDFs
                 grid.innerHTML = `<p class="text-blue-600 dark:text-blue-400 text-sm font-bold animate-pulse">Deep scanning inside documents for "${query}"...</p>`;
@@ -484,8 +497,9 @@
                     }
                 } catch (error) {
                     console.error("Deep search failed, falling back to basic database search", error);
-                    // Fallback to searching basic Firebase titles if the deep search fails
-                    const records = window.globalMaterialsCache.filter(item => 
+                    // Fallback to searching basic Firebase + Drive titles if the deep search fails
+                    const allAvailableMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+                    const records = allAvailableMaterials.filter(item => 
                         (item.title && item.title.toLowerCase().includes(query.toLowerCase())) || 
                         (item.keywords && item.keywords.toLowerCase().includes(query.toLowerCase())) ||
                         (item.level && item.level.toLowerCase().includes(query.toLowerCase())) ||
@@ -766,26 +780,24 @@
                 const response = await fetch('/api/materials');
                 const files = await response.json();
 
-                const container = document.getElementById('smart-materials-grid');
-                if (!container) return;
+                // Map Drive files to match the exact structure of your Firebase materials
+                window.driveMaterialsCache = files.map(file => ({
+                    id: file.id,
+                    title: file.name,
+                    driveUrl: file.webViewLink,
+                    subject: 'Google Drive', // Identifies the source
+                    level: 'Cloud', 
+                    keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document'
+                }));
 
-                container.innerHTML = '';
-
-                files.forEach(file => {
-                    const icon = file.mimeType === 'application/vnd.google-apps.folder' ? '📁' : '📄';
-
-                    container.innerHTML += `
-                        <div class="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition">
-                            <div class="font-bold text-lg">${icon} ${file.name}</div>
-                            <a href="${file.webViewLink}" target="_blank" class="text-blue-600 hover:underline text-sm">
-                                Open
-                            </a>
-                        </div>
-                    `;
-                });
-
-                const badge = document.getElementById('material-count-badge');
-                if (badge) badge.textContent = files.length;
+                // Combine Firebase and newly loaded Drive files
+                const combinedMaterials = [...(window.globalMaterialsCache || []), ...window.driveMaterialsCache];
+                
+                // Render them all together
+                const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
+                if(!currentQuery) {
+                    window.renderMaterialsGrid(combinedMaterials);
+                }
 
             } catch (error) {
                 console.error('Google Drive Load Error:', error);
