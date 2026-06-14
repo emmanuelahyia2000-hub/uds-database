@@ -60,16 +60,9 @@
 
         .scholar-title { font-size: 18px; line-height: 1.2; color: #1B365D; font-weight: normal; }
         .scholar-title:hover { text-decoration: underline; cursor: pointer; }
-        .scholar-meta { color: #006621; font-size: 14px; margin-top: 2px; }
-        .scholar-snippet { color: #4d5156; font-size: 13px; line-height: 1.5; margin-top: 4px; }
-        .scholar-action { color: #1a0dab; font-size: 13px; cursor: pointer; }
-        .scholar-action:hover { text-decoration: underline; }
 
         html.dark body { background-color: #202124; color: #bdc1c6; }
         html.dark .scholar-title { color: #8ab4f8; }
-        html.dark .scholar-meta { color: #81c995; }
-        html.dark .scholar-snippet { color: #9aa0a6; }
-        html.dark .scholar-action { color: #8ab4f8; }
         html.dark #doc-reader-iframe { background-color: #ffffff; }
     </style>
 </head>
@@ -127,15 +120,10 @@
 
             <div class="w-full flex-grow flex flex-col min-w-0">
                 
-                <!-- NEW FEATURE: Slideshow Panel -->
                 <div id="slideshow-panel" class="w-full max-w-2xl mb-6 relative rounded-xl overflow-hidden shadow-sm bg-gray-100 dark:bg-gray-800 h-48 md:h-64 hidden group">
-                    <div id="slideshow-container" class="w-full h-full relative">
-                        <!-- Slides will be injected here via JS -->
-                    </div>
+                    <div id="slideshow-container" class="w-full h-full relative"></div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
-                    <div id="slideshow-indicators" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10">
-                        <!-- Indicators will be injected here via JS -->
-                    </div>
+                    <div id="slideshow-indicators" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10"></div>
                 </div>
 
                 <div class="relative w-full max-w-2xl mb-8 group">
@@ -187,7 +175,6 @@
                             <div id="admin-file-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:text-gray-200"></div>
                         </div>
 
-                        <!-- NEW FEATURE: Manage Slideshow Flyers -->
                         <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
                             <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">5. Manage Slideshow Flyers</span>
                             <form onsubmit="handleAddFlyer(event)" class="flex gap-2 mb-2">
@@ -203,7 +190,7 @@
                     Showing results from Cloud Archive (<span id="material-count-badge">...</span> items)
                 </div>
 
-                <div id="smart-materials-grid" class="flex flex-col gap-6 w-full max-w-3xl pb-20"></div>
+                <div id="smart-materials-grid" class="flex flex-col gap-4 w-full max-w-3xl pb-20"></div>
 
                 <div id="section-announcements" class="hidden w-full max-w-3xl">
                     <h2 class="text-xl font-normal text-navy dark:text-blue-400 mb-6 pb-2 border-b">Campus Notifications</h2>
@@ -256,7 +243,6 @@
         </div>
     </div>
 
-    <!-- NEW FEATURE: Learning Quote Modal -->
     <div id="quote-modal" class="hidden fixed inset-0 z-[250] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-lg w-full p-8 relative text-center border-t-4 border-navy dark:border-blue-400">
             <button onclick="closeQuoteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -268,12 +254,9 @@
     </div>
 
     <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[250] bg-white flex flex-col">
-        <div class="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
-            <h3 id="doc-reader-header-title" class="text-gray-800 font-bold text-sm truncate">Loading...</h3>
-            <div class="flex gap-4">
-                <a id="doc-reader-download-trigger" href="#" target="_blank" class="text-sm text-blue-600 hover:underline">Open in Drive</a>
-                <button onclick="terminateDocViewer()" class="text-sm text-red-600 hover:underline">Close</button>
-            </div>
+        <div class="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200 shadow-sm">
+            <h3 id="doc-reader-header-title" class="text-gray-800 font-bold text-sm truncate pr-4">Loading...</h3>
+            <button onclick="terminateDocViewer()" class="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-4 py-1.5 rounded transition font-bold">Close Viewer</button>
         </div>
         <div class="flex-grow w-full bg-gray-100"><iframe id="doc-reader-iframe" class="w-full h-full border-none bg-white" src=""></iframe></div>
     </div>
@@ -367,7 +350,6 @@
                 document.getElementById('profile-dept').innerText = currentUserProfile.department;
                 document.getElementById('profile-level').innerText = currentUserProfile.level;
                 
-                // Show Daily Inspiration Quote once upon login
                 window.showRandomQuote();
 
                 if(currentUserProfile.email === "emmanuelahyia2000@gmail.com") { document.getElementById('admin-panel-btn').classList.remove('hidden'); } else { document.getElementById('admin-panel-btn').classList.add('hidden'); }
@@ -381,7 +363,7 @@
                 document.getElementById('guest-onboarding-view').classList.remove('hidden');
                 document.getElementById('auth-action-btn').innerText = "Sign In";
                 document.getElementById('admin-panel-btn').classList.add('hidden');
-                window.hasShownQuote = false; // Reset quote flag on logout
+                window.hasShownQuote = false; 
             }
             window.currentUserProfile = currentUserProfile; 
         });
@@ -404,8 +386,8 @@
                 container.innerHTML += `
                     <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
                         <h4 class="scholar-title text-base mb-1">${data.title}</h4>
-                        <div class="scholar-meta text-xs mb-2">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
-                        <p class="scholar-snippet">${data.content}</p>
+                        <div class="scholar-meta text-xs mb-2 text-scholarGreen dark:text-[#81c995]">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm line-height-[1.5] mt-1">${data.content}</p>
                     </div>`;
             });
         });
@@ -423,7 +405,6 @@
             }
         });
 
-        // NEW FEATURE: Sync Slideshow Flyers
         onSnapshot(collection(db, "slideshow"), (snapshot) => {
             window.slideshowData = [];
             const adminList = document.getElementById('admin-flyer-list');
@@ -479,8 +460,16 @@
         window.toggleAdminDashboard = function() { const el = document.getElementById('admin-dashboard-panel'); el.classList.contains('hidden') ? el.classList.remove('hidden') : el.classList.add('hidden'); if(!el.classList.contains('hidden')) window.filterAdminFiles(); };
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
         
-        window.openDocument = function(title, url) { document.getElementById('doc-reader-header-title').innerText = title; document.getElementById('doc-reader-iframe').src = url; document.getElementById('doc-reader-download-trigger').href = url.replace('/preview', '/view'); document.getElementById('google-document-reader-modal').classList.remove('hidden'); };
-        window.terminateDocViewer = function() { document.getElementById('doc-reader-iframe').src = ''; document.getElementById('google-document-reader-modal').classList.add('hidden'); };
+        window.openDocument = function(title, url) { 
+            document.getElementById('doc-reader-header-title').innerText = title; 
+            document.getElementById('doc-reader-iframe').src = url; 
+            document.getElementById('google-document-reader-modal').classList.remove('hidden'); 
+        };
+        
+        window.terminateDocViewer = function() { 
+            document.getElementById('doc-reader-iframe').src = ''; 
+            document.getElementById('google-document-reader-modal').classList.add('hidden'); 
+        };
         
         window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
         window.closeAuthModal = function() { document.getElementById('auth-gateway-modal').classList.add('hidden'); };
@@ -489,7 +478,6 @@
             else { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.remove('hidden'); document.getElementById('tab-login-btn').className = "text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1"; document.getElementById('tab-register-btn').className = "text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1"; }
         };
 
-        // NEW FEATURE: Logic for the Daily Inspirational Quotes
         const learningQuotes = [
             "The beautiful thing about learning is that no one can take it away from you. - B.B. King",
             "Education is the most powerful weapon which you can use to change the world. - Nelson Mandela",
@@ -511,7 +499,6 @@
             document.getElementById('quote-modal').classList.add('hidden');
         };
 
-        // NEW FEATURE: Logic for the 3-Second Automated Slider
         window.slideshowData = [];
         window.currentSlideIndex = 0;
         window.slideIntervalThread = null;
@@ -545,7 +532,7 @@
 
             window.currentSlideIndex = 0;
             if (window.slideIntervalThread) clearInterval(window.slideIntervalThread);
-            window.slideIntervalThread = setInterval(window.advanceSlide, 3000); // 3 seconds loop
+            window.slideIntervalThread = setInterval(window.advanceSlide, 3000); 
         };
 
         window.advanceSlide = function() {
@@ -600,21 +587,35 @@
             const isAdmin = window.currentUserProfile && window.currentUserProfile.email === "emmanuelahyia2000@gmail.com";
 
             items.forEach(item => {
-                let deleteBtnHtml = isAdmin ? `<span class="mx-2 text-gray-300">|</span><button onclick="deleteFileFromDatabase('${item.id}')" class="scholar-action text-red-600 hover:text-red-800">Delete</button>` : '';
+                let deleteBtnHtml = isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-4 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Delete</button>` : '';
                 
-                let metaLabel = item.subject ? `${item.subject} Department` : `Level ${item.level} Database`;
+                // Assign official visual icons based on file type or keyword match
+                let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-10 h-10 object-contain" alt="File">';
+                const titleLower = (item.title || '').toLowerCase();
+                const keywordsLower = (item.keywords || '').toLowerCase();
+                
+                if (keywordsLower.includes('folder')) {
+                    iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Drive_Folder_Icon_%282020%29.svg" class="w-10 h-10 object-contain" alt="Folder">';
+                } else if (titleLower.includes('.pdf') || keywordsLower.includes('pdf')) {
+                    iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" class="w-10 h-10 object-contain" alt="PDF">';
+                } else if (titleLower.includes('.doc') || keywordsLower.includes('word')) {
+                    iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-10 h-10 object-contain" alt="DOCX">';
+                } else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) {
+                    iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-10 h-10 object-contain" alt="PPT">';
+                }
 
+                // Removed the long snippet and the meta tag info, replaced with a clean layout and image icon.
                 grid.innerHTML += `
-                    <div class="mb-4">
-                        <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-[10px] border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-1 rounded-sm uppercase tracking-wider">[PDF]</span>
-                            <h3 class="scholar-title" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
+                    <div class="mb-2 bg-white dark:bg-[#303134] p-4 rounded border border-gray-200 dark:border-gray-700 hover:shadow-md transition flex items-center gap-4">
+                        <div class="flex-shrink-0 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">
+                            ${iconHtml}
                         </div>
-                        <div class="scholar-meta">${metaLabel} ${item.keywords ? '- Tags: ' + item.keywords : ''}</div>
-                        <div class="scholar-snippet">Secure academic file stored in UDS Cloud Repository. Click the title to preview or the action links below to view raw file data.</div>
-                        <div class="mt-1 flex items-center">
-                            <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="scholar-action">View Document</button>
-                            ${deleteBtnHtml}
+                        <div class="flex-grow min-w-0">
+                            <h3 class="scholar-title font-bold text-base mb-1 truncate" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
+                            <div class="mt-2 flex items-center">
+                                <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 rounded text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition">Open File</button>
+                                ${deleteBtnHtml}
+                            </div>
                         </div>
                     </div>`;
             });
@@ -646,7 +647,6 @@
                     
                     if (data.results && data.results.length > 0) {
                         const formattedResults = data.results.map(file => {
-                            // Automatically fix CSP Frame policies for runtime search hits
                             let embedUrl = file.webViewLink;
                             if (file.mimeType === 'application/vnd.google-apps.folder') {
                                 const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/);
@@ -660,7 +660,7 @@
                                 title: file.name,
                                 subject: 'DEEP MATCH',
                                 driveUrl: embedUrl,
-                                keywords: 'Found inside text'
+                                keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document'
                             };
                         });
                         window.renderMaterialsGrid(formattedResults);
