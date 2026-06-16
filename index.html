@@ -216,6 +216,21 @@
                             <div id="admin-marketplace-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
                                 </div>
                         </div>
+
+                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
+                            <div class="flex justify-between items-center border-b pb-1">
+                                <span class="text-xs font-bold text-navy dark:text-blue-400 block"><i class="fa-solid fa-bullhorn mr-1"></i> 8. Notice Master Control</span>
+                                <span class="text-[10px] text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded uppercase tracking-wider">Admin Override</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 dark:text-gray-400 mb-2">Full authority to view, edit, archive, and delete campus notices.</p>
+                            <div class="flex justify-between text-xs mb-2 text-gray-600 dark:text-gray-400">
+                                <span>Total: <span id="admin-notice-total" class="font-bold">0</span></span>
+                                <span>Published: <span id="admin-notice-published" class="font-bold">0</span></span>
+                                <span>Archived: <span id="admin-notice-archived" class="font-bold text-orange-500">0</span></span>
+                            </div>
+                            <div id="admin-notice-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
+                                </div>
+                        </div>
                     </div>
                 </section>
 
@@ -405,6 +420,7 @@
             </div>
         </div>
     </div>
+    
     <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[300] bg-[#f8f9fa] dark:bg-[#121212] flex flex-col transition-opacity duration-300">
         <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
             <div class="flex items-center gap-3 overflow-hidden">
@@ -721,6 +737,24 @@
         </div>
     </div>
 
+    <div id="edit-announcement-modal" class="hidden fixed inset-0 z-[350] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-lg w-full p-6 relative border-t-4 border-navy dark:border-blue-400">
+            <button onclick="closeEditAnnouncementModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h2 class="text-xl font-bold text-navy dark:text-blue-400 mb-4">Edit Notice</h2>
+            <form id="form-edit-announcement" onsubmit="submitEditAnnouncement(event)" class="space-y-4">
+                <input type="hidden" id="edit-ann-id">
+                <div>
+                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Title</label>
+                    <input type="text" id="edit-ann-title" required class="w-full px-3 py-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Content</label>
+                    <textarea id="edit-ann-content" required rows="4" class="w-full px-3 py-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2 bg-navy text-white text-sm font-bold rounded hover:bg-blue-800 transition shadow">Save Changes</button>
+            </form>
+        </div>
+    </div>
 
     <div id="toast-deck" class="fixed bottom-5 left-5 z-[300] space-y-2 pointer-events-none"></div>
 
@@ -741,6 +775,7 @@
         window.driveMaterialsCache = []; 
         window.accommodationsCache = [];
         window.announcementsCache = [];
+        window.allAnnouncementsCache = []; // Added to hold archived notices for admins
         window.marketplaceCache = []; // Marketplace addition
 
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
@@ -777,6 +812,7 @@
                 if(combinedMaterials.length > 0) window.renderMaterialsGrid(combinedMaterials);
                 
                 if(window.compileSmartNotices) window.compileSmartNotices();
+                if(window.renderAdminNotices) window.renderAdminNotices();
             } else {
                 currentUserProfile = null;
                 window.isAdmin = false;
@@ -831,19 +867,45 @@
             if(window.compileSmartNotices) window.compileSmartNotices();
         });
 
+        // UPDATED: ANNOUNCEMENTS LISTENER FOR NOTICE MANAGEMENT INTEGRATION
         onSnapshot(collection(db, "announcements"), (snapshot) => {
-            const container = document.getElementById('announcements-yield-box'); container.innerHTML = '';
+            const container = document.getElementById('announcements-yield-box'); 
+            if(container) container.innerHTML = '';
+            
             window.announcementsCache = [];
+            window.allAnnouncementsCache = [];
+            
+            let total = 0, published = 0, archived = 0;
+
             snapshot.forEach(doc => {
                 const data = doc.data();
-                window.announcementsCache.push({id: doc.id, ...data});
-                container.innerHTML += `
-                    <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
-                        <h4 class="scholar-title text-base mb-1">${data.title}</h4>
-                        <div class="scholar-meta text-xs mb-2 text-scholarGreen dark:text-[#81c995]">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm line-height-[1.5] mt-1">${data.content}</p>
-                    </div>`;
+                const item = {id: doc.id, ...data};
+                window.allAnnouncementsCache.push(item);
+                total++;
+                
+                if(item.archived) {
+                    archived++;
+                } else {
+                    published++;
+                    window.announcementsCache.push(item);
+                    if(container) {
+                        container.innerHTML += `
+                            <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
+                                <h4 class="scholar-title text-base mb-1">${data.title}</h4>
+                                <div class="scholar-meta text-xs mb-2 text-scholarGreen dark:text-[#81c995]">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm line-height-[1.5] mt-1 whitespace-pre-wrap">${data.content}</p>
+                            </div>`;
+                    }
+                }
             });
+
+            if(window.isAdmin) {
+                const totEl = document.getElementById('admin-notice-total'); if(totEl) totEl.innerText = total;
+                const pubEl = document.getElementById('admin-notice-published'); if(pubEl) pubEl.innerText = published;
+                const arcEl = document.getElementById('admin-notice-archived'); if(arcEl) arcEl.innerText = archived;
+                if(window.renderAdminNotices) window.renderAdminNotices();
+            }
+
             if(window.compileSmartNotices) window.compileSmartNotices();
         });
 
@@ -886,7 +948,7 @@
     </script>
 
     <script>
-        // PWA Setup with 10-second delay requirement
+        // PWA Setup with 1-second delay requirement based on user prompt
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err)); }); }
         let deferredPrompt;
         window.hasInstalledPWA = false;
@@ -895,12 +957,12 @@
             e.preventDefault(); 
             deferredPrompt = e; 
             
-            // 10 seconds prompt display requirement
+            // Adjusted from 10000ms to 1000ms to notify users immediately on open
             setTimeout(() => {
                 if (deferredPrompt && !window.hasInstalledPWA) {
                     document.getElementById('pwa-install-footer').classList.remove('hidden'); 
                 }
-            }, 10000); 
+            }, 1000); 
         });
         
         window.installPWA = async () => { 
@@ -959,7 +1021,8 @@
             if(!el.classList.contains('hidden')) { 
                 window.filterAdminFiles(); 
                 window.renderAdminAccommodations(); 
-                if(window.adminRenderMarketplace) window.adminRenderMarketplace(); // Marketplace Add
+                if(window.adminRenderMarketplace) window.adminRenderMarketplace(); 
+                if(window.renderAdminNotices) window.renderAdminNotices(); // ADDED NOTICE MGMT RENDERING
             }
         };
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
@@ -1111,7 +1174,26 @@
         window.deleteFileFromDatabase = async function(fileId) { if(confirm("Permanently delete?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "materials", fileId)); window.showToast("Deleted", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
         window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b pb-1 mb-1"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
         window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate }); window.showToast("Date set!", "success"); } catch(err) {} };
-        window.handleBroadcastAnnouncement = async function(e) { e.preventDefault(); const title = document.getElementById('ann-title').value; const content = document.getElementById('ann-content').value; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "announcements"), { title, content, timestamp: new Date().getTime() }); window.showToast("Broadcasted!", "success"); document.getElementById('ann-title').value = ''; document.getElementById('ann-content').value = ''; } catch(err) {} };
+        
+        // UPDATED: handleBroadcastAnnouncement includes views & archived metadata
+        window.handleBroadcastAnnouncement = async function(e) { 
+            e.preventDefault(); 
+            const title = document.getElementById('ann-title').value; 
+            const content = document.getElementById('ann-content').value; 
+            try { 
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "announcements"), { 
+                    title, 
+                    content, 
+                    timestamp: new Date().getTime(),
+                    views: 0,
+                    archived: false
+                }); 
+                window.showToast("Broadcasted!", "success"); 
+                document.getElementById('ann-title').value = ''; 
+                document.getElementById('ann-content').value = ''; 
+            } catch(err) {} 
+        };
+
         window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
         window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
 
@@ -1632,6 +1714,95 @@
             }
         };
 
+        // --- NEW: NOTICE MANAGEMENT ADMIN LOGIC ---
+        
+        window.renderAdminNotices = function() {
+            if(!window.isAdmin) return;
+            const container = document.getElementById('admin-notice-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(!window.allAnnouncementsCache || window.allAnnouncementsCache.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-500 italic">No notices available.</p>';
+                return;
+            }
+
+            // Sort newest first
+            const sorted = [...window.allAnnouncementsCache].sort((a,b) => b.timestamp - a.timestamp);
+
+            sorted.forEach(item => {
+                const statusColor = item.archived ? 'text-orange-500' : 'text-green-500';
+                const statusText = item.archived ? 'Archived' : 'Published';
+                const toggleText = item.archived ? 'Restore' : 'Archive';
+                const views = item.views || 0;
+                
+                container.innerHTML += `
+                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
+                        <div class="flex flex-col min-w-0 pr-2 flex-grow">
+                            <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span>
+                            <span class="text-[9px] text-gray-500 truncate">Status: <span class="${statusColor} font-bold">${statusText}</span> | Views: ${views} | ${new Date(item.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <div class="flex gap-3 shrink-0">
+                            <button onclick="openEditAnnouncementModal('${item.id}')" class="text-blue-500 hover:underline font-bold"><i class="fa-solid fa-pen mr-1"></i>Edit</button>
+                            <button onclick="adminToggleNoticeArchive('${item.id}', ${item.archived ? true : false})" class="${statusColor} hover:underline font-bold"><i class="fa-solid fa-box-archive mr-1"></i>${toggleText}</button>
+                            <button onclick="adminDeleteNotice('${item.id}')" class="text-red-500 hover:text-red-700 font-bold"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.adminDeleteNotice = async function(id) {
+            if(!window.isAdmin) return;
+            if(confirm("Are you sure you want to permanently delete this notice?")) {
+                try {
+                    await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "announcements", id));
+                    window.showToast("Notice deleted.", "success");
+                } catch(e) { window.showToast("Admin action failed.", "error"); }
+            }
+        };
+
+        window.adminToggleNoticeArchive = async function(id, isArchived) {
+            if(!window.isAdmin) return;
+            try {
+                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "announcements", id), {
+                    archived: !isArchived
+                });
+                window.showToast(!isArchived ? "Notice Archived" : "Notice Restored", "success");
+            } catch(e) { window.showToast("Action failed.", "error"); }
+        };
+
+        window.openEditAnnouncementModal = function(id) {
+            const notice = window.allAnnouncementsCache.find(n => n.id === id);
+            if(!notice) return;
+            document.getElementById('edit-ann-id').value = id;
+            document.getElementById('edit-ann-title').value = notice.title;
+            document.getElementById('edit-ann-content').value = notice.content;
+            document.getElementById('edit-announcement-modal').classList.remove('hidden');
+        };
+
+        window.closeEditAnnouncementModal = function() {
+            document.getElementById('edit-announcement-modal').classList.add('hidden');
+        };
+
+        window.submitEditAnnouncement = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-ann-id').value;
+            const title = document.getElementById('edit-ann-title').value;
+            const content = document.getElementById('edit-ann-content').value;
+
+            try {
+                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "announcements", id), {
+                    title: title,
+                    content: content,
+                    lastEdited: new Date().getTime()
+                });
+                window.showToast("Notice updated successfully!", "success");
+                window.closeEditAnnouncementModal();
+            } catch(err) {
+                window.showToast("Failed to update notice.", "error");
+            }
+        };
+
         // --- GOOGLE DRIVE API INTEGRATION Unchanged ---
         async function loadGoogleDriveMaterials() {
             try {
@@ -1705,7 +1876,7 @@
         window.compileSmartNotices = function() {
             let updates = [];
             
-            // 1. Announcements (Priority 1 & 2)
+            // 1. Announcements (Priority 1 & 2) - Uses the updated window.announcementsCache (published only)
             if (window.announcementsCache) {
                 window.announcementsCache.forEach(a => {
                     const titleLower = a.title.toLowerCase();
