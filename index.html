@@ -34,7 +34,8 @@
                     colors: {
                         navy: { DEFAULT: '#1B365D', 800: '#152947', 900: '#0F1E33' },
                         scholarGreen: '#006621', 
-                        scholarBlue: '#1a0dab'   
+                        scholarBlue: '#1a0dab',
+                        marketplaceWarning: '#f59e0b'
                     }
                 }
             }
@@ -72,6 +73,14 @@
         #hostel-map-picker { z-index: 10; }
         #view-hostel-map { z-index: 10; }
         .leaflet-container { font-family: inherit; }
+
+        /* Marketplace Line Clamp */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-20 md:pb-0">
@@ -115,6 +124,7 @@
                     <ul class="space-y-3 text-sm">
                         <li><button onclick="navigateTo('dashboard')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-book-open w-4"></i> Cloud Archive</button></li>
                         <li><button onclick="navigateTo('accommodation')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-building-user w-4"></i> Accommodation Finder</button></li>
+                        <li><button onclick="navigateTo('marketplace')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-store w-4"></i> Marketplace</button></li>
                         <li><button onclick="openGpaModal()" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-calculator w-4"></i> GPA Engine</button></li>
                         <li><button onclick="openResearchModal()" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-flask w-4"></i> ANOVA Toolkit</button></li>
                         <li><button onclick="navigateTo('announcements')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-bullhorn w-4"></i> Campus Notices</button></li>
@@ -196,6 +206,16 @@
                             <div id="admin-accommodation-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
                                 </div>
                         </div>
+
+                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
+                            <div class="flex justify-between items-center border-b pb-1">
+                                <span class="text-xs font-bold text-navy dark:text-blue-400 block"><i class="fa-solid fa-store mr-1"></i> 7. Marketplace Master Control</span>
+                                <span class="text-[10px] text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded uppercase tracking-wider">Admin Override</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 dark:text-gray-400 mb-2">Full authority to manage products, services, requests, and remove malicious listings.</p>
+                            <div id="admin-marketplace-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
+                                </div>
+                        </div>
                     </div>
                 </section>
 
@@ -235,6 +255,61 @@
                     <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
                         <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase mb-4"><i class="fa-solid fa-ranking-star mr-2 text-yellow-500"></i>Top Contributors Leaderboard</h3>
                         <div id="accommodation-contributors-box" class="bg-gray-50 dark:bg-[#303134] rounded border border-gray-200 dark:border-gray-700 p-4">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="section-marketplace" class="hidden w-full">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-navy dark:text-blue-400"><i class="fa-solid fa-store mr-2"></i>Student Marketplace</h2>
+                            <p class="text-xs text-gray-500 mt-1">Buy, sell, advertise services, and find student businesses.</p>
+                        </div>
+                        <button onclick="openAddMarketplaceModal()" class="bg-navy hover:bg-blue-800 text-white px-5 py-2.5 rounded shadow-md hover:shadow-lg transition font-bold text-sm flex items-center gap-2 whitespace-nowrap">
+                            <i class="fa-solid fa-tag"></i> Create Listing
+                        </button>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-[#303134] border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6 shadow-sm flex flex-col md:flex-row gap-3">
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                            </div>
+                            <input type="text" id="marketplace-search-input" onkeyup="filterMarketplace()" placeholder="Search products, services, books, electronics..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#202124] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white transition shadow-sm">
+                        </div>
+                        <select id="marketplace-type-filter" onchange="filterMarketplace()" class="px-3 py-2 bg-white dark:bg-[#202124] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white shadow-sm md:w-36">
+                            <option value="">All Types</option>
+                            <option value="Product">Products</option>
+                            <option value="Service">Services</option>
+                            <option value="Request">Requests</option>
+                        </select>
+                        <select id="marketplace-category-filter" onchange="filterMarketplace()" class="px-3 py-2 bg-white dark:bg-[#202124] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white shadow-sm md:w-48">
+                            <option value="">All Categories</option>
+                            <option value="Books">Books</option>
+                            <option value="Laptops">Laptops</option>
+                            <option value="Phones">Phones</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Graphic Design">Graphic Design</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Statistics Services">Statistics Services</option>
+                            <option value="Photography">Photography</option>
+                            <option value="Video Editing">Video Editing</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Tailoring">Tailoring</option>
+                            <option value="Accommodation Services">Accommodation Services</option>
+                            <option value="Printing">Printing</option>
+                            <option value="Academic Services">Academic Services</option>
+                            <option value="Repairs">Repairs</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div id="marketplace-yield-box" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10 w-full">
+                        </div>
+
+                    <div class="mt-10 border-t border-gray-200 dark:border-gray-700 pt-8 w-full max-w-3xl">
+                        <h3 class="text-base font-bold text-gray-800 dark:text-white uppercase mb-4 flex items-center"><i class="fa-solid fa-trophy mr-2 text-yellow-500"></i> Top Sellers Leaderboard</h3>
+                        <div id="marketplace-contributors-box" class="bg-gray-50 dark:bg-[#303134] rounded-lg border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
                             </div>
                     </div>
                 </div>
@@ -492,6 +567,160 @@
         </div>
     </div>
 
+    <div id="add-marketplace-modal" class="hidden fixed inset-0 z-[160] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border dark:border-gray-600 max-h-[95vh]">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#303134]">
+                <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100"><i class="fa-solid fa-tag mr-2 text-navy dark:text-blue-400"></i>Create Marketplace Listing</h3>
+                <button onclick="closeAddMarketplaceModal()" class="text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Listing Title</label>
+                        <input type="text" id="add-mkt-title" required placeholder="e.g. HP ProBook 450 G8, Need Web Developer..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Listing Type</label>
+                        <select id="add-mkt-type" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                            <option value="Product">Selling a Product</option>
+                            <option value="Service">Offering a Service</option>
+                            <option value="Request">Looking For Help / Request</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Category</label>
+                        <select id="add-mkt-category" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                            <option value="Books">Books</option>
+                            <option value="Laptops">Laptops</option>
+                            <option value="Phones">Phones</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Graphic Design">Graphic Design</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Statistics Services">Statistics Services</option>
+                            <option value="Photography">Photography</option>
+                            <option value="Video Editing">Video Editing</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Tailoring">Tailoring</option>
+                            <option value="Accommodation Services">Accommodation Services</option>
+                            <option value="Printing">Printing</option>
+                            <option value="Academic Services">Academic Services</option>
+                            <option value="Repairs">Repairs</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Price / Budget (GHS)</label>
+                        <input type="number" id="add-mkt-price" required placeholder="e.g. 1500 (Type 0 if Negotiable)" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Condition</label>
+                        <select id="add-mkt-condition" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                            <option value="New">Brand New</option>
+                            <option value="Used">Used</option>
+                            <option value="Refurbished">Refurbished</option>
+                            <option value="Not Applicable">Not Applicable (Services/Requests)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Campus Location</label>
+                        <input type="text" id="add-mkt-location" required placeholder="e.g. Nyankpala, Tamale, Navrongo..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Phone Number (Call)</label>
+                        <input type="text" id="add-mkt-contact" required placeholder="e.g. 0551234567" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">WhatsApp Number (Include Code)</label>
+                        <input type="text" id="add-mkt-whatsapp" required placeholder="e.g. 233551234567" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Product/Service Image URL</label>
+                    <p class="text-[10px] text-gray-500 mb-1">Do not upload files. Paste a direct image link from Imgur, Google Drive (Public), or any site.</p>
+                    <input type="url" id="add-mkt-image" placeholder="https://example.com/image.jpg (Optional but Recommended)" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Description / Details</label>
+                    <textarea id="add-mkt-desc" rows="4" required placeholder="Describe the product, specs, your skills, or exactly what you are looking for..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400"></textarea>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#303134]">
+                <button onclick="saveMarketplaceListing()" class="w-full bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded text-sm transition shadow">Publish Listing</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-marketplace-modal" class="hidden fixed inset-0 z-[165] bg-gray-900/70 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden border dark:border-gray-600 max-h-[95vh]">
+            <button onclick="closeMarketplaceDetails()" class="absolute top-4 right-4 z-10 text-gray-600 bg-white/80 hover:bg-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md md:hidden"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="w-full md:w-1/2 bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative min-h-[250px] md:min-h-full">
+                <img id="view-mkt-img" src="" class="w-full h-full object-cover hidden">
+                <div id="view-mkt-no-img" class="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                    <i class="fa-solid fa-image text-5xl mb-3 opacity-50"></i>
+                    <span class="text-sm font-bold opacity-80">No Image Provided</span>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/2 flex flex-col flex-grow relative overflow-y-auto">
+                <button onclick="closeMarketplaceDetails()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-800 dark:hover:text-white w-8 h-8 flex items-center justify-center transition hidden md:flex"><i class="fa-solid fa-xmark text-xl"></i></button>
+                
+                <div class="p-6 md:p-8 flex-grow space-y-5">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span id="view-mkt-type" class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Type</span>
+                            <span id="view-mkt-category" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Category</span>
+                        </div>
+                        <h2 id="view-mkt-title" class="text-2xl font-bold text-gray-900 dark:text-gray-100 leading-tight mb-2">Loading...</h2>
+                        <div class="text-3xl font-black text-navy dark:text-blue-400" id="view-mkt-price">GHS --</div>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-[#303134] rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-navy dark:bg-blue-600 flex items-center justify-center text-white text-xl font-bold shrink-0">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-xs text-gray-500 mb-0.5 uppercase tracking-wider">Seller / Provider</p>
+                            <h4 id="view-mkt-seller" class="font-bold text-gray-800 dark:text-gray-100 text-base truncate">Unknown</h4>
+                            <p id="view-mkt-location" class="text-xs text-gray-500 truncate"><i class="fa-solid fa-location-dot mr-1"></i> Location</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1 dark:border-gray-700">Description</h4>
+                        <p id="view-mkt-desc" class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed"></p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1 dark:border-gray-700">Details</h4>
+                        <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                            <li><span class="font-bold">Condition:</span> <span id="view-mkt-condition">--</span></li>
+                            <li><span class="font-bold">Posted:</span> <span id="view-mkt-date">--</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-8 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2a2b2e] flex gap-3">
+                    <a id="btn-mkt-whatsapp" href="#" target="_blank" class="flex-1 bg-[#25D366] hover:bg-[#20b858] text-white font-bold py-3 rounded-lg text-sm transition shadow flex justify-center items-center gap-2 text-center">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp
+                    </a>
+                    <a id="btn-mkt-call" href="#" class="flex-1 bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded-lg text-sm transition shadow flex justify-center items-center gap-2 text-center">
+                        <i class="fa-solid fa-phone text-sm"></i> Call Seller
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div id="toast-deck" class="fixed bottom-5 left-5 z-[300] space-y-2 pointer-events-none"></div>
 
@@ -512,6 +741,7 @@
         window.driveMaterialsCache = []; 
         window.accommodationsCache = [];
         window.announcementsCache = [];
+        window.marketplaceCache = []; // Marketplace addition
 
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
 
@@ -572,6 +802,20 @@
             }
             if(window.renderAdminAccommodations) window.renderAdminAccommodations();
             if(window.renderLeaderboard) window.renderLeaderboard();
+            if(window.compileSmartNotices) window.compileSmartNotices();
+        });
+
+        // Marketplace Firestore Listener
+        onSnapshot(collection(db, "marketplace"), (snapshot) => {
+            const items = [];
+            snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
+            window.marketplaceCache = items;
+            
+            if(!document.getElementById('section-marketplace').classList.contains('hidden')){
+                window.renderMarketplace();
+            }
+            if(window.adminRenderMarketplace) window.adminRenderMarketplace();
+            if(window.renderMarketplaceLeaderboard) window.renderMarketplaceLeaderboard();
             if(window.compileSmartNotices) window.compileSmartNotices();
         });
 
@@ -642,11 +886,36 @@
     </script>
 
     <script>
-        // PWA Setup
+        // PWA Setup with 10-second delay requirement
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err)); }); }
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('pwa-install-footer').classList.remove('hidden'); });
-        window.installPWA = async () => { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') document.getElementById('pwa-install-footer').classList.add('hidden'); deferredPrompt = null; } else { alert("App is already installed or browser blocked automatic install."); } };
+        window.hasInstalledPWA = false;
+        
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+            
+            // 10 seconds prompt display requirement
+            setTimeout(() => {
+                if (deferredPrompt && !window.hasInstalledPWA) {
+                    document.getElementById('pwa-install-footer').classList.remove('hidden'); 
+                }
+            }, 10000); 
+        });
+        
+        window.installPWA = async () => { 
+            if (deferredPrompt) { 
+                deferredPrompt.prompt(); 
+                const { outcome } = await deferredPrompt.userChoice; 
+                if (outcome === 'accepted') {
+                    window.hasInstalledPWA = true;
+                    document.getElementById('pwa-install-footer').classList.add('hidden'); 
+                }
+                deferredPrompt = null; 
+            } else { 
+                alert("App is already installed or browser blocked automatic install."); 
+            } 
+        };
 
         window.toggleTheme = function() {
             const html = document.documentElement; const icon = document.getElementById('theme-icon');
@@ -666,6 +935,7 @@
             document.getElementById('section-main-search').classList.add('hidden');
             document.getElementById('section-announcements').classList.add('hidden');
             document.getElementById('section-accommodation').classList.add('hidden');
+            document.getElementById('section-marketplace').classList.add('hidden'); // Marketplace Add
             document.getElementById('slideshow-panel').classList.add('hidden');
             
             if(v === 'dashboard') { 
@@ -677,12 +947,20 @@
                 document.getElementById('section-accommodation').classList.remove('hidden'); 
                 window.renderAccommodations();
             }
+            else if(v === 'marketplace') { // Marketplace Add
+                document.getElementById('section-marketplace').classList.remove('hidden'); 
+                window.renderMarketplace();
+            }
         };
 
         window.toggleAdminDashboard = function() { 
             const el = document.getElementById('admin-dashboard-panel'); 
             el.classList.contains('hidden') ? el.classList.remove('hidden') : el.classList.add('hidden'); 
-            if(!el.classList.contains('hidden')) { window.filterAdminFiles(); window.renderAdminAccommodations(); }
+            if(!el.classList.contains('hidden')) { 
+                window.filterAdminFiles(); 
+                window.renderAdminAccommodations(); 
+                if(window.adminRenderMarketplace) window.adminRenderMarketplace(); // Marketplace Add
+            }
         };
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
         
@@ -857,14 +1135,12 @@
             document.getElementById('add-hostel-modal').classList.remove('hidden');
             
             if(!mapInstance) {
-                // Initialize Leaflet Map (Using Tamale/Nyankpala general coordinates as default)
                 mapInstance = L.map('hostel-map-picker').setView([9.4075, -0.8534], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(mapInstance);
                 markerInstance = L.marker([9.4075, -0.8534], {draggable: true}).addTo(mapInstance);
                 
                 mapInstance.on('click', function(e) { markerInstance.setLatLng(e.latlng); });
             }
-            // Ensure map size is correct after modal display
             setTimeout(() => { if(mapInstance) mapInstance.invalidateSize(); }, 100);
         };
 
@@ -900,10 +1176,6 @@
                     verified: false,
                     reviews: []
                 });
-
-                // Update Contributor Score silently
-                const userRef = window.firebaseDoc(window.firebaseDb, "users", window.currentUserProfile.email);
-                // Implementation of score tracking would go here
                 
                 window.showToast("Accommodation Listing Added!", "success");
                 window.closeAddHostelModal();
@@ -918,7 +1190,6 @@
                 data = data.filter(h => h.name.toLowerCase().includes(filterQuery.toLowerCase()) || (h.description && h.description.toLowerCase().includes(filterQuery.toLowerCase())));
             }
 
-            // Empty State (Professional)
             if(data.length === 0) {
                 box.className = "w-full";
                 box.innerHTML = `
@@ -1003,7 +1274,6 @@
 
             document.getElementById('view-hostel-modal').classList.remove('hidden');
 
-            // Render Map
             if(!viewMapInstance) {
                 viewMapInstance = L.map('view-hostel-map').setView([hostel.lat, hostel.lng], 15);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(viewMapInstance);
@@ -1046,7 +1316,6 @@
                 box.innerHTML = '<p class="text-xs text-gray-500 italic text-center py-4">No contributor activity yet.</p>';
                 return;
             }
-            // Calculate pseudo leaderboard based on listing counts
             const counts = {};
             window.accommodationsCache.forEach(h => {
                 const name = h.contributorName || 'Anonymous Scholar';
@@ -1064,6 +1333,218 @@
                 `;
             });
         };
+
+
+        // --- STUDENT MARKETPLACE LOGIC ---
+        
+        window.openAddMarketplaceModal = function() {
+            if(!window.currentUserProfile) { window.showToast("Please sign in to create a listing.", "error"); return; }
+            document.getElementById('add-marketplace-modal').classList.remove('hidden');
+        };
+
+        window.closeAddMarketplaceModal = function() {
+            document.getElementById('add-marketplace-modal').classList.add('hidden');
+            document.getElementById('add-mkt-title').value = '';
+            document.getElementById('add-mkt-price').value = '';
+            document.getElementById('add-mkt-location').value = '';
+            document.getElementById('add-mkt-contact').value = '';
+            document.getElementById('add-mkt-whatsapp').value = '';
+            document.getElementById('add-mkt-image').value = '';
+            document.getElementById('add-mkt-desc').value = '';
+        };
+
+        window.saveMarketplaceListing = async function() {
+            const title = document.getElementById('add-mkt-title').value.trim();
+            const type = document.getElementById('add-mkt-type').value;
+            const category = document.getElementById('add-mkt-category').value;
+            const price = document.getElementById('add-mkt-price').value.trim();
+            const condition = document.getElementById('add-mkt-condition').value;
+            const location = document.getElementById('add-mkt-location').value.trim();
+            const contact = document.getElementById('add-mkt-contact').value.trim();
+            const whatsapp = document.getElementById('add-mkt-whatsapp').value.trim();
+            const imageUrl = document.getElementById('add-mkt-image').value.trim();
+            const desc = document.getElementById('add-mkt-desc').value.trim();
+
+            if(!title || !price || !location || !contact || !whatsapp || !desc) {
+                window.showToast("Please fill in all required fields.", "error"); return;
+            }
+
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Publishing...";
+            btn.disabled = true;
+
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "marketplace"), {
+                    title: title,
+                    type: type,
+                    category: category,
+                    price: Number(price) || 0,
+                    condition: condition,
+                    location: location,
+                    contact: contact,
+                    whatsapp: whatsapp,
+                    imageUrl: imageUrl,
+                    description: desc,
+                    sellerId: window.currentUserProfile.email,
+                    sellerName: window.currentUserProfile.name,
+                    timestamp: new Date().getTime(),
+                    views: 0
+                });
+                
+                window.showToast("Listing Published Successfully!", "success");
+                window.closeAddMarketplaceModal();
+            } catch(e) { 
+                window.showToast("Failed to publish listing.", "error"); 
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        window.renderMarketplace = function() {
+            const box = document.getElementById('marketplace-yield-box');
+            let data = window.marketplaceCache || [];
+            
+            // Filters
+            const query = (document.getElementById('marketplace-search-input')?.value || '').trim().toLowerCase();
+            const typeFilter = document.getElementById('marketplace-type-filter')?.value || '';
+            const catFilter = document.getElementById('marketplace-category-filter')?.value || '';
+
+            if (query) {
+                data = data.filter(i => (i.title && i.title.toLowerCase().includes(query)) || (i.description && i.description.toLowerCase().includes(query)));
+            }
+            if (typeFilter) {
+                data = data.filter(i => i.type === typeFilter);
+            }
+            if (catFilter) {
+                data = data.filter(i => i.category === catFilter);
+            }
+
+            // Sort by newest
+            data.sort((a, b) => b.timestamp - a.timestamp);
+
+            if(data.length === 0) {
+                box.className = "w-full col-span-2 md:col-span-3 lg:col-span-4";
+                box.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 text-center text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 w-full">
+                        <i class="fa-solid fa-store-slash text-5xl mb-4 text-gray-400 dark:text-gray-600"></i>
+                        <p class="text-lg font-bold text-gray-700 dark:text-gray-300">No matching listings found.</p>
+                        <p class="text-sm mt-1 max-w-md mx-auto">Be the first to list a product or advertise your services in this category.</p>
+                        <button onclick="openAddMarketplaceModal()" class="mt-4 text-sm font-bold text-blue-600 hover:underline">Create a Listing</button>
+                    </div>`;
+                return;
+            }
+
+            box.className = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10 w-full";
+            box.innerHTML = '';
+            
+            data.forEach(item => {
+                const imgHtml = item.imageUrl 
+                    ? `<img src="${item.imageUrl}" class="w-full h-full object-cover" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl"></i></div>` 
+                    : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl mb-1 opacity-50"></i></div>`;
+                
+                let typeColor = 'bg-black/60';
+                if(item.type === 'Service') typeColor = 'bg-blue-600/80';
+                if(item.type === 'Request') typeColor = 'bg-orange-500/80';
+
+                const timeString = new Date(item.timestamp).toLocaleDateString();
+                const priceText = item.price === 0 ? 'Negotiable' : `GHS ${item.price}`;
+
+                box.innerHTML += `
+                    <div class="bg-white dark:bg-[#303134] rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col group cursor-pointer" onclick="openMarketplaceDetails('${item.id}')">
+                        <div class="h-32 md:h-40 w-full bg-gray-100 dark:bg-gray-800 relative shrink-0">
+                            ${imgHtml}
+                            <span class="absolute top-2 right-2 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded backdrop-blur-sm uppercase font-bold tracking-wider">${item.type}</span>
+                        </div>
+                        <div class="p-3 md:p-4 flex-grow flex flex-col min-w-0">
+                            <h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm mb-1 line-clamp-2 leading-tight">${item.title}</h4>
+                            <p class="text-[10px] md:text-xs text-gray-500 mb-2 truncate">${item.category}</p>
+                            <div class="mt-auto">
+                                <span class="font-black text-navy dark:text-blue-400 text-base md:text-lg">${priceText}</span>
+                                <div class="flex justify-between items-center mt-2 border-t border-gray-100 dark:border-gray-700 pt-2">
+                                    <span class="text-[10px] text-gray-500 truncate pr-2"><i class="fa-solid fa-store mr-1"></i>${item.sellerName.split(' ')[0]}</span>
+                                    <span class="text-[9px] text-gray-400 whitespace-nowrap">${timeString}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.filterMarketplace = function() {
+            window.renderMarketplace();
+        };
+
+        window.openMarketplaceDetails = function(id) {
+            const item = window.marketplaceCache.find(i => i.id === id);
+            if(!item) return;
+
+            document.getElementById('view-mkt-title').innerText = item.title;
+            document.getElementById('view-mkt-price').innerText = item.price === 0 ? 'Negotiable' : `GHS ${item.price}`;
+            document.getElementById('view-mkt-type').innerText = item.type;
+            document.getElementById('view-mkt-category').innerText = item.category;
+            document.getElementById('view-mkt-seller').innerText = item.sellerName;
+            document.getElementById('view-mkt-location').innerHTML = `<i class="fa-solid fa-location-dot mr-1"></i> ${item.location}`;
+            document.getElementById('view-mkt-desc').innerText = item.description || 'No description provided.';
+            document.getElementById('view-mkt-condition').innerText = item.condition || 'N/A';
+            document.getElementById('view-mkt-date').innerText = new Date(item.timestamp).toLocaleDateString();
+
+            const imgEl = document.getElementById('view-mkt-img');
+            const noImgEl = document.getElementById('view-mkt-no-img');
+            if(item.imageUrl) {
+                imgEl.src = item.imageUrl; imgEl.classList.remove('hidden'); noImgEl.classList.add('hidden');
+                imgEl.onerror = () => { imgEl.classList.add('hidden'); noImgEl.classList.remove('hidden'); };
+            } else {
+                imgEl.classList.add('hidden'); noImgEl.classList.remove('hidden');
+            }
+
+            // Clean WhatsApp number
+            let cleanWa = item.whatsapp.replace(/\D/g, '');
+            if(cleanWa.startsWith('0')) cleanWa = '233' + cleanWa.substring(1);
+
+            document.getElementById('btn-mkt-whatsapp').href = `https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(item.sellerName)},%20I%20am%20interested%20in%20your%20listing%20on%20UDS%20Hub:%20${encodeURIComponent(item.title)}`;
+            document.getElementById('btn-mkt-call').href = `tel:${item.contact}`;
+
+            document.getElementById('view-marketplace-modal').classList.remove('hidden');
+        };
+
+        window.closeMarketplaceDetails = function() {
+            document.getElementById('view-marketplace-modal').classList.add('hidden');
+        };
+
+        window.renderMarketplaceLeaderboard = function() {
+            const box = document.getElementById('marketplace-contributors-box');
+            if(!window.marketplaceCache || window.marketplaceCache.length === 0) {
+                box.innerHTML = '<p class="text-xs text-gray-500 italic text-center py-4">No marketplace activity yet.</p>';
+                return;
+            }
+            
+            const counts = {};
+            window.marketplaceCache.forEach(i => {
+                const name = i.sellerName || 'Anonymous Scholar';
+                counts[name] = (counts[name] || 0) + 1;
+            });
+            const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 10); // Top 10
+            
+            box.innerHTML = '';
+            sorted.forEach(([name, count], idx) => {
+                let badgeHtml = '';
+                if(idx === 0) badgeHtml = '<i class="fa-solid fa-crown text-yellow-500 ml-2" title="Top Seller"></i>';
+                
+                box.innerHTML += `
+                    <div class="flex justify-between items-center border-b dark:border-gray-700 last:border-0 py-2.5">
+                        <span class="text-sm text-gray-800 dark:text-gray-200 flex items-center font-bold">
+                            <span class="text-gray-400 font-mono mr-3 text-xs w-4">${idx+1}.</span> 
+                            ${name} ${badgeHtml}
+                        </span>
+                        <span class="text-xs font-bold text-navy dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">${count} Listings</span>
+                    </div>
+                `;
+            });
+        };
+
 
         // --- ADMIN MASTER CONTROL LOGIC ---
         window.renderAdminAccommodations = function() {
@@ -1115,6 +1596,42 @@
             } catch(e) { window.showToast("Admin override failed.", "error"); }
         };
 
+        // Marketplace Admin Render
+        window.adminRenderMarketplace = function() {
+            if(!window.isAdmin) return;
+            const container = document.getElementById('admin-marketplace-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(!window.marketplaceCache || window.marketplaceCache.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-500 italic">No marketplace listings found.</p>';
+                return;
+            }
+
+            window.marketplaceCache.forEach(item => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
+                        <div class="flex flex-col min-w-0 pr-2">
+                            <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span>
+                            <span class="text-[9px] text-gray-500 truncate">${item.type} | By: ${item.sellerName || 'Unknown'} | GHS ${item.price}</span>
+                        </div>
+                        <div class="flex gap-3 shrink-0">
+                            <button onclick="adminDeleteMarketplaceItem('${item.id}')" class="text-red-500 hover:text-red-700 font-bold"><i class="fa-solid fa-trash mr-1"></i>Remove</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.adminDeleteMarketplaceItem = async function(id) {
+            if(!window.isAdmin) return;
+            if(confirm("ADMIN OVERRIDE: Permanently remove this marketplace listing?")) {
+                try {
+                    await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "marketplace", id));
+                    window.showToast("Listing removed.", "success");
+                } catch(e) { window.showToast("Admin action failed.", "error"); }
+            }
+        };
+
         // --- GOOGLE DRIVE API INTEGRATION Unchanged ---
         async function loadGoogleDriveMaterials() {
             try {
@@ -1139,18 +1656,18 @@
         document.addEventListener('DOMContentLoaded', () => { loadGoogleDriveMaterials(); });
         
         // --- SMART NOTICE CENTER LOGIC ---
-        window.currentUpdateVersion = 1.1; 
+        window.currentUpdateVersion = 1.2; // Bumped version for Marketplace feature
         window.systemFeatures = [
             {
-                id: 'feat_accom_v1.1',
-                type: 'Feature Announcement',
-                title: 'Accommodation Finder Added',
-                content: 'Find hostels, compare prices, view locations, and contribute accommodation information.',
+                id: 'feat_mkt_v1.2',
+                type: 'Major Update',
+                title: 'Student Marketplace Launched',
+                content: 'Buy products, sell items, advertise your services, or request help from fellow students inside the new Marketplace.',
                 priority: 3,
-                timestamp: 1718000000000, 
-                icon: '<i class="fa-solid fa-building-user text-blue-500 text-2xl"></i>',
-                action: 'navigateTo("accommodation"); closeSmartNoticeCenter();',
-                actionText: 'Try It Now'
+                timestamp: 1718000000001, 
+                icon: '<i class="fa-solid fa-store text-blue-500 text-2xl"></i>',
+                action: 'navigateTo("marketplace"); closeSmartNoticeCenter();',
+                actionText: 'Explore Marketplace'
             }
         ];
 
@@ -1229,9 +1746,10 @@
                 }
             }
 
-            // 4. Accommodation Activity (Priority 5)
+            // 4. Accommodation & Marketplace Activity (Priority 5)
+            const recentMs = Date.now() - (7 * 24 * 60 * 60 * 1000);
+            
             if (window.accommodationsCache) {
-                const recentMs = Date.now() - (7 * 24 * 60 * 60 * 1000);
                 const recentAccoms = window.accommodationsCache.filter(a => a.timestamp && a.timestamp > recentMs);
                 if (recentAccoms.length > 0) {
                     updates.push({
@@ -1244,6 +1762,23 @@
                         icon: '<i class="fa-solid fa-house-circle-check text-purple-500 text-xl md:text-2xl"></i>',
                         action: 'navigateTo("accommodation"); closeSmartNoticeCenter();',
                         actionText: 'View Hostels'
+                    });
+                }
+            }
+
+            if (window.marketplaceCache) {
+                const recentMkt = window.marketplaceCache.filter(a => a.timestamp && a.timestamp > recentMs);
+                if (recentMkt.length > 0) {
+                    updates.push({
+                        id: 'recent_mkt_update',
+                        type: 'Marketplace Update',
+                        title: `New Marketplace Listings`,
+                        content: `${recentMkt.length} new products/services have been added to the student marketplace.`,
+                        priority: 5,
+                        timestamp: Math.max(...recentMkt.map(a => a.timestamp)),
+                        icon: '<i class="fa-solid fa-store text-yellow-600 text-xl md:text-2xl"></i>',
+                        action: 'navigateTo("marketplace"); closeSmartNoticeCenter();',
+                        actionText: 'View Marketplace'
                     });
                 }
             }
