@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta name="google-site-verification" content="EVz8fPxueqGzMmY9eHSIQeK1I_DiGBOh4ZpwNBj4DAo" />  
+    <meta name="google-site-verification" content="EVz8fPxueqGzMmY9eHSIQeK1I_DiGBOh4ZpwNBj4DAo" />  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UDS Hub | Academic Search & Accommodation</title>
@@ -21,6 +21,8 @@
     
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
         // Theme logic
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -37,7 +39,14 @@
                         navy: { DEFAULT: '#1B365D', 800: '#152947', 900: '#0F1E33' },
                         scholarGreen: '#006621', 
                         scholarBlue: '#1a0dab',
-                        marketplaceWarning: '#f59e0b'
+                        marketplaceWarning: '#f59e0b',
+                        geminiBase: '#131314',     // AI Dark Mode Base
+                        geminiSurface: '#1E1F20',  // AI Dark Mode Surface
+                        geminiLightBase: '#FFFFFF',
+                        geminiLightSurface: '#F0F4F9' // AI Light Mode Surface
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
                     }
                 }
             }
@@ -47,8 +56,8 @@
     <style>
         body { 
             background-color: #ffffff; 
-            color: #202124; 
-            font-family: Arial, sans-serif; 
+            color: #1f2937; 
+            font-family: 'Inter', sans-serif; 
             transition: background-color 0.3s, color 0.3s;
         }
         .theme-bg { background-color: #1B365D; } 
@@ -57,6 +66,7 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        html.dark ::-webkit-scrollbar-thumb { background: #4b5563; }
         
         .whatsapp-float { animation: pulse-glow 3s infinite ease-in-out; }
         @keyframes pulse-glow {
@@ -64,11 +74,11 @@
             50% { transform: scale(1.04); box-shadow: 0 6px 20px rgba(27, 54, 93, 0.5); }
         }
 
-        .scholar-title { font-size: 18px; line-height: 1.2; color: #1B365D; font-weight: normal; }
+        .scholar-title { font-size: 18px; line-height: 1.3; color: #1B365D; font-weight: 500; }
         .scholar-title:hover { text-decoration: underline; cursor: pointer; }
 
-        html.dark body { background-color: #202124; color: #bdc1c6; }
-        html.dark .scholar-title { color: #8ab4f8; }
+        html.dark body { background-color: #131314; color: #E3E3E3; }
+        html.dark .scholar-title { color: #A8C7FA; }
         html.dark #doc-reader-iframe { background-color: #ffffff; }
         
         /* Map specific styling */
@@ -85,222 +95,232 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-0">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white">
 
-    <nav class="bg-white dark:bg-[#202124] border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex justify-between items-center z-50 sticky top-0 transition-colors">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('dashboard')">
-            <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-2xl"></i>
-            <span class="text-2xl font-normal tracking-tight text-gray-700 dark:text-gray-200">UDS<span class="font-bold text-navy dark:text-blue-400">Hub</span></span>
+    <nav class="bg-white dark:bg-geminiBase px-4 md:px-6 py-3 flex justify-between items-center z-[60] sticky top-0 transition-colors">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar()" class="lg:hidden text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-geminiSurface p-2 rounded-full transition w-10 h-10 flex items-center justify-center">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+            <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('dashboard')">
+                <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-2xl"></i>
+                <span class="text-xl md:text-2xl font-medium tracking-tight text-gray-700 dark:text-gray-200">UDS<span class="font-bold text-navy dark:text-blue-400">Hub</span></span>
+            </div>
         </div>
         
-        <div class="flex items-center gap-4 text-sm">
-            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-gray-600 dark:text-gray-300 hover:underline">Admin Config</button>
-            <button onclick="toggleTheme()" class="text-gray-600 dark:text-gray-300 hover:text-navy text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
-            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-navy hover:bg-blue-800 text-white px-5 py-2 rounded text-sm font-bold shadow-sm transition">Sign In</button>
+        <div class="flex items-center gap-3 md:gap-4 text-sm">
+            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-gray-600 dark:text-gray-300 hover:text-navy dark:hover:text-white font-medium bg-gray-100 dark:bg-geminiSurface px-3 py-1.5 rounded-full transition">Admin Config</button>
+            <button onclick="toggleTheme()" class="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-geminiSurface w-10 h-10 rounded-full flex items-center justify-center transition text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
+            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-navy dark:bg-blue-300 hover:bg-blue-800 dark:hover:bg-blue-200 text-white dark:text-navy px-5 py-2 rounded-full text-sm font-medium transition">Sign In</button>
         </div>
     </nav>
 
-    <a href="https://wa.me/233592632127" target="_blank" class="whatsapp-float fixed z-40 bottom-24 right-4 md:bottom-6 md:right-6 bg-[#25D366] text-white px-5 py-3 rounded-full flex items-center gap-2 shadow-lg hover:opacity-90 transition font-bold text-sm">
-        <i class="fa-brands fa-whatsapp text-xl"></i>
+    <a href="https://wa.me/233592632127" target="_blank" class="whatsapp-float fixed z-40 bottom-24 right-4 md:bottom-6 md:right-6 bg-[#25D366] text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 transition font-bold text-sm">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
     </a>
 
-    <main class="flex-grow container mx-auto max-w-[1200px] py-8 px-4 flex flex-col lg:flex-row gap-8 items-start">
+    <main class="flex-grow w-full py-6 px-4 md:px-8 flex flex-col items-center">
 
-        <div id="guest-onboarding-view" class="w-full text-center py-32 flex flex-col items-center">
-            <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-7xl mb-4"></i>
-            <h1 class="text-4xl sm:text-5xl font-normal text-gray-800 dark:text-gray-100 mb-8 tracking-tight">UDS <span class="font-bold text-navy dark:text-blue-400">Scholar</span></h1>
-            <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-md">Access academic databases, find student accommodation, and calculate GPA performance.</p>
-            <button onclick="openAuthModal()" class="theme-bg text-white font-bold px-8 py-3.5 rounded shadow-sm hover:shadow-md transition text-lg w-full max-w-sm">Access Academic Profile</button>
+        <div id="guest-onboarding-view" class="w-full text-center py-20 md:py-32 flex flex-col items-center max-w-2xl mx-auto">
+            <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-6xl md:text-7xl mb-6"></i>
+            <h1 class="text-4xl sm:text-5xl font-medium text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Welcome to <br class="md:hidden"><span class="font-bold text-navy dark:text-blue-400">UDS Hub</span></h1>
+            <p class="text-gray-600 dark:text-gray-400 mb-10 text-base md:text-lg leading-relaxed">Access academic databases, find student accommodation, and calculate GPA performance seamlessly.</p>
+            <button onclick="openAuthModal()" class="bg-navy dark:bg-blue-300 text-white dark:text-navy font-medium px-8 py-3.5 rounded-full hover:opacity-90 transition text-base w-full max-w-xs shadow">Access Academic Profile</button>
         </div>
 
-        <div id="portal-workspace" class="hidden w-full flex-col lg:flex-row gap-8">
-            <div class="w-full lg:w-64 flex-shrink-0 space-y-6">
-                <div class="border-l-4 border-navy dark:border-blue-400 pl-4 py-1">
-                    <h3 class="font-bold text-gray-900 dark:text-white text-base" id="profile-name">Loading...</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1" id="profile-index">Index: --</p>
-                    <p class="text-xs text-scholarGreen dark:text-[#81c995]">Level <span id="profile-level">--</span> • <span id="profile-dept">--</span></p>
-                </div>
+        <div id="portal-workspace" class="hidden w-full max-w-6xl mx-auto flex-col lg:flex-row gap-8 relative items-start">
+            
+            <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[45] hidden transition-opacity opacity-0 lg:hidden backdrop-blur-sm"></div>
 
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Academic Tools</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><button onclick="navigateTo('dashboard')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-book-open w-4"></i> Cloud Archive</button></li>
-                        <li><button onclick="navigateTo('accommodation')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-building-user w-4"></i> Accommodation Finder</button></li>
-                        <li><button onclick="navigateTo('marketplace')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-store w-4"></i> Marketplace</button></li>
-                        <li><button onclick="openGpaModal()" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-calculator w-4"></i> GPA Engine</button></li>
-                        <li><button onclick="openResearchModal()" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-flask w-4"></i> ANOVA Toolkit</button></li>
-                        <li><button onclick="navigateTo('announcements')" class="text-scholarBlue dark:text-[#8ab4f8] hover:underline flex items-center gap-2"><i class="fa-solid fa-bullhorn w-4"></i> Campus Notices</button></li>
-                    </ul>
-                </div>
-
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Countdown</h4>
-                    <div class="text-lg font-bold text-navy dark:text-blue-400 tracking-tight" id="widget-countdown-clock">--:--:--:--</div>
-                    <p class="text-xs text-gray-500">Until Resumption</p>
-                </div>
-            </div>
-
-            <div class="w-full flex-grow flex flex-col min-w-0">
+            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-[50] w-72 bg-geminiLightSurface dark:bg-geminiSurface transform -translate-x-full transition-transform duration-300 lg:relative lg:translate-x-0 flex flex-col flex-shrink-0 shadow-2xl lg:shadow-none h-full lg:h-auto overflow-y-auto lg:w-64 lg:bg-transparent lg:dark:bg-transparent lg:rounded-none">
                 
-                <div id="slideshow-panel" class="w-full max-w-2xl mb-6 relative rounded-xl overflow-hidden shadow-sm bg-gray-100 dark:bg-gray-800 h-48 md:h-64 hidden group">
+                <div class="p-6 lg:p-0 space-y-6">
+                    <div class="flex justify-between items-center lg:hidden mb-2">
+                        <span class="font-medium text-gray-800 dark:text-gray-200">Tools</span>
+                        <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+                    </div>
+
+                    <div class="bg-white dark:bg-geminiSurface lg:bg-transparent lg:dark:bg-transparent p-4 lg:p-0 rounded-2xl lg:rounded-none border lg:border-none border-gray-200 dark:border-gray-800">
+                        <h3 class="font-medium text-gray-900 dark:text-white text-base truncate" id="profile-name">Loading...</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1" id="profile-index">Index: --</p>
+                        <div class="inline-flex items-center px-2 py-1 rounded bg-green-50 dark:bg-green-900/20 text-xs text-scholarGreen dark:text-[#81c995] font-medium mt-1">
+                            Level <span id="profile-level" class="ml-1">--</span> <span class="mx-1">•</span> <span id="profile-dept" class="truncate max-w-[120px]">--</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-2 lg:px-0">Academic Tools</h4>
+                        <ul class="space-y-1 text-sm font-medium">
+                            <li><button onclick="navigateTo('dashboard')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-book-open w-5 text-center opacity-70"></i> Cloud Archive</button></li>
+                            <li><button onclick="navigateTo('accommodation')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-building-user w-5 text-center opacity-70"></i> Accommodation Finder</button></li>
+                            <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center opacity-70"></i> Marketplace</button></li>
+                            <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center opacity-70"></i> GPA Engine</button></li>
+                            <li><button onclick="openResearchModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-flask w-5 text-center opacity-70"></i> ANOVA Toolkit</button></li>
+                            <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center opacity-70"></i> Campus Notices</button></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-geminiLightSurface dark:bg-geminiSurface p-4 rounded-2xl">
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Until Resumption</h4>
+                        <div class="text-lg font-mono text-navy dark:text-blue-300 tracking-tight" id="widget-countdown-clock">--:--:--:--</div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="w-full flex-grow flex flex-col min-w-0 md:pl-4">
+                
+                <div id="slideshow-panel" class="w-full mb-8 relative rounded-3xl overflow-hidden shadow-sm bg-gray-100 dark:bg-geminiSurface h-48 md:h-72 hidden group mx-auto">
                     <div id="slideshow-container" class="w-full h-full relative"></div>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
-                    <div id="slideshow-indicators" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10"></div>
+                    <div id="slideshow-indicators" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10"></div>
                 </div>
 
-                <section id="admin-dashboard-panel" class="hidden bg-gray-50 dark:bg-[#303134] rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm mb-8 space-y-6">
-                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-3">
-                        <h2 class="text-sm font-bold text-gray-800 dark:text-white uppercase"><i class="fa-solid fa-sliders mr-2"></i>Admin Terminal</h2>
-                        <button onclick="lockAdminSession()" class="text-xs text-blue-600 hover:underline">Close Terminal</button>
+                <section id="admin-dashboard-panel" class="hidden bg-white dark:bg-geminiSurface rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm mb-8 space-y-6 mx-auto w-full">
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
+                        <h2 class="text-base font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-sliders mr-2"></i>Admin Terminal</h2>
+                        <button onclick="lockAdminSession()" class="text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-full transition">Close Terminal</button>
                     </div>
                     
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                        <div class="col-span-1 xl:col-span-2 mb-2 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
-                            <span class="text-sm font-bold text-navy dark:text-blue-400 block mb-2">Automated Google Drive Sync</span>
-                            <p class="text-xs text-gray-600 dark:text-gray-300 mb-3">Drop folders directly into your Google Drive, then click this button. The system will scan your Drive and add all new files to the database automatically.</p>
-                            <button onclick="triggerDriveSync(this)" class="w-full py-2 bg-blue-600 text-white text-xs font-bold rounded hover:bg-blue-800 transition">Start Deep Sync</button>
+                        <div class="col-span-1 xl:col-span-2 mb-2 p-5 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl">
+                            <span class="text-sm font-medium text-navy dark:text-blue-300 block mb-2">Automated Google Drive Sync</span>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">Drop folders directly into your Google Drive, then click this button. The system will scan your Drive and add all new files to the database automatically.</p>
+                            <button onclick="triggerDriveSync(this)" class="w-full py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition">Start Deep Sync</button>
                         </div>
 
-                        <form onsubmit="handleSecureUpload(event)" class="space-y-3">
-                            <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">1. Manual Sync Resource</span>
-                            <select id="adm-level" class="w-full px-3 py-2 border rounded text-xs"><option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option></select>
-                            <input type="text" id="adm-resource-title" required placeholder="Resource Title..." class="w-full px-3 py-2 border rounded text-xs">
-                            <input type="text" id="adm-search-tags" placeholder="Keywords (biology, math...)" class="w-full px-3 py-2 border rounded text-xs">
-                            <input type="text" id="adm-drive-link" required placeholder="Drive Link..." class="w-full px-3 py-2 border rounded text-xs">
-                            <button type="submit" id="adm-upload-btn" class="w-full py-2 bg-navy text-white text-xs font-bold rounded">Publish</button>
+                        <form onsubmit="handleSecureUpload(event)" class="space-y-3 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">1. Manual Sync Resource</span>
+                            <select id="adm-level" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50"><option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option></select>
+                            <input type="text" id="adm-resource-title" required placeholder="Resource Title..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                            <input type="text" id="adm-search-tags" placeholder="Keywords (biology, math...)" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                            <input type="text" id="adm-drive-link" required placeholder="Drive Link..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                            <button type="submit" id="adm-upload-btn" class="w-full py-2.5 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition">Publish</button>
                         </form>
 
                         <div class="space-y-4">
-                            <form onsubmit="handleCalendarUpdate(event)" class="space-y-2">
-                                <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">2. Target Date</span>
-                                <input type="date" id="set-exam-date" class="w-full px-3 py-2 border rounded text-xs">
-                                <button type="submit" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded">Set Date</button>
+                            <form onsubmit="handleCalendarUpdate(event)" class="space-y-2 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">2. Target Date</span>
+                                <input type="date" id="set-exam-date" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
+                                <button type="submit" class="w-full py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white text-sm font-medium rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition">Set Date</button>
                             </form>
-                            <form onsubmit="handleBroadcastAnnouncement(event)" class="space-y-2">
-                                <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">3. Broadcast Notice</span>
-                                <input type="text" id="ann-title" required placeholder="Heading" class="w-full px-3 py-2 border rounded text-xs"></input>
-                                <textarea id="ann-content" required rows="2" placeholder="Details..." class="w-full px-3 py-2 border rounded text-xs"></textarea>
-                                <button type="submit" class="w-full py-2 bg-gray-800 text-white text-xs font-bold rounded">Broadcast</button>
+                            <form onsubmit="handleBroadcastAnnouncement(event)" class="space-y-2 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">3. Broadcast Notice</span>
+                                <input type="text" id="ann-title" required placeholder="Heading" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none"></input>
+                                <textarea id="ann-content" required rows="2" placeholder="Details..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none"></textarea>
+                                <button type="submit" class="w-full py-2.5 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition">Broadcast</button>
                             </form>
                         </div>
 
-                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2">
-                            <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">4. Manage Files</span>
-                            <input type="text" id="admin-file-search" onkeyup="filterAdminFiles()" placeholder="Search to manage..." class="w-full px-3 py-2 border rounded text-xs">
-                            <div id="admin-file-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:text-gray-200"></div>
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-2">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">4. Manage Files</span>
+                            <input type="text" id="admin-file-search" onkeyup="filterAdminFiles()" placeholder="Search to manage..." class="w-full px-4 py-2 border dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-geminiBase dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                            <div id="admin-file-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200 scroll-smooth"></div>
                         </div>
 
-                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
-                            <span class="text-xs font-bold text-navy dark:text-blue-400 block border-b pb-1">5. Manage Slideshow Flyers</span>
-                            <form onsubmit="handleAddFlyer(event)" class="flex gap-2 mb-2">
-                                <input type="url" id="admin-flyer-url" required placeholder="Paste Flyer Image URL (e.g. Imgur link)..." class="w-full px-3 py-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white">
-                                <button type="submit" class="px-4 py-2 bg-navy hover:bg-blue-800 transition text-white text-xs font-bold rounded">Add Flyer</button>
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">5. Manage Slideshow Flyers</span>
+                            <form onsubmit="handleAddFlyer(event)" class="flex gap-2">
+                                <input type="url" id="admin-flyer-url" required placeholder="Paste Flyer Image URL..." class="w-full px-4 py-2 border dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-geminiBase dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                                <button type="submit" class="px-5 py-2 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition shrink-0">Add</button>
                             </form>
-                            <div id="admin-flyer-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600"></div>
+                            <div id="admin-flyer-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
                         
-                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
-                            <div class="flex justify-between items-center border-b pb-1">
-                                <span class="text-xs font-bold text-navy dark:text-blue-400 block"><i class="fa-solid fa-building-shield mr-1"></i> 6. Accommodation Master Control</span>
-                                <span class="text-[10px] text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded uppercase tracking-wider">Admin Override</span>
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-building-shield mr-1"></i> 6. Accommodation Master Control</span>
+                                <span class="text-[10px] text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">Admin Override</span>
                             </div>
-                            <p class="text-[11px] text-gray-600 dark:text-gray-400 mb-2">Full authority to remove listings, override community trust scores, and ban contributors.</p>
-                            <div id="admin-accommodation-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
-                                </div>
+                            <div id="admin-accommodation-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
 
-                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
-                            <div class="flex justify-between items-center border-b pb-1">
-                                <span class="text-xs font-bold text-navy dark:text-blue-400 block"><i class="fa-solid fa-store mr-1"></i> 7. Marketplace Master Control</span>
-                                <span class="text-[10px] text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded uppercase tracking-wider">Admin Override</span>
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-store mr-1"></i> 7. Marketplace Master Control</span>
+                                <span class="text-[10px] text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">Admin Override</span>
                             </div>
-                            <p class="text-[11px] text-gray-600 dark:text-gray-400 mb-2">Full authority to manage products, services, requests, and remove malicious listings.</p>
-                            <div id="admin-marketplace-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
-                                </div>
+                            <div id="admin-marketplace-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
 
-                        <div class="col-span-1 xl:col-span-2 space-y-2 mt-2 border-t dark:border-gray-600 pt-4">
-                            <div class="flex justify-between items-center border-b pb-1">
-                                <span class="text-xs font-bold text-navy dark:text-blue-400 block"><i class="fa-solid fa-bullhorn mr-1"></i> 8. Notice Master Control</span>
-                                <span class="text-[10px] text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded uppercase tracking-wider">Admin Override</span>
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-bullhorn mr-1"></i> 8. Notice Master Control</span>
+                                <span class="text-[10px] text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">Admin Override</span>
                             </div>
-                            <p class="text-[11px] text-gray-600 dark:text-gray-400 mb-2">Full authority to view, edit, archive, and delete campus notices.</p>
-                            <div class="flex justify-between text-xs mb-2 text-gray-600 dark:text-gray-400">
-                                <span>Total: <span id="admin-notice-total" class="font-bold">0</span></span>
-                                <span>Published: <span id="admin-notice-published" class="font-bold">0</span></span>
+                            <div class="flex gap-4 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#1A1A1C] p-3 rounded-xl">
+                                <span>Total: <span id="admin-notice-total" class="font-bold text-gray-800 dark:text-gray-200">0</span></span>
+                                <span>Published: <span id="admin-notice-published" class="font-bold text-green-600 dark:text-green-400">0</span></span>
                                 <span>Archived: <span id="admin-notice-archived" class="font-bold text-orange-500">0</span></span>
                             </div>
-                            <div id="admin-notice-list" class="space-y-1 max-h-40 overflow-y-auto border p-2 rounded bg-white text-xs dark:bg-transparent dark:border-gray-600">
-                                </div>
+                            <div id="admin-notice-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
                     </div>
                 </section>
 
-                <div id="section-main-search" class="w-full">
-                    <div class="relative w-full max-w-2xl mb-8 group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-navy transition"></i>
+                <div id="section-main-search" class="w-full flex flex-col items-center mx-auto">
+                    <div class="relative w-full max-w-3xl mb-6 group">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-blue-500 transition"></i>
                         </div>
-                        <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-11 pr-4 py-3.5 bg-white dark:bg-[#303134] border border-gray-300 dark:border-gray-600 rounded-full text-base shadow-sm hover:shadow focus:shadow-md outline-none text-gray-800 dark:text-gray-100 transition">
+                        <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-12 pr-5 py-4 bg-gray-50/50 dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-full text-base focus:shadow-md outline-none text-gray-800 dark:text-gray-100 transition-all focus:bg-white focus:border-blue-200 dark:focus:border-gray-600 placeholder-gray-400">
                     </div>
 
-                    <div class="text-sm text-gray-500 mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">
-                        Showing results from Cloud Archive (<span id="material-count-badge">...</span> items)
+                    <div class="w-full max-w-3xl text-sm text-gray-500 mb-4 px-2 flex justify-between items-center">
+                        <span>Cloud Archive Documents</span>
+                        <span class="bg-gray-100 dark:bg-geminiSurface px-2 py-1 rounded-full text-xs font-medium"><span id="material-count-badge">0</span> items</span>
                     </div>
 
-                    <div id="smart-materials-grid" class="flex flex-col gap-4 w-full max-w-3xl pb-20"></div>
+                    <div id="smart-materials-grid" class="flex flex-col gap-3 w-full max-w-3xl pb-20"></div>
                 </div>
 
-                <div id="section-accommodation" class="hidden w-full max-w-3xl">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 gap-4">
+                <div id="section-accommodation" class="hidden w-full max-w-4xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
                         <div>
-                            <h2 class="text-xl font-normal text-navy dark:text-blue-400"><i class="fa-solid fa-building-user mr-2"></i>Accommodation Finder</h2>
-                            <p class="text-xs text-gray-500 mt-1">Community-driven hostel directory and reviews.</p>
+                            <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-building-user mr-2 text-blue-500"></i>Accommodation Finder</h2>
+                            <p class="text-sm text-gray-500 mt-1">Community-driven hostel directory and reviews.</p>
                         </div>
-                        <button onclick="openAddHostelModal()" class="bg-navy hover:bg-blue-800 text-white px-4 py-2 rounded text-sm font-bold shadow-sm transition whitespace-nowrap">
-                            <i class="fa-solid fa-plus mr-1"></i> Add Listing
+                        <button onclick="openAddHostelModal()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy hover:opacity-90 text-white px-5 py-2.5 rounded-full text-sm font-medium transition whitespace-nowrap flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Listing
                         </button>
                     </div>
 
-                    <div class="flex gap-4 mb-6">
-                        <input type="text" id="hostel-search-input" onkeyup="filterAccommodations()" placeholder="Search hostels by name or area..." class="w-full px-4 py-2.5 bg-white dark:bg-[#303134] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white transition">
+                    <div class="mb-6 px-2">
+                        <input type="text" id="hostel-search-input" onkeyup="filterAccommodations()" placeholder="Search hostels by name or area..." class="w-full px-5 py-3.5 bg-gray-50/50 dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-300 dark:focus:border-gray-500 dark:text-white transition">
                     </div>
 
-                    <div id="accommodation-yield-box" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                        </div>
+                    <div id="accommodation-yield-box" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8 px-2"></div>
 
-                    <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-                        <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase mb-4"><i class="fa-solid fa-ranking-star mr-2 text-yellow-500"></i>Top Contributors Leaderboard</h3>
-                        <div id="accommodation-contributors-box" class="bg-gray-50 dark:bg-[#303134] rounded border border-gray-200 dark:border-gray-700 p-4">
-                            </div>
+                    <div class="mt-10 px-2 pt-8 border-t border-gray-100 dark:border-gray-800">
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-5 flex items-center"><i class="fa-solid fa-ranking-star mr-2 text-yellow-500"></i>Top Contributors</h3>
+                        <div id="accommodation-contributors-box" class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm"></div>
                     </div>
                 </div>
 
-                <div id="section-marketplace" class="hidden w-full">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 gap-4">
+                <div id="section-marketplace" class="hidden w-full max-w-5xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
                         <div>
-                            <h2 class="text-2xl font-bold text-navy dark:text-blue-400"><i class="fa-solid fa-store mr-2"></i>Student Marketplace</h2>
-                            <p class="text-xs text-gray-500 mt-1">Buy, sell, advertise services, and find student businesses.</p>
+                            <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-store mr-2 text-blue-500"></i>Student Marketplace</h2>
+                            <p class="text-sm text-gray-500 mt-1">Buy, sell, advertise services, and find student businesses.</p>
                         </div>
-                        <button onclick="openAddMarketplaceModal()" class="bg-navy hover:bg-blue-800 text-white px-5 py-2.5 rounded shadow-md hover:shadow-lg transition font-bold text-sm flex items-center gap-2 whitespace-nowrap">
+                        <button onclick="openAddMarketplaceModal()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy hover:opacity-90 text-white px-5 py-2.5 rounded-full transition font-medium text-sm flex items-center gap-2 whitespace-nowrap shadow-sm">
                             <i class="fa-solid fa-tag"></i> Create Listing
                         </button>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-[#303134] border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6 shadow-sm flex flex-col md:flex-row gap-3">
+                    <div class="bg-white dark:bg-geminiSurface border border-gray-100 dark:border-gray-800 rounded-3xl p-4 mb-8 shadow-sm flex flex-col md:flex-row gap-3">
                         <div class="relative flex-grow">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
                             </div>
-                            <input type="text" id="marketplace-search-input" onkeyup="filterMarketplace()" placeholder="Search products, services, books, electronics..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-[#202124] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white transition shadow-sm">
+                            <input type="text" id="marketplace-search-input" onkeyup="filterMarketplace()" placeholder="Search products, services..." class="w-full pl-11 pr-4 py-2.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white transition">
                         </div>
-                        <select id="marketplace-type-filter" onchange="filterMarketplace()" class="px-3 py-2 bg-white dark:bg-[#202124] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white shadow-sm md:w-36">
+                        <select id="marketplace-type-filter" onchange="filterMarketplace()" class="px-4 py-2.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white md:w-36 cursor-pointer">
                             <option value="">All Types</option>
                             <option value="Product">Products</option>
                             <option value="Service">Services</option>
                             <option value="Request">Requests</option>
                         </select>
-                        <select id="marketplace-category-filter" onchange="filterMarketplace()" class="px-3 py-2 bg-white dark:bg-[#202124] border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white shadow-sm md:w-48">
+                        <select id="marketplace-category-filter" onchange="filterMarketplace()" class="px-4 py-2.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white md:w-48 cursor-pointer">
                             <option value="">All Categories</option>
                             <option value="Books">Books</option>
                             <option value="Laptops">Laptops</option>
@@ -321,182 +341,193 @@
                         </select>
                     </div>
 
-                    <div id="marketplace-yield-box" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10 w-full">
-                        </div>
+                    <div id="marketplace-yield-box" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-10 w-full px-2"></div>
 
-                    <div class="mt-10 border-t border-gray-200 dark:border-gray-700 pt-8 w-full max-w-3xl">
-                        <h3 class="text-base font-bold text-gray-800 dark:text-white uppercase mb-4 flex items-center"><i class="fa-solid fa-trophy mr-2 text-yellow-500"></i> Top Sellers Leaderboard</h3>
-                        <div id="marketplace-contributors-box" class="bg-gray-50 dark:bg-[#303134] rounded-lg border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-                            </div>
+                    <div class="mt-10 pt-8 border-t border-gray-100 dark:border-gray-800 w-full max-w-4xl mx-auto px-2">
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-5 flex items-center"><i class="fa-solid fa-trophy mr-2 text-yellow-500"></i> Top Sellers</h3>
+                        <div id="marketplace-contributors-box" class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm"></div>
                     </div>
                 </div>
 
-                <div id="section-announcements" class="hidden w-full max-w-3xl">
-                    <h2 class="text-xl font-normal text-navy dark:text-blue-400 mb-6 pb-2 border-b">Campus Notifications</h2>
-                    <div id="announcements-yield-box" class="space-y-6"></div>
+                <div id="section-announcements" class="hidden w-full max-w-3xl mx-auto">
+                    <h2 class="text-2xl font-medium text-gray-800 dark:text-white mb-8 pb-4 border-b border-gray-100 dark:border-gray-800 px-2"><i class="fa-regular fa-bell text-blue-500 mr-2"></i>Campus Notifications</h2>
+                    <div id="announcements-yield-box" class="space-y-6 px-2"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="pwa-install-footer" class="hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-4 z-50 flex items-center justify-between shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.1)]">
-        <span class="text-sm font-bold text-gray-800 dark:text-white">Install UDS Hub App</span>
-        <div class="flex gap-3">
-            <button onclick="document.getElementById('pwa-install-footer').classList.add('hidden')" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-white">Later</button>
-            <button onclick="installPWA()" class="px-5 py-2 bg-navy text-white rounded text-sm font-bold shadow hover:bg-blue-800">Install</button>
+    <div id="pwa-install-footer" class="hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-geminiSurface border-t border-gray-200 dark:border-gray-800 p-4 z-50 flex items-center justify-between shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)] transition-transform">
+        <span class="text-sm font-medium text-gray-800 dark:text-white">Install UDS Hub App for a better experience</span>
+        <div class="flex gap-2">
+            <button onclick="document.getElementById('pwa-install-footer').classList.add('hidden')" class="px-4 py-2 rounded-full text-sm text-gray-500 hover:bg-gray-100 dark:hover:bg-geminiBase transition">Later</button>
+            <button onclick="installPWA()" class="px-5 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:opacity-90 transition">Install</button>
         </div>
     </div>
 
-    <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-gray-900/50 flex justify-center items-center p-4">
-        <div class="bg-white dark:bg-[#202124] rounded border dark:border-gray-600 shadow-xl max-w-md w-full p-8 relative">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="text-center mb-6">
-                <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-4xl mb-2"></i>
-                <h2 class="text-2xl font-normal text-gray-800 dark:text-gray-100">Sign in</h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Use your UDS Profile</p>
+    <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-8 relative border border-gray-100 dark:border-gray-800">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 flex items-center justify-center rounded-full transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-medium text-gray-800 dark:text-gray-100">Welcome Back</h2>
+                <p class="text-sm text-gray-500 mt-1">Sign in with your UDS Profile</p>
             </div>
-            <div class="flex gap-4 border-b border-gray-200 dark:border-gray-700 pb-2 mb-6 text-sm">
-                <button id="tab-login-btn" onclick="toggleAuthTab('login')" class="text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1">Sign In</button>
-                <button id="tab-register-btn" onclick="toggleAuthTab('register')" class="text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1">Create Account</button>
+            <div class="flex gap-2 bg-gray-100 dark:bg-geminiBase p-1 rounded-xl mb-6 text-sm font-medium">
+                <button id="tab-login-btn" onclick="toggleAuthTab('login')" class="flex-1 bg-white dark:bg-geminiSurface text-gray-800 dark:text-white shadow-sm py-2 rounded-lg transition">Sign In</button>
+                <button id="tab-register-btn" onclick="toggleAuthTab('register')" class="flex-1 text-gray-500 hover:text-gray-800 dark:hover:text-white py-2 rounded-lg transition">Create Account</button>
             </div>
             <form id="form-login" onsubmit="executeImmediateLogin(event)" class="space-y-4">
-                <input type="text" id="login-identifier" required placeholder="Index Number or Email" class="w-full px-4 py-3 bg-transparent border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white">
-                <input type="password" id="login-pass" required placeholder="Password" class="w-full px-4 py-3 bg-transparent border border-gray-300 dark:border-gray-600 rounded text-sm outline-none focus:border-navy dark:focus:border-blue-400 dark:text-white">
-                <button type="submit" class="w-full py-3 bg-navy text-white font-bold text-sm rounded hover:bg-blue-800 transition">Next</button>
+                <input type="text" id="login-identifier" required placeholder="Index Number or Email" class="w-full px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white">
+                <input type="password" id="login-pass" required placeholder="Password" class="w-full px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white">
+                <button type="submit" class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium text-sm rounded-xl hover:opacity-90 transition mt-2">Continue</button>
             </form>
             <form id="form-register" onsubmit="executeImmediateRegistration(event)" class="hidden space-y-4">
                 <div class="flex gap-3">
-                    <input type="text" id="reg-name" required placeholder="Full Name" class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
-                    <input type="text" id="reg-index" required placeholder="Index No." class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                    <input type="text" id="reg-name" required placeholder="Full Name" class="w-1/2 px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    <input type="text" id="reg-index" required placeholder="Index No." class="w-1/2 px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                 </div>
-                <input type="email" id="reg-email" placeholder="Email (Optional)" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                <input type="email" id="reg-email" placeholder="Email (Optional)" class="w-full px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                 <div class="flex gap-3">
-                    <input type="text" id="reg-dept" required placeholder="Department" class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
-                    <select id="reg-level" class="w-1/2 px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
+                    <input type="text" id="reg-dept" required placeholder="Department" class="w-1/2 px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    <select id="reg-level" class="w-1/2 px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
                         <option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option>
                     </select>
                 </div>
-                <input type="password" id="reg-pass" required placeholder="Password" class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 bg-transparent rounded text-sm dark:text-white">
-                <button type="submit" class="w-full py-3 bg-navy text-white font-bold text-sm rounded hover:bg-blue-800 transition">Create</button>
+                <input type="password" id="reg-pass" required placeholder="Password" class="w-full px-4 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                <button type="submit" class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium text-sm rounded-xl hover:opacity-90 transition mt-2">Create Profile</button>
             </form>
         </div>
     </div>
 
-    <div id="quote-modal" class="hidden fixed inset-0 z-[250] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-lg w-full p-8 relative text-center border-t-4 border-navy dark:border-blue-400">
-            <button onclick="closeQuoteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <i class="fa-solid fa-quote-left text-4xl text-gray-300 dark:text-gray-600 mb-4 block"></i>
-            <h2 class="text-2xl font-normal text-navy dark:text-blue-400 mb-4">Daily Inspiration</h2>
-            <p id="quote-text" class="text-lg text-gray-700 dark:text-gray-200 italic mb-6 font-serif">Loading quote...</p>
-            <button onclick="closeQuoteModal()" class="bg-navy hover:bg-blue-800 text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-md transition">Let's Learn!</button>
+    <div id="quote-modal" class="hidden fixed inset-0 z-[250] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-lg w-full p-8 relative text-center border border-gray-100 dark:border-gray-800">
+            <button onclick="closeQuoteModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            <div class="w-16 h-16 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-lightbulb text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-medium text-gray-800 dark:text-gray-100 mb-6">Daily Inspiration</h2>
+            <p id="quote-text" class="text-lg text-gray-600 dark:text-gray-300 mb-8 italic leading-relaxed font-serif">Loading quote...</p>
+            <button onclick="closeQuoteModal()" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-8 py-3 rounded-full text-sm font-medium transition w-full max-w-xs mx-auto block hover:opacity-90">Let's Learn</button>
         </div>
     </div>
 
     <div id="smart-notice-badge-container" class="fixed bottom-6 left-4 md:bottom-6 md:left-6 z-40 hidden">
-        <button id="smart-notice-badge" onclick="openSmartNoticeCenter()" class="bg-white dark:bg-[#303134] border border-gray-200 dark:border-gray-700 text-navy dark:text-blue-400 px-4 py-3 rounded-full flex items-center gap-2 shadow-lg hover:shadow-xl transition-all font-bold text-sm">
-            <i class="fa-solid fa-bell text-yellow-500 animate-pulse"></i>
+        <button id="smart-notice-badge" onclick="openSmartNoticeCenter()" class="bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 px-5 py-3.5 rounded-full flex items-center gap-3 shadow-lg hover:shadow-xl transition-all font-medium text-sm">
+            <i class="fa-solid fa-bell text-blue-500 animate-pulse"></i>
             <span id="smart-notice-text">Updates</span>
-            <span id="smart-notice-count" class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] text-center hidden">0</span>
+            <span id="smart-notice-count" class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center hidden">0</span>
         </button>
     </div>
 
-    <div id="smart-notice-center-modal" class="hidden fixed inset-0 z-[260] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-lg w-full flex flex-col overflow-hidden border-t-4 border-navy dark:border-blue-400 dark:border-x dark:border-b dark:border-gray-600 max-h-[85vh]">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#303134]">
-                <div class="flex flex-col">
-                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-yellow-500"></i> What's New
-                    </h3>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400">Smart Notice Center</p>
+    <div id="smart-notice-center-modal" class="hidden fixed inset-0 z-[260] bg-black/60 flex justify-end p-0 md:p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl w-full md:w-[400px] flex flex-col h-full md:h-auto md:max-h-[85vh] border border-transparent dark:border-gray-800">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-geminiSurface md:rounded-t-3xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-lg"></i>
+                    </div>
+                    <h3 class="font-medium text-lg text-gray-800 dark:text-gray-100">What's New</h3>
                 </div>
-                <button onclick="closeSmartNoticeCenter()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeSmartNoticeCenter()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div id="smart-notice-content" class="p-4 overflow-y-auto space-y-4 flex-grow bg-white dark:bg-[#202124]">
-                </div>
+            <div id="smart-notice-content" class="p-4 overflow-y-auto space-y-3 flex-grow bg-gray-50/50 dark:bg-geminiBase"></div>
             
-            <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#303134]">
-                <button onclick="markAllUpdatesRead()" class="w-full bg-navy hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-sm transition shadow flex justify-center items-center gap-2">
+            <div class="p-4 bg-white dark:bg-geminiSurface md:rounded-b-3xl border-t border-gray-100 dark:border-gray-800">
+                <button onclick="markAllUpdatesRead()" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-geminiBase dark:hover:bg-[#2a2b2e] text-gray-700 dark:text-gray-300 font-medium py-3 rounded-xl text-sm transition flex justify-center items-center gap-2">
                     <i class="fa-solid fa-check-double"></i> Mark All as Read
                 </button>
             </div>
         </div>
     </div>
     
-    <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[300] bg-[#f8f9fa] dark:bg-[#121212] flex flex-col transition-opacity duration-300">
-        <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
+    <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[300] bg-[#f8f9fa] dark:bg-[#000000] flex flex-col transition-opacity duration-300">
+        <div class="flex justify-between items-center px-4 md:px-6 py-3 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
             <div class="flex items-center gap-3 overflow-hidden">
-                <div id="doc-reader-icon" class="text-2xl drop-shadow-sm">📄</div>
+                <div id="doc-reader-icon" class="text-2xl drop-shadow-sm flex-shrink-0">📄</div>
                 <div class="flex flex-col min-w-0">
-                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-bold text-base md:text-lg truncate max-w-[60vw]">Document Loading...</h3>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">Secure UDS Hub Viewer</span>
+                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-medium text-sm md:text-base truncate max-w-[50vw]">Document Loading...</h3>
+                    <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-            <div class="flex gap-3 shrink-0">
-                <button onclick="terminateDocViewer()" class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 text-gray-700 dark:text-gray-300 px-5 py-2.5 rounded-full transition-all duration-200 font-bold text-sm shadow-sm border border-gray-200 dark:border-gray-700">
-                    <i class="fa-solid fa-xmark text-lg"></i> <span class="hidden md:inline">Close File</span>
+            <div class="flex gap-2 shrink-0">
+                <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
+                    <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
             </div>
         </div>
-        <div class="relative flex-grow w-full bg-gray-200 dark:bg-[#0a0a0a] overflow-hidden">
-            <div id="doc-reader-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#202124] z-20 transition-opacity duration-300">
-                <div class="w-14 h-14 border-4 border-gray-200 border-t-navy dark:border-t-blue-500 rounded-full animate-spin mb-4 shadow-sm"></div>
-                <p class="text-sm font-bold text-navy dark:text-blue-400 animate-pulse tracking-wide">Rendering Document...</p>
-                <p class="text-xs text-gray-500 mt-2">Optimizing for your screen</p>
+        <div class="relative flex-grow w-full bg-gray-100 dark:bg-[#0a0a0a] overflow-hidden">
+            <div id="doc-reader-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-[#131314] z-20 transition-opacity duration-300">
+                <div class="w-12 h-12 border-4 border-gray-100 border-t-blue-500 dark:border-gray-800 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 animate-pulse">Rendering Document...</p>
             </div>
-            <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
+            <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out bg-white" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
         </div>
     </div>
 
-    <div id="gpa-calculator-modal" class="hidden fixed inset-0 z-[120] bg-gray-900/50 flex justify-center items-center p-4">
-        <div class="bg-white dark:bg-[#202124] rounded shadow-xl max-w-xl w-full border border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden max-h-[90vh]">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h3 class="font-normal text-xl text-gray-800 dark:text-gray-100">GPA Calculator</h3>
-                <button onclick="closeGpaModal()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="gpa-calculator-modal" class="hidden fixed inset-0 z-[120] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-xl w-full border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-geminiSurface">
+                <h3 class="font-medium text-xl text-gray-800 dark:text-gray-100 flex items-center gap-3"><i class="fa-solid fa-calculator text-blue-500 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-full"></i> GPA Engine</h3>
+                <button onclick="closeGpaModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-6">
-                <div class="flex gap-4 border-b pb-4 dark:border-gray-700">
-                    <div class="w-1/2"><label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Previous Credits</label><input type="number" id="gpa-past-credits" value="0" onkeyup="recalculateStudentGpaMetrics()" onchange="recalculateStudentGpaMetrics()" class="w-full p-2 border rounded dark:bg-transparent dark:border-gray-600 dark:text-white"></div>
-                    <div class="w-1/2"><label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Previous Points</label><input type="number" step="0.1" id="gpa-past-points" value="0" onkeyup="recalculateStudentGpaMetrics()" onchange="recalculateStudentGpaMetrics()" class="w-full p-2 border rounded dark:bg-transparent dark:border-gray-600 dark:text-white"></div>
+                <div class="flex gap-4 border-b border-gray-100 dark:border-gray-800 pb-6">
+                    <div class="w-1/2">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Previous Credits</label>
+                        <input type="number" id="gpa-past-credits" value="0" onkeyup="recalculateStudentGpaMetrics()" onchange="recalculateStudentGpaMetrics()" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl outline-none focus:ring-2 focus:ring-blue-100 dark:text-white font-mono text-sm">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Previous Points</label>
+                        <input type="number" step="0.1" id="gpa-past-points" value="0" onkeyup="recalculateStudentGpaMetrics()" onchange="recalculateStudentGpaMetrics()" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl outline-none focus:ring-2 focus:ring-blue-100 dark:text-white font-mono text-sm">
+                    </div>
                 </div>
                 <div>
-                    <div class="flex justify-between mb-2"><h4 class="text-sm text-gray-800 dark:text-gray-200">Current Courses</h4><button onclick="addCourseGpaRow()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">+ Add Course</button></div>
-                    <div class="flex gap-2 px-1 text-xs text-gray-500 mb-1"><div class="w-1/3">Course</div><div class="w-1/4">Score</div><div class="w-1/4">Cr</div><div class="w-12">Gr</div><div class="w-6"></div></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wider">Current Courses</h4>
+                        <button onclick="addCourseGpaRow()" class="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full hover:opacity-80 transition">+ Add Course</button>
+                    </div>
+                    <div class="flex gap-2 px-2 text-[10px] text-gray-400 uppercase tracking-wider mb-2 font-medium"><div class="w-1/3">Course Code</div><div class="w-1/4 text-center">Score</div><div class="w-1/4 text-center">Credit</div><div class="w-12 text-center">Grade</div><div class="w-6"></div></div>
                     <div id="gpa-rows-stack" class="space-y-2"></div>
                 </div>
             </div>
-            <div class="bg-gray-50 dark:bg-[#303134] border-t dark:border-gray-700 p-4 flex justify-between">
-                <div><span class="text-xs text-gray-500 block">Trimester</span><span id="gpa-output-tri" class="text-xl font-bold text-navy dark:text-blue-400">0.00</span></div>
-                <div class="text-right"><span class="text-xs text-gray-500 block">Cumulative</span><span id="gpa-output-cgpa" class="text-2xl font-bold text-navy dark:text-blue-400">0.00</span></div>
+            <div class="bg-gray-50 dark:bg-geminiBase p-6 flex justify-between items-center">
+                <div class="bg-white dark:bg-geminiSurface px-4 py-2 rounded-2xl shadow-sm"><span class="text-[10px] text-gray-500 uppercase tracking-wider block font-medium">Trimester GPA</span><span id="gpa-output-tri" class="text-xl font-bold text-gray-800 dark:text-white">0.00</span></div>
+                <div class="bg-blue-600 dark:bg-blue-500 px-6 py-2 rounded-2xl shadow-md text-right"><span class="text-[10px] text-blue-200 uppercase tracking-wider block font-medium">Cumulative GPA</span><span id="gpa-output-cgpa" class="text-2xl font-black text-white">0.00</span></div>
             </div>
         </div>
     </div>
 
-    <div id="research-toolkit-modal" class="hidden fixed inset-0 z-[125] bg-gray-900/50 flex justify-center items-center p-4">
-        <div class="bg-white dark:bg-[#202124] rounded shadow-xl max-w-[95vw] lg:max-w-[1200px] w-full border border-gray-300 dark:border-gray-600 flex flex-col overflow-hidden max-h-[95vh]">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h3 class="font-normal text-xl text-gray-800 dark:text-gray-100">ANOVA Toolkit & Comprehensive Statistical Parameters</h3>
-                <button onclick="closeResearchModal()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="research-toolkit-modal" class="hidden fixed inset-0 z-[125] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-[95vw] lg:max-w-[1200px] w-full border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden h-[90vh]">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                <h3 class="font-medium text-lg text-gray-800 dark:text-gray-100 flex items-center gap-3"><i class="fa-solid fa-flask text-purple-500 bg-purple-50 dark:bg-purple-900/20 p-2 rounded-full"></i> ANOVA Toolkit</h3>
+                <button onclick="closeResearchModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 flex-grow overflow-y-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <div class="lg:col-span-3 space-y-4">
+                    <div class="lg:col-span-3 space-y-6">
                         <div>
-                            <label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Experimental Design</label>
-                            <select id="anova-design-type" class="w-full p-2 border rounded dark:bg-transparent dark:border-gray-600 dark:text-white text-sm">
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Experimental Design</label>
+                            <select id="anova-design-type" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl outline-none dark:text-white text-sm cursor-pointer">
                                 <option value="crd">CRD</option><option value="rcbd">RCBD</option><option value="lsd">LSD</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-xs text-gray-600 dark:text-gray-400 block mb-1">Matrix (CSV)</label>
-                            <textarea id="anova-raw-data" rows="8" class="w-full p-2 border rounded font-mono text-sm dark:bg-transparent dark:border-gray-600 dark:text-white"></textarea>
-                            <button onclick="runAnovaAnalysis()" class="w-full mt-2 py-2 bg-navy text-white text-sm rounded hover:bg-blue-800 transition">Compute Variance & Parameters</button>
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Matrix (CSV)</label>
+                            <textarea id="anova-raw-data" rows="12" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl font-mono text-sm outline-none dark:text-white resize-none"></textarea>
+                            <button onclick="runAnovaAnalysis()" class="w-full mt-4 py-3 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition">Compute Variance</button>
                         </div>
                     </div>
                     <div class="lg:col-span-9 flex flex-col gap-6">
-                        <div id="anova-table-container" class="text-sm dark:text-gray-200 rounded min-h-[200px]">Awaiting data...</div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-40">
-                            <div><canvas id="anova-chart-bar"></canvas></div><div><canvas id="anova-chart-line"></canvas></div><div><canvas id="anova-chart-box"></canvas></div>
+                        <div id="anova-table-container" class="text-sm dark:text-gray-200 rounded-2xl min-h-[200px] flex items-center justify-center border-2 border-dashed border-gray-200 dark:border-gray-700 text-gray-400">Awaiting data input...</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-48">
+                            <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-2"><canvas id="anova-chart-bar"></canvas></div>
+                            <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-2"><canvas id="anova-chart-line"></canvas></div>
+                            <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-2"><canvas id="anova-chart-box"></canvas></div>
                         </div>
                     </div>
                 </div>
@@ -504,109 +535,108 @@
         </div>
     </div>
 
-    <div id="add-hostel-modal" class="hidden fixed inset-0 z-[150] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border dark:border-gray-600 max-h-[95vh]">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#303134]">
-                <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100"><i class="fa-solid fa-house-medical mr-2 text-navy dark:text-blue-400"></i>Contribute Accommodation</h3>
-                <button onclick="closeAddHostelModal()" class="text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="add-hostel-modal" class="hidden fixed inset-0 z-[150] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border border-gray-100 dark:border-gray-800 max-h-[95vh]">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                <h3 class="font-medium text-lg text-gray-800 dark:text-gray-100 flex items-center gap-2"><i class="fa-solid fa-house-medical text-blue-500 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-full"></i>Contribute Accommodation</h3>
+                <button onclick="closeAddHostelModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-4 flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Hostel Name</label>
-                        <input type="text" id="add-hostel-name" required placeholder="e.g. SRC Hostel" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Hostel Name</label>
+                        <input type="text" id="add-hostel-name" required placeholder="e.g. SRC Hostel" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Estimated Price (GHS / year)</label>
-                        <input type="number" id="add-hostel-price" required placeholder="e.g. 2500" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Est. Price (GHS/yr)</label>
+                        <input type="number" id="add-hostel-price" required placeholder="e.g. 2500" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
                 </div>
                 
-                <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Hostel Images (Max 10, 3MB each)</label>
-                    <p class="text-[10px] text-gray-500 mb-1">Upload front view, rooms, and compound. JPG, PNG, WEBP only.</p>
-                    <button type="button" id="btn-upload-hostel-images" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white transition font-bold text-navy flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Hostel Images
+                <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1 uppercase tracking-wider">Hostel Images</label>
+                    <p class="text-[10px] text-gray-400 mb-3">Upload front view, rooms. JPG, PNG, WEBP (Max 10).</p>
+                    <button type="button" id="btn-upload-hostel-images" class="w-full py-2.5 bg-white dark:bg-geminiSurface text-gray-800 dark:text-white rounded-xl text-sm font-medium shadow-sm hover:shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-500"></i> Browse Images
                     </button>
-                    <div id="hostel-upload-preview" class="flex gap-2 mt-3 overflow-x-auto pb-2 hidden"></div>
+                    <div id="hostel-upload-preview" class="flex gap-2 mt-4 overflow-x-auto pb-2 hidden"></div>
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Amenities & Description</label>
-                    <textarea id="add-hostel-desc" rows="2" placeholder="e.g. Water available, near gate 2, single rooms available..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400"></textarea>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Amenities & Description</label>
+                    <textarea id="add-hostel-desc" rows="3" placeholder="e.g. Water available, near gate 2..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none"></textarea>
                 </div>
                 <div class="pt-2">
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Pin Location on Map</label>
-                    <p class="text-[10px] text-gray-500 mb-2">Click or drag the marker to set the exact location.</p>
-                    <div id="hostel-map-picker" class="w-full h-48 rounded border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800"></div>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1 uppercase tracking-wider">Pin Location on Map</label>
+                    <p class="text-[10px] text-gray-400 mb-2">Click or drag the marker to set exact location.</p>
+                    <div id="hostel-map-picker" class="w-full h-48 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-geminiBase z-10"></div>
                 </div>
             </div>
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#303134]">
-                <button onclick="saveHostelListing()" class="w-full bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded text-sm transition shadow">Submit Listing</button>
+            <div class="p-5 border-t border-gray-100 dark:border-gray-800">
+                <button onclick="saveHostelListing()" class="w-full bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3 rounded-xl text-sm hover:opacity-90 transition">Submit Listing</button>
             </div>
         </div>
     </div>
 
-    <div id="view-hostel-modal" class="hidden fixed inset-0 z-[150] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border dark:border-gray-600 max-h-[95vh]">
-            <div class="relative h-48 bg-gray-200 dark:bg-gray-800 flex-shrink-0">
+    <div id="view-hostel-modal" class="hidden fixed inset-0 z-[150] bg-black/60 flex justify-center items-center p-0 md:p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden h-full md:h-auto md:max-h-[95vh] border border-transparent dark:border-gray-800 relative">
+            <div class="relative h-56 md:h-64 bg-gray-100 dark:bg-geminiBase flex-shrink-0">
                 <img id="view-hostel-img" src="" class="w-full h-full object-cover hidden">
                 <div id="view-hostel-no-img" class="w-full h-full flex flex-col items-center justify-center text-gray-400">
-                    <i class="fa-solid fa-image text-4xl mb-2"></i><span class="text-sm">No photo available</span>
+                    <i class="fa-solid fa-image text-4xl mb-2 opacity-50"></i><span class="text-sm">No photo available</span>
                 </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                <button onclick="closeViewHostelModal()" class="absolute top-4 right-4 text-white bg-black/30 hover:bg-black/50 w-8 h-8 rounded-full flex items-center justify-center transition backdrop-blur-sm"><i class="fa-solid fa-xmark"></i></button>
-                <div class="absolute bottom-4 left-6 right-6">
-                    <h3 id="view-hostel-title" class="text-2xl font-bold text-white tracking-tight drop-shadow-md">Loading...</h3>
-                    <p id="view-hostel-price" class="text-yellow-400 font-bold text-sm drop-shadow">GHS -- / year</p>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                
+                <button onclick="closeViewHostelModal()" class="absolute top-5 right-5 text-white bg-black/40 hover:bg-black/60 w-8 h-8 rounded-full flex items-center justify-center transition backdrop-blur-md z-20"><i class="fa-solid fa-xmark"></i></button>
+                
+                <div class="absolute bottom-5 left-6 right-6 z-10">
+                    <h3 id="view-hostel-title" class="text-2xl md:text-3xl font-medium text-white tracking-tight mb-1">Loading...</h3>
+                    <div class="flex items-center gap-3">
+                        <span id="view-hostel-price" class="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-lg text-sm font-medium">GHS -- / year</span>
+                        <span id="view-hostel-verification" class="text-xs px-2 py-1 rounded-lg font-medium backdrop-blur-md">Unverified</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
-                <div class="flex items-start gap-4">
-                    <div class="flex-grow">
-                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-1 border-b pb-1 dark:border-gray-700">About & Amenities</h4>
-                        <p id="view-hostel-desc" class="text-sm text-gray-600 dark:text-gray-400 line-height-[1.5]"></p>
-                    </div>
+            <div class="p-6 overflow-y-auto space-y-8 flex-grow">
+                <div>
+                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">About & Amenities</h4>
+                    <p id="view-hostel-desc" class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl"></p>
                 </div>
 
                 <div>
-                    <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1 dark:border-gray-700">Map Location</h4>
-                    <div id="view-hostel-map" class="w-full h-40 rounded border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800"></div>
+                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Map Location</h4>
+                    <div id="view-hostel-map" class="w-full h-48 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-geminiBase z-10"></div>
                 </div>
 
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200">Community Reviews</h4>
-                        <span class="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded font-bold" id="view-hostel-verification">Unverified</span>
-                    </div>
-                    <div id="view-hostel-reviews" class="space-y-3 mb-4">
-                        </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="add-review-text" placeholder="Write a quick review..." class="flex-grow p-2 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy">
-                        <button onclick="submitHostelReview()" class="bg-gray-800 hover:bg-black dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-bold transition">Post</button>
+                <div class="pt-2">
+                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Community Reviews</h4>
+                    <div id="view-hostel-reviews" class="space-y-3 mb-5"></div>
+                    <div class="flex gap-2 bg-gray-50 dark:bg-geminiBase p-2 rounded-2xl border border-gray-100 dark:border-gray-800">
+                        <input type="text" id="add-review-text" placeholder="Write a quick review..." class="flex-grow px-3 py-2 bg-transparent text-sm outline-none dark:text-white">
+                        <button onclick="submitHostelReview()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-xl text-sm font-medium transition hover:opacity-90">Post</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="add-marketplace-modal" class="hidden fixed inset-0 z-[160] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border dark:border-gray-600 max-h-[95vh]">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#303134]">
-                <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100"><i class="fa-solid fa-tag mr-2 text-navy dark:text-blue-400"></i>Create Marketplace Listing</h3>
-                <button onclick="closeAddMarketplaceModal()" class="text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="add-marketplace-modal" class="hidden fixed inset-0 z-[160] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border border-gray-100 dark:border-gray-800 max-h-[95vh]">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                <h3 class="font-medium text-lg text-gray-800 dark:text-gray-100 flex items-center gap-2"><i class="fa-solid fa-tag text-blue-500 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-full"></i>Create Listing</h3>
+                <button onclick="closeAddMarketplaceModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-4 flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div class="col-span-1 md:col-span-2">
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Listing Title</label>
-                        <input type="text" id="add-mkt-title" required placeholder="e.g. HP ProBook 450 G8, Need Web Developer..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Listing Title</label>
+                        <input type="text" id="add-mkt-title" required placeholder="e.g. HP ProBook 450 G8" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
                     
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Listing Type</label>
-                        <select id="add-mkt-type" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Listing Type</label>
+                        <select id="add-mkt-type" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
                             <option value="Product">Selling a Product</option>
                             <option value="Service">Offering a Service</option>
                             <option value="Request">Looking For Help / Request</option>
@@ -614,132 +644,114 @@
                     </div>
 
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Category</label>
-                        <select id="add-mkt-category" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
-                            <option value="Books">Books</option>
-                            <option value="Laptops">Laptops</option>
-                            <option value="Phones">Phones</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Graphic Design">Graphic Design</option>
-                            <option value="Web Development">Web Development</option>
-                            <option value="Statistics Services">Statistics Services</option>
-                            <option value="Photography">Photography</option>
-                            <option value="Video Editing">Video Editing</option>
-                            <option value="Fashion">Fashion</option>
-                            <option value="Tailoring">Tailoring</option>
-                            <option value="Accommodation Services">Accommodation Services</option>
-                            <option value="Printing">Printing</option>
-                            <option value="Academic Services">Academic Services</option>
-                            <option value="Repairs">Repairs</option>
-                            <option value="Other">Other</option>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Category</label>
+                        <select id="add-mkt-category" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
+                            <option value="Books">Books</option><option value="Laptops">Laptops</option><option value="Phones">Phones</option><option value="Electronics">Electronics</option><option value="Graphic Design">Graphic Design</option><option value="Web Development">Web Development</option><option value="Statistics Services">Statistics Services</option><option value="Photography">Photography</option><option value="Video Editing">Video Editing</option><option value="Fashion">Fashion</option><option value="Tailoring">Tailoring</option><option value="Accommodation Services">Accommodation Services</option><option value="Printing">Printing</option><option value="Academic Services">Academic Services</option><option value="Repairs">Repairs</option><option value="Other">Other</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Price / Budget (GHS)</label>
-                        <input type="number" id="add-mkt-price" required placeholder="e.g. 1500 (Type 0 if Negotiable)" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Price (GHS)</label>
+                        <input type="number" id="add-mkt-price" required placeholder="e.g. 1500 (Type 0 for Negotiable)" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
 
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Condition</label>
-                        <select id="add-mkt-condition" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
-                            <option value="New">Brand New</option>
-                            <option value="Used">Used</option>
-                            <option value="Refurbished">Refurbished</option>
-                            <option value="Not Applicable">Not Applicable (Services/Requests)</option>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Condition</label>
+                        <select id="add-mkt-condition" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
+                            <option value="New">Brand New</option><option value="Used">Used</option><option value="Refurbished">Refurbished</option><option value="Not Applicable">Not Applicable</option>
                         </select>
                     </div>
 
-                    <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Campus Location</label>
-                        <input type="text" id="add-mkt-location" required placeholder="e.g. Nyankpala, Tamale, Navrongo..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Campus Location</label>
+                        <input type="text" id="add-mkt-location" required placeholder="e.g. Nyankpala, Tamale, Navrongo..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
 
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Phone Number (Call)</label>
-                        <input type="text" id="add-mkt-contact" required placeholder="e.g. 0551234567" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Phone Number (Call)</label>
+                        <input type="text" id="add-mkt-contact" required placeholder="e.g. 0551234567" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
 
                     <div>
-                        <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">WhatsApp Number (Include Code)</label>
-                        <input type="text" id="add-mkt-whatsapp" required placeholder="e.g. 233551234567" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">WhatsApp (Inc. Code)</label>
+                        <input type="text" id="add-mkt-whatsapp" required placeholder="e.g. 233551234567" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
                 </div>
 
-                <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Product/Service Images (Max 5, 3MB each)</label>
-                    <button type="button" id="btn-upload-mkt-images" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white transition font-bold text-navy flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Listing Images
+                <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1 uppercase tracking-wider">Images (Max 5)</label>
+                    <button type="button" id="btn-upload-mkt-images" class="w-full py-2.5 bg-white dark:bg-geminiSurface text-gray-800 dark:text-white rounded-xl text-sm font-medium shadow-sm hover:shadow transition flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-500"></i> Upload Listing Images
                     </button>
-                    <div id="mkt-upload-preview" class="flex gap-2 mt-3 overflow-x-auto pb-2 hidden"></div>
+                    <div id="mkt-upload-preview" class="flex gap-2 mt-4 overflow-x-auto pb-2 hidden"></div>
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Description / Details</label>
-                    <textarea id="add-mkt-desc" rows="4" required placeholder="Describe the product, specs, your skills, or exactly what you are looking for..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400"></textarea>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Description</label>
+                    <textarea id="add-mkt-desc" rows="4" required placeholder="Describe details, specs, or what you need..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none"></textarea>
                 </div>
             </div>
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#303134]">
-                <button onclick="saveMarketplaceListing(event)" class="w-full bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded text-sm transition shadow">Publish Listing</button>
+            <div class="p-5 border-t border-gray-100 dark:border-gray-800">
+                <button onclick="saveMarketplaceListing(event)" class="w-full bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3 rounded-xl text-sm hover:opacity-90 transition">Publish Listing</button>
             </div>
         </div>
     </div>
 
-    <div id="view-marketplace-modal" class="hidden fixed inset-0 z-[165] bg-gray-900/70 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden border dark:border-gray-600 max-h-[95vh]">
-            <button onclick="closeMarketplaceDetails()" class="absolute top-4 right-4 z-10 text-gray-600 bg-white/80 hover:bg-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md md:hidden"><i class="fa-solid fa-xmark"></i></button>
+    <div id="view-marketplace-modal" class="hidden fixed inset-0 z-[165] bg-black/70 flex justify-center items-center p-0 md:p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden h-full md:h-auto border border-transparent dark:border-gray-800 md:max-h-[90vh]">
+            <button onclick="closeMarketplaceDetails()" class="absolute top-5 right-5 z-20 text-white bg-black/40 hover:bg-black/60 w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-md md:hidden"><i class="fa-solid fa-xmark"></i></button>
             
-            <div class="w-full md:w-1/2 bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative min-h-[250px] md:min-h-full">
+            <div class="w-full md:w-1/2 bg-gray-100 dark:bg-geminiBase flex items-center justify-center relative min-h-[300px] md:min-h-full">
                 <img id="view-mkt-img" src="" class="w-full h-full object-cover hidden">
                 <div id="view-mkt-no-img" class="w-full h-full flex flex-col items-center justify-center text-gray-400">
                     <i class="fa-solid fa-image text-5xl mb-3 opacity-50"></i>
-                    <span class="text-sm font-bold opacity-80">No Image Provided</span>
+                    <span class="text-sm font-medium opacity-80">No Image Provided</span>
                 </div>
             </div>
             
             <div class="w-full md:w-1/2 flex flex-col flex-grow relative overflow-y-auto">
-                <button onclick="closeMarketplaceDetails()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-800 dark:hover:text-white w-8 h-8 flex items-center justify-center transition hidden md:flex"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button onclick="closeMarketplaceDetails()" class="absolute top-5 right-5 z-10 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full items-center justify-center transition hidden md:flex"><i class="fa-solid fa-xmark text-lg"></i></button>
                 
-                <div class="p-6 md:p-8 flex-grow space-y-5">
+                <div class="p-6 md:p-8 flex-grow space-y-6">
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span id="view-mkt-type" class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Type</span>
-                            <span id="view-mkt-category" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Category</span>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span id="view-mkt-type" class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-wider">Type</span>
+                            <span id="view-mkt-category" class="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-wider">Category</span>
                         </div>
-                        <h2 id="view-mkt-title" class="text-2xl font-bold text-gray-900 dark:text-gray-100 leading-tight mb-2">Loading...</h2>
-                        <div class="text-3xl font-black text-navy dark:text-blue-400" id="view-mkt-price">GHS --</div>
+                        <h2 id="view-mkt-title" class="text-2xl font-medium text-gray-900 dark:text-gray-100 leading-tight mb-3">Loading...</h2>
+                        <div class="text-3xl font-black text-gray-900 dark:text-blue-300" id="view-mkt-price">GHS --</div>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-[#303134] rounded-lg p-4 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-navy dark:bg-blue-600 flex items-center justify-center text-white text-xl font-bold shrink-0">
-                            <i class="fa-solid fa-user"></i>
+                    <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-4 flex items-center gap-4 border border-transparent dark:border-gray-800">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl shrink-0">
+                            <i class="fa-regular fa-user"></i>
                         </div>
                         <div class="flex-grow min-w-0">
-                            <p class="text-xs text-gray-500 mb-0.5 uppercase tracking-wider">Seller / Provider</p>
-                            <h4 id="view-mkt-seller" class="font-bold text-gray-800 dark:text-gray-100 text-base truncate">Unknown</h4>
-                            <p id="view-mkt-location" class="text-xs text-gray-500 truncate"><i class="fa-solid fa-location-dot mr-1"></i> Location</p>
+                            <p class="text-[10px] text-gray-500 mb-0.5 uppercase tracking-wider font-medium">Provider</p>
+                            <h4 id="view-mkt-seller" class="font-medium text-gray-800 dark:text-gray-100 text-base truncate">Unknown</h4>
+                            <p id="view-mkt-location" class="text-xs text-gray-500 truncate mt-1"><i class="fa-solid fa-location-dot mr-1 opacity-70"></i> Location</p>
                         </div>
                     </div>
 
                     <div>
-                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1 dark:border-gray-700">Description</h4>
-                        <p id="view-mkt-desc" class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed"></p>
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Description</h4>
+                        <p id="view-mkt-desc" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl"></p>
                     </div>
 
                     <div>
-                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-2 border-b pb-1 dark:border-gray-700">Details</h4>
-                        <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                            <li><span class="font-bold">Condition:</span> <span id="view-mkt-condition">--</span></li>
-                            <li><span class="font-bold">Posted:</span> <span id="view-mkt-date">--</span></li>
-                        </ul>
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Details</h4>
+                        <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-4 text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                            <div class="flex justify-between border-b border-gray-200 dark:border-gray-800 pb-2"><span class="font-medium">Condition:</span> <span id="view-mkt-condition" class="text-gray-800 dark:text-gray-100">--</span></div>
+                            <div class="flex justify-between pt-1"><span class="font-medium">Posted:</span> <span id="view-mkt-date" class="text-gray-800 dark:text-gray-100">--</span></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="p-6 md:p-8 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2a2b2e] flex gap-3">
-                    <a id="btn-mkt-whatsapp" href="#" target="_blank" class="flex-1 bg-[#25D366] hover:bg-[#20b858] text-white font-bold py-3 rounded-lg text-sm transition shadow flex justify-center items-center gap-2 text-center">
+                <div class="p-6 border-t border-gray-100 dark:border-gray-800 flex gap-3">
+                    <a id="btn-mkt-whatsapp" href="#" target="_blank" class="flex-1 bg-[#25D366] hover:bg-[#20b858] text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center">
                         <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp
                     </a>
-                    <a id="btn-mkt-call" href="#" class="flex-1 bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded-lg text-sm transition shadow flex justify-center items-center gap-2 text-center">
+                    <a id="btn-mkt-call" href="#" class="flex-1 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center hover:opacity-90">
                         <i class="fa-solid fa-phone text-sm"></i> Call Seller
                     </a>
                 </div>
@@ -747,26 +759,26 @@
         </div>
     </div>
 
-    <div id="edit-announcement-modal" class="hidden fixed inset-0 z-[350] bg-gray-900/60 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-[#202124] rounded-xl shadow-2xl max-w-lg w-full p-6 relative border-t-4 border-navy dark:border-blue-400">
-            <button onclick="closeEditAnnouncementModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h2 class="text-xl font-bold text-navy dark:text-blue-400 mb-4">Edit Notice</h2>
-            <form id="form-edit-announcement" onsubmit="submitEditAnnouncement(event)" class="space-y-4">
+    <div id="edit-announcement-modal" class="hidden fixed inset-0 z-[350] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-lg w-full p-8 relative border border-gray-100 dark:border-gray-800">
+            <button onclick="closeEditAnnouncementModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            <h2 class="text-xl font-medium text-gray-800 dark:text-gray-100 mb-6"><i class="fa-solid fa-pen mr-2 text-blue-500"></i>Edit Notice</h2>
+            <form id="form-edit-announcement" onsubmit="submitEditAnnouncement(event)" class="space-y-5">
                 <input type="hidden" id="edit-ann-id">
                 <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Title</label>
-                    <input type="text" id="edit-ann-title" required class="w-full px-3 py-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Title</label>
+                    <input type="text" id="edit-ann-title" required class="w-full px-4 py-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Content</label>
-                    <textarea id="edit-ann-content" required rows="4" class="w-full px-3 py-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white"></textarea>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Content</label>
+                    <textarea id="edit-ann-content" required rows="5" class="w-full px-4 py-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none"></textarea>
                 </div>
-                <button type="submit" class="w-full py-2 bg-navy text-white text-sm font-bold rounded hover:bg-blue-800 transition shadow">Save Changes</button>
+                <button type="submit" class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2">Save Changes</button>
             </form>
         </div>
     </div>
 
-    <div id="toast-deck" class="fixed bottom-5 left-5 z-[300] space-y-2 pointer-events-none"></div>
+    <div id="toast-deck" class="fixed bottom-6 left-6 z-[400] space-y-3 pointer-events-none"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -899,10 +911,10 @@
                     window.announcementsCache.push(item);
                     if(container) {
                         container.innerHTML += `
-                            <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-700">
-                                <h4 class="scholar-title text-base mb-1">${data.title}</h4>
-                                <div class="scholar-meta text-xs mb-2 text-scholarGreen dark:text-[#81c995]">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm line-height-[1.5] mt-1 whitespace-pre-wrap">${data.content}</p>
+                            <div class="mb-5 pb-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-geminiBase p-6 rounded-3xl">
+                                <h4 class="text-lg font-medium text-gray-800 dark:text-gray-100 mb-1">${data.title}</h4>
+                                <div class="text-[10px] uppercase tracking-wider mb-3 text-gray-500 font-medium">Posted: ${new Date(data.timestamp).toLocaleDateString()}</div>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">${data.content}</p>
                             </div>`;
                     }
                 }
@@ -942,12 +954,12 @@
 
                 if(adminList) {
                     adminList.innerHTML += `
-                        <div class="flex justify-between items-center border-b dark:border-gray-600 pb-2 mb-2">
-                            <div class="flex items-center gap-2 truncate pr-2 w-full">
-                                <img src="${data.url}" class="w-10 h-10 object-cover rounded shadow-sm border border-gray-200 dark:border-gray-600">
-                                <a href="${data.url}" target="_blank" class="truncate text-blue-600 dark:text-blue-400 hover:underline flex-grow">${data.url}</a>
+                        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
+                            <div class="flex items-center gap-3 truncate pr-2 w-full">
+                                <img src="${data.url}" class="w-10 h-10 object-cover rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                <a href="${data.url}" target="_blank" class="truncate text-blue-500 hover:underline flex-grow text-xs">${data.url}</a>
                             </div>
-                            <button onclick="deleteFlyer('${doc.id}')" class="text-red-500 hover:text-red-700 shrink-0 px-2"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="deleteFlyer('${doc.id}')" class="text-red-500 hover:text-red-700 shrink-0 px-2 bg-red-50 dark:bg-red-900/20 rounded-lg py-1.5"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `;
                 }
@@ -986,6 +998,24 @@
             } 
         };
 
+        // UI toggles & functions
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('app-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden'; 
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+                document.body.style.overflow = 'auto';
+            }
+        };
+
         window.toggleTheme = function() {
             const html = document.documentElement; const icon = document.getElementById('theme-icon');
             if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.theme = 'light'; if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } } 
@@ -995,12 +1025,17 @@
 
         window.showToast = function(msg, type='success') {
             const deck = document.getElementById('toast-deck'); const toast = document.createElement('div');
-            toast.className = `p-3 rounded shadow text-white text-sm font-bold flex items-center gap-2 ${type==='success'?'bg-gray-800':'bg-red-600'} transition-opacity duration-300`;
-            toast.innerHTML = `<span>${msg}</span>`; deck.appendChild(toast);
+            toast.className = `px-4 py-3 rounded-2xl shadow-lg text-white text-sm font-medium flex items-center gap-3 ${type==='success'?'bg-gray-900 dark:bg-white dark:text-black':'bg-red-500'} transition-opacity duration-300 mb-2`;
+            toast.innerHTML = `<i class="fa-solid ${type==='success'?'fa-check-circle':'fa-circle-exclamation'}"></i><span>${msg}</span>`; deck.appendChild(toast);
             setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
         window.navigateTo = function(v) {
+            // Mobile auto-close sidebar logic
+            if(window.innerWidth < 1024 && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
+                window.toggleSidebar();
+            }
+
             document.getElementById('section-main-search').classList.add('hidden');
             document.getElementById('section-announcements').classList.add('hidden');
             document.getElementById('section-accommodation').classList.add('hidden');
@@ -1080,8 +1115,8 @@
         window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
         window.closeAuthModal = function() { document.getElementById('auth-gateway-modal').classList.add('hidden'); };
         window.toggleAuthTab = function(tab) {
-            if(tab === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('tab-login-btn').className = "text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1"; document.getElementById('tab-register-btn').className = "text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1"; } 
-            else { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.remove('hidden'); document.getElementById('tab-login-btn').className = "text-gray-500 hover:text-gray-800 dark:hover:text-white px-2 pb-1"; document.getElementById('tab-register-btn').className = "text-navy dark:text-blue-400 font-bold border-b-2 border-navy dark:border-blue-400 px-2 pb-1"; }
+            if(tab === 'login') { document.getElementById('form-login').classList.remove('hidden'); document.getElementById('form-register').classList.add('hidden'); document.getElementById('tab-login-btn').className = "flex-1 bg-white dark:bg-geminiSurface text-gray-800 dark:text-white shadow-sm py-2 rounded-lg transition"; document.getElementById('tab-register-btn').className = "flex-1 text-gray-500 hover:text-gray-800 dark:hover:text-white py-2 rounded-lg transition"; } 
+            else { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-register').classList.remove('hidden'); document.getElementById('tab-login-btn').className = "flex-1 text-gray-500 hover:text-gray-800 dark:hover:text-white py-2 rounded-lg transition"; document.getElementById('tab-register-btn').className = "flex-1 bg-white dark:bg-geminiSurface text-gray-800 dark:text-white shadow-sm py-2 rounded-lg transition"; }
         };
 
         const learningQuotes = ["The beautiful thing about learning is that no one can take it away from you.", "Education is the most powerful weapon which you can use to change the world.", "Strive for progress, not perfection.", "The expert in anything was once a beginner."];
@@ -1103,16 +1138,16 @@
             container.innerHTML = ''; indicators.innerHTML = '';
             window.slideshowData.forEach((slide, index) => {
                 const img = document.createElement('img'); img.src = slide.url; img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; img.id = `slide-img-${index}`; container.appendChild(img);
-                const dot = document.createElement('div'); dot.className = `w-2 h-2 rounded-full transition-colors duration-500 ${index === 0 ? 'bg-white scale-125' : 'bg-white/40'}`; dot.id = `slide-dot-${index}`; indicators.appendChild(dot);
+                const dot = document.createElement('div'); dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-500 ${index === 0 ? 'bg-white w-4' : 'bg-white/40'}`; dot.id = `slide-dot-${index}`; indicators.appendChild(dot);
             });
-            window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 3000); 
+            window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 4000); 
         };
 
         window.advanceSlide = function() {
             if (!window.slideshowData || window.slideshowData.length <= 1) return;
             const prevIndex = window.currentSlideIndex; window.currentSlideIndex = (window.currentSlideIndex + 1) % window.slideshowData.length;
-            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('scale-125');
-            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('scale-125');
+            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('w-4');
+            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
         };
 
         window.handleAddFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Flyer Added Successfully!", "success"); document.getElementById('admin-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add flyer.", "error"); } };
@@ -1120,10 +1155,10 @@
 
         window.renderMaterialsGrid = function(items) {
             const grid = document.getElementById('smart-materials-grid'); document.getElementById('material-count-badge').innerText = items ? items.length : '0'; grid.innerHTML = '';
-            if(!items || items.length === 0) { grid.innerHTML = `<p class="text-gray-500 text-sm italic">Your search did not match any documents in the database.</p>`; return; }
+            if(!items || items.length === 0) { grid.innerHTML = `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-regular fa-folder-open text-4xl mb-3 text-gray-300 dark:text-gray-600"></i><p class="text-gray-500 text-sm font-medium">Your search did not match any documents.</p></div>`; return; }
             
             items.forEach(item => {
-                let deleteBtnHtml = window.isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-4 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Delete</button>` : '';
+                let deleteBtnHtml = window.isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-3 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash"></i></button>` : '';
                 let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-10 h-10 object-contain" alt="File">';
                 const titleLower = (item.title || '').toLowerCase(); const keywordsLower = (item.keywords || '').toLowerCase();
                 
@@ -1133,12 +1168,12 @@
                 else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-10 h-10 object-contain" alt="PPT">'; }
 
                 grid.innerHTML += `
-                    <div class="mb-2 bg-white dark:bg-[#303134] p-4 rounded border border-gray-200 dark:border-gray-700 hover:shadow-md transition flex items-center gap-4">
-                        <div class="flex-shrink-0 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">${iconHtml}</div>
-                        <div class="flex-grow min-w-0">
-                            <h3 class="scholar-title font-bold text-base mb-1 truncate" onclick="openDocument('${item.title}', '${item.driveUrl}')">${item.title}</h3>
-                            <div class="mt-2 flex items-center">
-                                <button onclick="openDocument('${item.title}', '${item.driveUrl}')" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1 rounded text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition">Open File</button>
+                    <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex items-center gap-4 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">
+                        <div class="flex-shrink-0 bg-gray-50 dark:bg-geminiBase p-2 rounded-xl">${iconHtml}</div>
+                        <div class="flex-grow min-w-0 flex flex-col justify-center">
+                            <h3 class="font-medium text-gray-800 dark:text-gray-100 text-sm md:text-base mb-1 truncate">${item.title}</h3>
+                            <div class="flex items-center">
+                                <span class="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider font-medium">View File</span>
                                 ${deleteBtnHtml}
                             </div>
                         </div>
@@ -1154,7 +1189,7 @@
                 window.navigateTo('dashboard'); const grid = document.getElementById('smart-materials-grid');
                 
                 if (query === '') { const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])]; window.renderMaterialsGrid(combinedMaterials); return; }
-                grid.innerHTML = `<p class="text-blue-600 dark:text-blue-400 text-sm font-bold animate-pulse">Deep scanning inside documents for "${query}"...</p>`;
+                grid.innerHTML = `<div class="bg-blue-50 dark:bg-blue-900/10 rounded-3xl p-6 text-center border border-blue-100 dark:border-blue-900/30"><p class="text-blue-600 dark:text-blue-400 text-sm font-medium flex items-center justify-center gap-2 animate-pulse"><i class="fa-solid fa-microchip"></i> Deep scanning inside documents...</p></div>`;
                 
                 try {
                     const response = await fetch('/api/search', { method: 'POST', body: JSON.stringify({ query: query }) }); const data = await response.json();
@@ -1166,7 +1201,7 @@
                             return { id: file.id, title: file.name, subject: 'DEEP MATCH', driveUrl: embedUrl, keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document' };
                         });
                         window.renderMaterialsGrid(formattedResults);
-                    } else { grid.innerHTML = `<p class="text-gray-500 text-sm italic">No documents contain the word "${query}".</p>`; }
+                    } else { grid.innerHTML = `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><p class="text-gray-500 text-sm font-medium">No documents contain the word "${query}".</p></div>`; }
                 } catch (error) {
                     const allAvailableMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
                     const records = allAvailableMaterials.filter(item => (item.title && item.title.toLowerCase().includes(query.toLowerCase())) || (item.keywords && item.keywords.toLowerCase().includes(query.toLowerCase())) || (item.level && item.level.toLowerCase().includes(query.toLowerCase())) || (item.subject && item.subject.toLowerCase().includes(query.toLowerCase())) );
@@ -1179,7 +1214,7 @@
 
         window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
         window.deleteFileFromDatabase = async function(fileId) { if(confirm("Permanently delete?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "materials", fileId)); window.showToast("Deleted", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
-        window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b pb-1 mb-1"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
+        window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-medium truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
         window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate }); window.showToast("Date set!", "success"); } catch(err) {} };
         
         window.handleBroadcastAnnouncement = async function(e) { 
@@ -1206,12 +1241,12 @@
         /* Academic Tools */
         window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
         window.closeGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.add('hidden'); };
-        window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-2"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white uppercase"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-navy">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 text-xs px-1"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
+        window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-3"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs dark:text-white uppercase outline-none focus:ring-2 focus:ring-blue-100"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs text-center dark:text-white font-mono outline-none focus:ring-2 focus:ring-blue-100"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs text-center dark:text-white font-mono outline-none focus:ring-2 focus:ring-blue-100"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/20 py-2 rounded-lg">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 bg-red-50 dark:bg-red-900/20 w-8 h-8 rounded-full flex justify-center items-center"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
         window.recalculateStudentGpaMetrics = function() { try { let p=0, c=0; const rows = document.getElementById('gpa-rows-stack').children; for(let row of rows) { const sv = parseFloat(row.querySelector('.gpa-score-field').value); const cv = parseFloat(row.querySelector('.gpa-credit-field').value); const label = row.querySelector('.gpa-grade-yield'); if(!isNaN(sv) && !isNaN(cv) && cv > 0) { let pt = 0; let grd = "-"; if (sv >= 80) { pt = 5.0; grd = "A+"; } else if (sv >= 70) { pt = 4.5; grd = "A"; } else if (sv >= 65) { pt = 4.0; grd = "B+"; } else if (sv >= 60) { pt = 3.5; grd = "B"; } else if (sv >= 55) { pt = 3.0; grd = "C+"; } else if (sv >= 50) { pt = 2.5; grd = "C"; } else if (sv >= 45) { pt = 2.0; grd = "D+"; } else if (sv >= 40) { pt = 1.5; grd = "D"; } else { pt = 0.0; grd = "F"; } label.innerText = grd; p += (pt * cv); c += cv; } else { label.innerText = "-"; } } const triGpa = c > 0 ? (p / c) : 0; document.getElementById('gpa-output-tri').innerText = triGpa.toFixed(2); const pc = parseFloat(document.getElementById('gpa-past-credits').value) || 0; const pp = parseFloat(document.getElementById('gpa-past-points').value) || 0; const cgpa = (pc + c) > 0 ? ((pp + p) / (pc + c)) : 0; document.getElementById('gpa-output-cgpa').innerText = cgpa.toFixed(2); } catch(e) {} };
         
         window.openResearchModal = function() { document.getElementById('research-toolkit-modal').classList.remove('hidden'); }; window.closeResearchModal = function() { document.getElementById('research-toolkit-modal').classList.add('hidden'); };
         window.anovaCharts = {};
-        window.runAnovaAnalysis = function() { const raw = document.getElementById('anova-raw-data').value.trim(); if(!raw) return; document.getElementById('anova-table-container').innerHTML = `<div class="p-4 bg-gray-50 border rounded text-xs font-mono">Statistical Engine running...</div>`; };
+        window.runAnovaAnalysis = function() { const raw = document.getElementById('anova-raw-data').value.trim(); if(!raw) return; document.getElementById('anova-table-container').innerHTML = `<div class="w-full h-full flex items-center justify-center font-mono text-blue-500 animate-pulse">Statistical Engine running...</div>`; };
 
         // --- ACCOMMODATION FINDER LOGIC ---
         let mapInstance = null, markerInstance = null;
@@ -1286,33 +1321,33 @@
             if(data.length === 0) {
                 box.className = "w-full";
                 box.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-16 text-center text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 w-full col-span-2">
-                        <i class="fa-solid fa-house-circle-xmark text-5xl mb-4 text-gray-400 dark:text-gray-600"></i>
-                        <p class="text-lg font-bold text-gray-700 dark:text-gray-300">No accommodation listings available yet.</p>
-                        <p class="text-sm mt-1">Be the first student to contribute accommodation information to the community.</p>
+                    <div class="flex flex-col items-center justify-center py-20 text-center text-gray-500 bg-gray-50 dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 w-full col-span-2">
+                        <i class="fa-solid fa-house-circle-xmark text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">No accommodation listings found.</p>
+                        <p class="text-xs mt-2 text-gray-400">Be the first student to contribute information.</p>
                     </div>`;
                 return;
             }
 
-            box.className = "grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 w-full";
+            box.className = "grid grid-cols-1 md:grid-cols-2 gap-5 mb-8 w-full px-2";
             box.innerHTML = '';
             
             data.forEach(hostel => {
                 const targetImg = (hostel.imageUrls && hostel.imageUrls.length > 0) ? hostel.imageUrls[0] : hostel.photoUrl;
                 const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
-                const imgStr = targetImg ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-32 object-cover" onerror="this.src=''; this.className='hidden'">` : `<div class="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400"><i class="fa-solid fa-image"></i></div>`;
+                const imgStr = targetImg ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-40 object-cover" onerror="this.src=''; this.className='hidden'">` : `<div class="w-full h-40 bg-gray-100 dark:bg-geminiBase flex items-center justify-center text-gray-400"><i class="fa-solid fa-image text-2xl opacity-50"></i></div>`;
                 
-                const verifStr = hostel.verified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1" title="Community Verified"></i>` : '';
+                const verifStr = hostel.verified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1.5" title="Verified"></i>` : '';
                 
                 box.innerHTML += `
-                    <div class="bg-white dark:bg-[#303134] rounded border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow transition group cursor-pointer" onclick="openHostelDetails('${hostel.id}')">
+                    <div class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group cursor-pointer" onclick="openHostelDetails('${hostel.id}')">
                         ${imgStr}
-                        <div class="p-4">
-                            <h4 class="font-bold text-navy dark:text-blue-400 text-lg truncate">${hostel.name} ${verifStr}</h4>
-                            <p class="text-xs text-gray-500 mb-2 truncate">${hostel.description || 'No description provided'}</p>
-                            <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                                <span class="font-bold text-gray-800 dark:text-gray-200 text-sm">GHS ${hostel.price} / yr</span>
-                                <span class="text-xs text-gray-500"><i class="fa-regular fa-comments mr-1"></i>${hostel.reviews ? hostel.reviews.length : 0} Reviews</span>
+                        <div class="p-5 flex flex-col h-[calc(100%-10rem)]">
+                            <h4 class="font-medium text-gray-800 dark:text-gray-100 text-lg truncate flex items-center">${hostel.name} ${verifStr}</h4>
+                            <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2 leading-relaxed flex-grow">${hostel.description || 'No description provided'}</p>
+                            <div class="flex justify-between items-center pt-3 border-t border-gray-50 dark:border-gray-800/50">
+                                <span class="font-bold text-gray-900 dark:text-white text-sm">GHS ${hostel.price} <span class="text-[10px] text-gray-400 font-normal">/ yr</span></span>
+                                <span class="text-[10px] text-gray-500 uppercase tracking-wider font-medium bg-gray-50 dark:bg-geminiBase px-2 py-1 rounded-lg"><i class="fa-regular fa-comments mr-1"></i>${hostel.reviews ? hostel.reviews.length : 0} Reviews</span>
                             </div>
                         </div>
                     </div>
@@ -1338,10 +1373,10 @@
             const verificationBadge = document.getElementById('view-hostel-verification');
             if(hostel.verified) {
                 verificationBadge.innerText = 'Admin Verified';
-                verificationBadge.className = 'text-xs px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded font-bold border border-green-200 dark:border-green-800';
+                verificationBadge.className = 'text-[10px] px-2.5 py-1 bg-green-500 text-white rounded-lg font-medium uppercase tracking-wider backdrop-blur-md';
             } else {
-                verificationBadge.innerText = 'Unverified Listing';
-                verificationBadge.className = 'text-xs px-2 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded font-bold border border-gray-200 dark:border-gray-700';
+                verificationBadge.innerText = 'Unverified';
+                verificationBadge.className = 'text-[10px] px-2.5 py-1 bg-white/20 text-white rounded-lg font-medium uppercase tracking-wider backdrop-blur-md';
             }
 
             const imgEl = document.getElementById('view-hostel-img');
@@ -1358,11 +1393,11 @@
                 noImgEl.classList.add('hidden');
                 
                 if(targetImages.length > 1) {
-                    let thumbsHtml = `<div id="hostel-gallery-thumbs" class="flex gap-2 absolute top-4 left-4 z-10">`;
+                    let thumbsHtml = `<div id="hostel-gallery-thumbs" class="flex gap-2 absolute top-5 left-6 z-10">`;
                     targetImages.forEach(url => {
                         const optThumb = url.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/');
                         const optFull = url.replace('/upload/', '/upload/f_webp,q_auto/');
-                        thumbsHtml += `<img src="${optThumb}" onclick="window.switchGalleryImage('view-hostel-img', '${optFull}')" class="w-12 h-12 rounded border-2 border-white shadow cursor-pointer hover:opacity-80 transition object-cover">`;
+                        thumbsHtml += `<img src="${optThumb}" onclick="window.switchGalleryImage('view-hostel-img', '${optFull}')" class="w-10 h-10 rounded-lg border-2 border-white/50 shadow cursor-pointer hover:border-white transition object-cover">`;
                     });
                     thumbsHtml += `</div>`;
                     galleryContainer.insertAdjacentHTML('beforeend', thumbsHtml);
@@ -1375,14 +1410,14 @@
             // Reviews
             const reviewsBox = document.getElementById('view-hostel-reviews');
             if(!hostel.reviews || hostel.reviews.length === 0) {
-                reviewsBox.innerHTML = '<p class="text-xs text-gray-500 italic">No reviews yet. Be the first to share your experience.</p>';
+                reviewsBox.innerHTML = '<p class="text-xs text-gray-400 italic bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl text-center">No reviews yet. Be the first to share your experience.</p>';
             } else {
                 reviewsBox.innerHTML = '';
                 hostel.reviews.forEach(r => {
                     reviewsBox.innerHTML += `
-                        <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded text-sm">
-                            <span class="font-bold text-gray-800 dark:text-gray-200 block text-xs mb-1">${r.authorName}</span>
-                            <span class="text-gray-600 dark:text-gray-400">${r.text}</span>
+                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl text-sm">
+                            <span class="font-medium text-gray-800 dark:text-gray-200 block text-xs mb-1">${r.authorName}</span>
+                            <span class="text-gray-600 dark:text-gray-400 leading-relaxed">${r.text}</span>
                         </div>
                     `;
                 });
@@ -1429,7 +1464,7 @@
         window.renderLeaderboard = function() {
             const box = document.getElementById('accommodation-contributors-box');
             if(!window.accommodationsCache || window.accommodationsCache.length === 0) {
-                box.innerHTML = '<p class="text-xs text-gray-500 italic text-center py-4">No contributor activity yet.</p>';
+                box.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-6">No contributor activity yet.</p>';
                 return;
             }
             const counts = {};
@@ -1442,9 +1477,9 @@
             box.innerHTML = '';
             sorted.forEach(([name, count], idx) => {
                 box.innerHTML += `
-                    <div class="flex justify-between items-center border-b dark:border-gray-700 last:border-0 py-2">
-                        <span class="text-sm text-gray-800 dark:text-gray-200"><span class="text-gray-400 font-mono mr-2">${idx+1}.</span> ${name}</span>
-                        <span class="text-xs font-bold text-navy dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">${count} Contributions</span>
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 last:border-0 py-3">
+                        <span class="text-sm text-gray-800 dark:text-gray-200 font-medium flex items-center gap-3"><span class="text-gray-400 font-mono text-xs w-4">${idx+1}.</span> ${name}</span>
+                        <span class="text-[10px] font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg uppercase tracking-wider">${count} Posts</span>
                     </div>
                 `;
             });
@@ -1546,26 +1581,25 @@
             data.sort((a, b) => b.timestamp - a.timestamp);
 
             if(data.length === 0) {
-                box.className = "w-full col-span-2 md:col-span-3 lg:col-span-4";
+                box.className = "w-full col-span-2 lg:col-span-3 xl:col-span-4";
                 box.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-20 text-center text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 w-full">
-                        <i class="fa-solid fa-store-slash text-5xl mb-4 text-gray-400 dark:text-gray-600"></i>
-                        <p class="text-lg font-bold text-gray-700 dark:text-gray-300">No matching listings found.</p>
-                        <p class="text-sm mt-1 max-w-md mx-auto">Be the first to list a product or advertise your services in this category.</p>
-                        <button onclick="openAddMarketplaceModal()" class="mt-4 text-sm font-bold text-blue-600 hover:underline">Create a Listing</button>
+                    <div class="flex flex-col items-center justify-center py-24 text-center text-gray-500 bg-gray-50 dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 w-full">
+                        <i class="fa-solid fa-store-slash text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">No matching listings found.</p>
+                        <p class="text-xs mt-2 max-w-sm mx-auto text-gray-400">Be the first to list a product or advertise your services.</p>
                     </div>`;
                 return;
             }
 
-            box.className = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10 w-full";
+            box.className = "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 w-full px-2";
             box.innerHTML = '';
             
             data.forEach(item => {
                 const targetImg = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl;
                 const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
                 const imgHtml = targetImg 
-                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl"></i></div>` 
-                    : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl mb-1 opacity-50"></i></div>`;
+                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-geminiBase"><i class="fa-solid fa-image text-2xl text-gray-400 opacity-50"></i></div>` 
+                    : `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-geminiBase"><i class="fa-solid fa-image text-2xl text-gray-400 opacity-50"></i></div>`;
                 
                 let typeColor = 'bg-black/60';
                 if(item.type === 'Service') typeColor = 'bg-blue-600/80';
@@ -1575,18 +1609,18 @@
                 const priceText = item.price === 0 ? 'Negotiable' : `GHS ${item.price}`;
 
                 box.innerHTML += `
-                    <div class="bg-white dark:bg-[#303134] rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col group cursor-pointer" onclick="openMarketplaceDetails('${item.id}')">
-                        <div class="h-32 md:h-40 w-full bg-gray-100 dark:bg-gray-800 relative shrink-0">
+                    <div class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group cursor-pointer" onclick="openMarketplaceDetails('${item.id}')">
+                        <div class="h-32 md:h-44 w-full relative shrink-0 overflow-hidden">
                             ${imgHtml}
-                            <span class="absolute top-2 right-2 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded backdrop-blur-sm uppercase font-bold tracking-wider">${item.type}</span>
+                            <span class="absolute top-3 right-3 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded-md backdrop-blur-md uppercase font-medium tracking-wider">${item.type}</span>
                         </div>
-                        <div class="p-3 md:p-4 flex-grow flex flex-col min-w-0">
-                            <h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm mb-1 line-clamp-2 leading-tight">${item.title}</h4>
-                            <p class="text-[10px] md:text-xs text-gray-500 mb-2 truncate">${item.category}</p>
+                        <div class="p-4 flex-grow flex flex-col min-w-0">
+                            <h4 class="font-medium text-gray-800 dark:text-gray-100 text-sm mb-1 line-clamp-2 leading-snug">${item.title}</h4>
+                            <p class="text-[10px] text-gray-400 mb-3 truncate uppercase tracking-wider">${item.category}</p>
                             <div class="mt-auto">
-                                <span class="font-black text-navy dark:text-blue-400 text-base md:text-lg">${priceText}</span>
-                                <div class="flex justify-between items-center mt-2 border-t border-gray-100 dark:border-gray-700 pt-2">
-                                    <span class="text-[10px] text-gray-500 truncate pr-2"><i class="fa-solid fa-store mr-1"></i>${item.sellerName.split(' ')[0]}</span>
+                                <span class="font-bold text-gray-900 dark:text-white text-base">${priceText}</span>
+                                <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
+                                    <span class="text-[10px] text-gray-500 truncate pr-2 font-medium"><i class="fa-solid fa-store mr-1.5 opacity-70"></i>${item.sellerName.split(' ')[0]}</span>
                                     <span class="text-[9px] text-gray-400 whitespace-nowrap">${timeString}</span>
                                 </div>
                             </div>
@@ -1609,7 +1643,7 @@
             document.getElementById('view-mkt-type').innerText = item.type;
             document.getElementById('view-mkt-category').innerText = item.category;
             document.getElementById('view-mkt-seller').innerText = item.sellerName;
-            document.getElementById('view-mkt-location').innerHTML = `<i class="fa-solid fa-location-dot mr-1"></i> ${item.location}`;
+            document.getElementById('view-mkt-location').innerHTML = `<i class="fa-solid fa-location-dot mr-1.5 opacity-70"></i> ${item.location}`;
             document.getElementById('view-mkt-desc').innerText = item.description || 'No description provided.';
             document.getElementById('view-mkt-condition').innerText = item.condition || 'N/A';
             document.getElementById('view-mkt-date').innerText = new Date(item.timestamp).toLocaleDateString();
@@ -1628,11 +1662,11 @@
                 noImgEl.classList.add('hidden');
                 
                 if(targetImages.length > 1) {
-                    let thumbsHtml = `<div id="mkt-gallery-thumbs" class="flex gap-2 absolute bottom-4 left-0 right-0 justify-center z-10 p-2 bg-black/20 backdrop-blur-sm">`;
+                    let thumbsHtml = `<div id="mkt-gallery-thumbs" class="flex gap-2 absolute bottom-5 left-0 right-0 justify-center z-10 p-2">`;
                     targetImages.forEach(url => {
                         const optThumb = url.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/');
                         const optFull = url.replace('/upload/', '/upload/f_webp,q_auto/');
-                        thumbsHtml += `<img src="${optThumb}" onclick="window.switchGalleryImage('view-mkt-img', '${optFull}')" class="w-12 h-12 rounded border-2 border-white shadow cursor-pointer hover:opacity-80 transition object-cover">`;
+                        thumbsHtml += `<img src="${optThumb}" onclick="window.switchGalleryImage('view-mkt-img', '${optFull}')" class="w-12 h-12 rounded-xl border-2 border-white/50 shadow-sm cursor-pointer hover:border-white transition object-cover">`;
                     });
                     thumbsHtml += `</div>`;
                     galleryContainer.insertAdjacentHTML('beforeend', thumbsHtml);
@@ -1659,7 +1693,7 @@
         window.renderMarketplaceLeaderboard = function() {
             const box = document.getElementById('marketplace-contributors-box');
             if(!window.marketplaceCache || window.marketplaceCache.length === 0) {
-                box.innerHTML = '<p class="text-xs text-gray-500 italic text-center py-4">No marketplace activity yet.</p>';
+                box.innerHTML = '<p class="text-xs text-gray-400 italic text-center py-6">No marketplace activity yet.</p>';
                 return;
             }
             
@@ -1676,12 +1710,12 @@
                 if(idx === 0) badgeHtml = '<i class="fa-solid fa-crown text-yellow-500 ml-2" title="Top Seller"></i>';
                 
                 box.innerHTML += `
-                    <div class="flex justify-between items-center border-b dark:border-gray-700 last:border-0 py-2.5">
-                        <span class="text-sm text-gray-800 dark:text-gray-200 flex items-center font-bold">
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 last:border-0 py-3">
+                        <span class="text-sm text-gray-800 dark:text-gray-200 flex items-center font-medium">
                             <span class="text-gray-400 font-mono mr-3 text-xs w-4">${idx+1}.</span> 
                             ${name} ${badgeHtml}
                         </span>
-                        <span class="text-xs font-bold text-navy dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">${count} Listings</span>
+                        <span class="text-[10px] font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg uppercase tracking-wider">${count} Listings</span>
                     </div>
                 `;
             });
@@ -1703,16 +1737,17 @@
             window.accommodationsCache.forEach(item => {
                 const verifyBtnText = item.verified ? 'Unverify' : 'Verify';
                 const verifyColor = item.verified ? 'text-orange-500' : 'text-green-500';
+                const verifyBg = item.verified ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-green-50 dark:bg-green-900/20';
                 
                 container.innerHTML += `
-                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3 mb-3">
                         <div class="flex flex-col min-w-0 pr-2">
-                            <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.name}</span>
-                            <span class="text-[9px] text-gray-500 truncate">By: ${item.contributorName || 'Unknown'} • Reviews: ${item.reviews ? item.reviews.length : 0}</span>
+                            <span class="font-medium truncate text-gray-800 dark:text-gray-200">${item.name}</span>
+                            <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider mt-0.5">By: ${item.contributorName || 'Unknown'} • Reviews: ${item.reviews ? item.reviews.length : 0}</span>
                         </div>
-                        <div class="flex gap-3 shrink-0">
-                            <button onclick="adminToggleHostelVerification('${item.id}', ${item.verified})" class="${verifyColor} hover:underline font-bold"><i class="fa-solid fa-check-double mr-1"></i>${verifyBtnText}</button>
-                            <button onclick="adminDeleteHostel('${item.id}')" class="text-red-500 hover:text-red-700 font-bold"><i class="fa-solid fa-trash mr-1"></i>Delete Data</button>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="adminToggleHostelVerification('${item.id}', ${item.verified})" class="${verifyColor} ${verifyBg} px-2 py-1.5 rounded-lg text-xs font-medium transition">${verifyBtnText}</button>
+                            <button onclick="adminDeleteHostel('${item.id}')" class="text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>`;
             });
@@ -1752,13 +1787,13 @@
 
             window.marketplaceCache.forEach(item => {
                 container.innerHTML += `
-                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3 mb-3">
                         <div class="flex flex-col min-w-0 pr-2">
-                            <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span>
-                            <span class="text-[9px] text-gray-500 truncate">${item.type} | By: ${item.sellerName || 'Unknown'} | GHS ${item.price}</span>
+                            <span class="font-medium truncate text-gray-800 dark:text-gray-200">${item.title}</span>
+                            <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider mt-0.5">${item.type} | By: ${item.sellerName || 'Unknown'} | GHS ${item.price}</span>
                         </div>
-                        <div class="flex gap-3 shrink-0">
-                            <button onclick="adminDeleteMarketplaceItem('${item.id}')" class="text-red-500 hover:text-red-700 font-bold"><i class="fa-solid fa-trash mr-1"></i>Remove</button>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="adminDeleteMarketplaceItem('${item.id}')" class="text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash mr-1"></i>Remove</button>
                         </div>
                     </div>`;
             });
@@ -1790,20 +1825,21 @@
 
             sorted.forEach(item => {
                 const statusColor = item.archived ? 'text-orange-500' : 'text-green-500';
+                const statusBg = item.archived ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-green-50 dark:bg-green-900/20';
                 const statusText = item.archived ? 'Archived' : 'Published';
                 const toggleText = item.archived ? 'Restore' : 'Archive';
                 const views = item.views || 0;
                 
                 container.innerHTML += `
-                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3 mb-3">
                         <div class="flex flex-col min-w-0 pr-2 flex-grow">
-                            <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span>
-                            <span class="text-[9px] text-gray-500 truncate">Status: <span class="${statusColor} font-bold">${statusText}</span> | Views: ${views} | ${new Date(item.timestamp).toLocaleDateString()}</span>
+                            <span class="font-medium truncate text-gray-800 dark:text-gray-200">${item.title}</span>
+                            <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider mt-0.5">Status: <span class="${statusColor} font-bold">${statusText}</span> | Views: ${views}</span>
                         </div>
-                        <div class="flex gap-3 shrink-0">
-                            <button onclick="openEditAnnouncementModal('${item.id}')" class="text-blue-500 hover:underline font-bold"><i class="fa-solid fa-pen mr-1"></i>Edit</button>
-                            <button onclick="adminToggleNoticeArchive('${item.id}', ${item.archived ? true : false})" class="${statusColor} hover:underline font-bold"><i class="fa-solid fa-box-archive mr-1"></i>${toggleText}</button>
-                            <button onclick="adminDeleteNotice('${item.id}')" class="text-red-500 hover:text-red-700 font-bold"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="openEditAnnouncementModal('${item.id}')" class="text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-2 py-1.5 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="adminToggleNoticeArchive('${item.id}', ${item.archived ? true : false})" class="${statusColor} ${statusBg} px-2 py-1.5 rounded-lg text-xs font-medium transition">${toggleText}</button>
+                            <button onclick="adminDeleteNotice('${item.id}')" class="text-red-500 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>`;
             });
@@ -1894,7 +1930,7 @@
                 content: 'Buy products, sell items, advertise your services, or request help from fellow students inside the new Marketplace.',
                 priority: 3,
                 timestamp: 1718000000001, 
-                icon: '<i class="fa-solid fa-store text-blue-500 text-2xl"></i>',
+                icon: '<i class="fa-solid fa-store text-blue-500 text-xl"></i>',
                 action: 'navigateTo("marketplace"); closeSmartNoticeCenter();',
                 actionText: 'Explore Marketplace'
             }
@@ -1941,12 +1977,12 @@
                     const isCritical = titleLower.includes('urgent') || titleLower.includes('critical') || titleLower.includes('exam');
                     updates.push({
                         id: a.id,
-                        type: isCritical ? 'Critical Academic Notice' : 'Campus Notice',
+                        type: isCritical ? 'Critical Notice' : 'Campus Notice',
                         title: a.title,
                         content: a.content,
                         priority: isCritical ? 1 : 2,
                         timestamp: a.timestamp,
-                        icon: isCritical ? '<i class="fa-solid fa-triangle-exclamation text-red-500 text-xl md:text-2xl"></i>' : '<i class="fa-solid fa-bullhorn text-orange-500 text-xl md:text-2xl"></i>',
+                        icon: isCritical ? '<i class="fa-solid fa-triangle-exclamation text-red-500 text-xl"></i>' : '<i class="fa-solid fa-bullhorn text-orange-500 text-xl"></i>',
                         action: 'navigateTo("announcements"); closeSmartNoticeCenter();',
                         actionText: 'Read More'
                     });
@@ -1968,7 +2004,7 @@
                         content: 'New academic materials and past questions have been added to the Cloud Archive.',
                         priority: 4,
                         timestamp: Math.max(...recentMats.map(m => m.timestamp)),
-                        icon: '<i class="fa-solid fa-cloud-arrow-down text-green-500 text-xl md:text-2xl"></i>',
+                        icon: '<i class="fa-solid fa-cloud-arrow-down text-green-500 text-xl"></i>',
                         action: 'navigateTo("dashboard"); closeSmartNoticeCenter();',
                         actionText: 'Browse Archive'
                     });
@@ -1983,12 +2019,12 @@
                 if (recentAccoms.length > 0) {
                     updates.push({
                         id: 'recent_accoms_update',
-                        type: 'General Update',
+                        type: 'Community Update',
                         title: `New Hostels Added`,
                         content: `${recentAccoms.length} new accommodation listings have been submitted by the community.`,
                         priority: 5,
                         timestamp: Math.max(...recentAccoms.map(a => a.timestamp)),
-                        icon: '<i class="fa-solid fa-house-circle-check text-purple-500 text-xl md:text-2xl"></i>',
+                        icon: '<i class="fa-solid fa-house-circle-check text-purple-500 text-xl"></i>',
                         action: 'navigateTo("accommodation"); closeSmartNoticeCenter();',
                         actionText: 'View Hostels'
                     });
@@ -2005,7 +2041,7 @@
                         content: `${recentMkt.length} new products/services have been added to the student marketplace.`,
                         priority: 5,
                         timestamp: Math.max(...recentMkt.map(a => a.timestamp)),
-                        icon: '<i class="fa-solid fa-store text-yellow-600 text-xl md:text-2xl"></i>',
+                        icon: '<i class="fa-solid fa-store text-yellow-600 text-xl"></i>',
                         action: 'navigateTo("marketplace"); closeSmartNoticeCenter();',
                         actionText: 'View Marketplace'
                     });
@@ -2031,15 +2067,12 @@
             });
 
             const countBadge = document.getElementById('smart-notice-count');
-            const badgeBtnText = document.getElementById('smart-notice-text');
             if(countBadge) {
                 if (unreadCount > 0) {
                     countBadge.innerText = unreadCount;
                     countBadge.classList.remove('hidden');
-                    if(badgeBtnText) badgeBtnText.innerText = 'New Updates';
                 } else {
                     countBadge.classList.add('hidden');
-                    if(badgeBtnText) badgeBtnText.innerText = 'Updates';
                 }
             }
 
@@ -2050,8 +2083,8 @@
             if (updates.length === 0) {
                 contentBox.innerHTML = `
                     <div class="flex flex-col items-center justify-center py-10 text-center text-gray-500">
-                        <i class="fa-solid fa-box-open text-4xl mb-3 text-gray-300 dark:text-gray-600"></i>
-                        <p class="text-sm font-bold">No new updates available.</p>
+                        <i class="fa-solid fa-box-open text-3xl mb-3 text-gray-300 dark:text-gray-600"></i>
+                        <p class="text-sm font-medium">No new updates available.</p>
                         <p class="text-xs mt-1">You're all caught up!</p>
                     </div>`;
                 return;
@@ -2059,30 +2092,27 @@
 
             updates.forEach(item => {
                 const isUnread = item.timestamp > lastSeenTs;
-                const newBadge = isUnread ? '<span class="absolute top-3 right-3 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span></span>' : '';
+                const newBadge = isUnread ? '<span class="absolute top-4 right-4 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span></span>' : '';
                 
-                let borderColor = 'border-gray-200 dark:border-gray-700';
                 let tagColor = 'text-gray-600 dark:text-gray-400';
-                let tagIcon = '';
-                
-                if(item.priority === 1) { borderColor = 'border-red-500 dark:border-red-500'; tagColor = 'text-red-600 dark:text-red-400'; }
-                else if(item.priority === 2) { borderColor = 'border-orange-500 dark:border-orange-500'; tagColor = 'text-orange-600 dark:text-orange-400'; }
-                else if(item.priority === 3) { borderColor = 'border-blue-500 dark:border-blue-500'; tagColor = 'text-blue-600 dark:text-blue-400'; tagIcon = '✨ '; }
-                else if(item.priority === 4) { borderColor = 'border-green-500 dark:border-green-500'; tagColor = 'text-green-600 dark:text-green-400'; }
-                else if(item.priority === 5) { borderColor = 'border-purple-500 dark:border-purple-500'; tagColor = 'text-purple-600 dark:text-purple-400'; }
+                if(item.priority === 1) { tagColor = 'text-red-600 dark:text-red-400'; }
+                else if(item.priority === 2) { tagColor = 'text-orange-600 dark:text-orange-400'; }
+                else if(item.priority === 3) { tagColor = 'text-blue-600 dark:text-blue-400'; }
+                else if(item.priority === 4) { tagColor = 'text-green-600 dark:text-green-400'; }
+                else if(item.priority === 5) { tagColor = 'text-purple-600 dark:text-purple-400'; }
 
                 contentBox.innerHTML += `
-                    <div class="bg-white dark:bg-[#303134] rounded-lg p-4 shadow-sm border-l-4 ${borderColor} border-y border-r border-y-gray-100 border-r-gray-100 dark:border-y-gray-700 dark:border-r-gray-700 relative overflow-hidden group hover:shadow-md transition">
+                    <div class="bg-white dark:bg-geminiSurface rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 relative group">
                         ${newBadge}
                         <div class="flex items-start gap-4">
-                            <div class="mt-1 shrink-0 w-8 text-center flex justify-center">
+                            <div class="mt-1 shrink-0 w-8 flex justify-center bg-gray-50 dark:bg-geminiBase p-2 rounded-xl">
                                 ${item.icon}
                             </div>
                             <div class="flex-grow pr-2">
-                                <span class="text-[10px] font-bold uppercase tracking-wider ${tagColor} mb-1 block">${tagIcon}${item.type}</span>
-                                <h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base mb-1">${item.title}</h4>
-                                <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">${item.content}</p>
-                                <button onclick='${item.action}' class="text-[11px] md:text-xs font-bold bg-navy hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded transition shadow-sm w-fit">${item.actionText}</button>
+                                <span class="text-[9px] font-medium uppercase tracking-wider ${tagColor} mb-1 block">${item.type}</span>
+                                <h4 class="font-medium text-gray-800 dark:text-gray-100 text-sm mb-1">${item.title}</h4>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3">${item.content}</p>
+                                <button onclick='${item.action}' class="text-[10px] font-medium bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-white uppercase tracking-wider px-3 py-1.5 rounded-lg transition">${item.actionText}</button>
                             </div>
                         </div>
                     </div>
@@ -2141,7 +2171,7 @@
             }
             container.classList.remove('hidden');
             container.innerHTML = imageArray.map((url, index) => `
-                <div class="relative w-16 h-16 flex-shrink-0 rounded border border-gray-300 overflow-hidden">
+                <div class="relative w-16 h-16 flex-shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
                     <img src="${url.replace('/upload/', '/upload/w_100,f_webp,q_auto/')}" class="w-full h-full object-cover">
                 </div>
             `).join('');
@@ -2152,14 +2182,15 @@
         };
     </script>
 
-<div id="pwa-splash-screen" style="z-index: 99999;" class="fixed inset-0 flex flex-col items-center justify-center bg-[#1B365D] text-white transition-opacity duration-500 ease-out">
+<div id="pwa-splash-screen" style="z-index: 99999;" class="fixed inset-0 flex flex-col items-center justify-center bg-white dark:bg-geminiBase text-gray-800 dark:text-white transition-opacity duration-500 ease-out">
     <div class="text-center animate-pulse flex flex-col items-center">
-        <i class="fa-solid fa-graduation-cap text-6xl mb-4"></i>
-        <h1 class="text-3xl font-normal tracking-tight">UDS <span class="font-bold text-white">Hub</span></h1>
-        <p class="text-sm opacity-75 mt-2">Academic Search & Accommodation</p>
+        <div class="w-20 h-20 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full flex items-center justify-center mb-6">
+            <i class="fa-solid fa-graduation-cap text-4xl"></i>
+        </div>
+        <h1 class="text-3xl font-medium tracking-tight">UDS <span class="font-bold text-navy dark:text-blue-400">Hub</span></h1>
     </div>
-    <div class="absolute bottom-10 text-xs font-medium tracking-wide opacity-90 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-        Powered by Germcy Brain 🧠
+    <div class="absolute bottom-10 text-[10px] font-medium tracking-widest uppercase opacity-50">
+        Powered by Germcy Brain
     </div>
 </div>
 
