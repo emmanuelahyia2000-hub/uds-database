@@ -18,6 +18,8 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 
     <script>
         // Theme logic
@@ -519,10 +521,16 @@
                         <input type="number" id="add-hostel-price" required placeholder="e.g. 2500" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
                     </div>
                 </div>
+                
                 <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Photo URL (Optional)</label>
-                    <input type="url" id="add-hostel-photo" placeholder="Paste an image link (e.g. Imgur)..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Hostel Images (Max 10, 3MB each)</label>
+                    <p class="text-[10px] text-gray-500 mb-1">Upload front view, rooms, and compound. JPG, PNG, WEBP only.</p>
+                    <button type="button" id="btn-upload-hostel-images" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white transition font-bold text-navy flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Hostel Images
+                    </button>
+                    <div id="hostel-upload-preview" class="flex gap-2 mt-3 overflow-x-auto pb-2 hidden"></div>
                 </div>
+
                 <div>
                     <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Amenities & Description</label>
                     <textarea id="add-hostel-desc" rows="2" placeholder="e.g. Water available, near gate 2, single rooms available..." class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400"></textarea>
@@ -659,9 +667,11 @@
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Product/Service Image URL</label>
-                    <p class="text-[10px] text-gray-500 mb-1">Do not upload files. Paste a direct image link from Imgur, Google Drive (Public), or any site.</p>
-                    <input type="url" id="add-mkt-image" placeholder="https://example.com/image.jpg (Optional but Recommended)" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-transparent dark:text-white outline-none focus:border-navy dark:focus:border-blue-400">
+                    <label class="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Product/Service Images (Max 5, 3MB each)</label>
+                    <button type="button" id="btn-upload-mkt-images" class="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white transition font-bold text-navy flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Listing Images
+                    </button>
+                    <div id="mkt-upload-preview" class="flex gap-2 mt-3 overflow-x-auto pb-2 hidden"></div>
                 </div>
 
                 <div>
@@ -670,7 +680,7 @@
                 </div>
             </div>
             <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#303134]">
-                <button onclick="saveMarketplaceListing()" class="w-full bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded text-sm transition shadow">Publish Listing</button>
+                <button onclick="saveMarketplaceListing(event)" class="w-full bg-navy hover:bg-blue-800 text-white font-bold py-3 rounded text-sm transition shadow">Publish Listing</button>
             </div>
         </div>
     </div>
@@ -775,8 +785,8 @@
         window.driveMaterialsCache = []; 
         window.accommodationsCache = [];
         window.announcementsCache = [];
-        window.allAnnouncementsCache = []; // Added to hold archived notices for admins
-        window.marketplaceCache = []; // Marketplace addition
+        window.allAnnouncementsCache = []; 
+        window.marketplaceCache = []; 
 
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
 
@@ -867,7 +877,6 @@
             if(window.compileSmartNotices) window.compileSmartNotices();
         });
 
-        // UPDATED: ANNOUNCEMENTS LISTENER FOR NOTICE MANAGEMENT INTEGRATION
         onSnapshot(collection(db, "announcements"), (snapshot) => {
             const container = document.getElementById('announcements-yield-box'); 
             if(container) container.innerHTML = '';
@@ -948,7 +957,7 @@
     </script>
 
     <script>
-        // PWA Setup with 1-second delay requirement based on user prompt
+        // PWA Setup
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err)); }); }
         let deferredPrompt;
         window.hasInstalledPWA = false;
@@ -956,8 +965,6 @@
         window.addEventListener('beforeinstallprompt', (e) => { 
             e.preventDefault(); 
             deferredPrompt = e; 
-            
-            // Adjusted from 10000ms to 1000ms to notify users immediately on open
             setTimeout(() => {
                 if (deferredPrompt && !window.hasInstalledPWA) {
                     document.getElementById('pwa-install-footer').classList.remove('hidden'); 
@@ -997,7 +1004,7 @@
             document.getElementById('section-main-search').classList.add('hidden');
             document.getElementById('section-announcements').classList.add('hidden');
             document.getElementById('section-accommodation').classList.add('hidden');
-            document.getElementById('section-marketplace').classList.add('hidden'); // Marketplace Add
+            document.getElementById('section-marketplace').classList.add('hidden'); 
             document.getElementById('slideshow-panel').classList.add('hidden');
             
             if(v === 'dashboard') { 
@@ -1009,7 +1016,7 @@
                 document.getElementById('section-accommodation').classList.remove('hidden'); 
                 window.renderAccommodations();
             }
-            else if(v === 'marketplace') { // Marketplace Add
+            else if(v === 'marketplace') { 
                 document.getElementById('section-marketplace').classList.remove('hidden'); 
                 window.renderMarketplace();
             }
@@ -1022,7 +1029,7 @@
                 window.filterAdminFiles(); 
                 window.renderAdminAccommodations(); 
                 if(window.adminRenderMarketplace) window.adminRenderMarketplace(); 
-                if(window.renderAdminNotices) window.renderAdminNotices(); // ADDED NOTICE MGMT RENDERING
+                if(window.renderAdminNotices) window.renderAdminNotices(); 
             }
         };
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
@@ -1175,7 +1182,6 @@
         window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b pb-1 mb-1"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-bold truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
         window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate }); window.showToast("Date set!", "success"); } catch(err) {} };
         
-        // UPDATED: handleBroadcastAnnouncement includes views & archived metadata
         window.handleBroadcastAnnouncement = async function(e) { 
             e.preventDefault(); 
             const title = document.getElementById('ann-title').value; 
@@ -1197,7 +1203,7 @@
         window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
         window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
 
-        /* Academic Tools Unchanged */
+        /* Academic Tools */
         window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
         window.closeGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.add('hidden'); };
         window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-2"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-2 border rounded text-xs dark:bg-transparent dark:border-gray-600 dark:text-white uppercase"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-2 border rounded text-xs text-center dark:bg-transparent dark:border-gray-600 dark:text-white font-mono"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-navy">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 text-xs px-1"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
@@ -1230,14 +1236,19 @@
             document.getElementById('add-hostel-modal').classList.add('hidden');
             document.getElementById('add-hostel-name').value = '';
             document.getElementById('add-hostel-price').value = '';
-            document.getElementById('add-hostel-photo').value = '';
             document.getElementById('add-hostel-desc').value = '';
+            
+            window.uploadedHostelImages = [];
+            const previewContainer = document.getElementById('hostel-upload-preview');
+            if (previewContainer) {
+                previewContainer.innerHTML = '';
+                previewContainer.classList.add('hidden');
+            }
         };
 
         window.saveHostelListing = async function() {
             const name = document.getElementById('add-hostel-name').value.trim();
             const price = document.getElementById('add-hostel-price').value.trim();
-            const photoUrl = document.getElementById('add-hostel-photo').value.trim();
             const desc = document.getElementById('add-hostel-desc').value.trim();
             
             if(!name || !price) { window.showToast("Name and Price are required", "error"); return; }
@@ -1248,7 +1259,7 @@
                 await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "accommodations"), {
                     name: name,
                     price: Number(price),
-                    photoUrl: photoUrl,
+                    imageUrls: window.uploadedHostelImages || [],
                     description: desc,
                     lat: latlng.lat,
                     lng: latlng.lng,
@@ -1287,7 +1298,10 @@
             box.innerHTML = '';
             
             data.forEach(hostel => {
-                const imgStr = hostel.photoUrl ? `<img src="${hostel.photoUrl}" class="w-full h-32 object-cover" onerror="this.src=''; this.className='hidden'">` : `<div class="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400"><i class="fa-solid fa-image"></i></div>`;
+                const targetImg = (hostel.imageUrls && hostel.imageUrls.length > 0) ? hostel.imageUrls[0] : hostel.photoUrl;
+                const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
+                const imgStr = targetImg ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-32 object-cover" onerror="this.src=''; this.className='hidden'">` : `<div class="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400"><i class="fa-solid fa-image"></i></div>`;
+                
                 const verifStr = hostel.verified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1" title="Community Verified"></i>` : '';
                 
                 box.innerHTML += `
@@ -1332,10 +1346,30 @@
 
             const imgEl = document.getElementById('view-hostel-img');
             const noImgEl = document.getElementById('view-hostel-no-img');
-            if(hostel.photoUrl) {
-                imgEl.src = hostel.photoUrl; imgEl.classList.remove('hidden'); noImgEl.classList.add('hidden');
+            const galleryContainer = imgEl.parentElement;
+            const existingThumbs = document.getElementById('hostel-gallery-thumbs');
+            if(existingThumbs) existingThumbs.remove();
+
+            const targetImages = (hostel.imageUrls && hostel.imageUrls.length > 0) ? hostel.imageUrls : (hostel.photoUrl ? [hostel.photoUrl] : []);
+
+            if(targetImages.length > 0) {
+                imgEl.src = targetImages[0].replace('/upload/', '/upload/f_webp,q_auto/'); 
+                imgEl.classList.remove('hidden'); 
+                noImgEl.classList.add('hidden');
+                
+                if(targetImages.length > 1) {
+                    let thumbsHtml = `<div id="hostel-gallery-thumbs" class="flex gap-2 absolute top-4 left-4 z-10">`;
+                    targetImages.forEach(url => {
+                        const optThumb = url.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/');
+                        const optFull = url.replace('/upload/', '/upload/f_webp,q_auto/');
+                        thumbsHtml += `<img src="${optThumb}" onclick="window.switchGalleryImage('view-hostel-img', '${optFull}')" class="w-12 h-12 rounded border-2 border-white shadow cursor-pointer hover:opacity-80 transition object-cover">`;
+                    });
+                    thumbsHtml += `</div>`;
+                    galleryContainer.insertAdjacentHTML('beforeend', thumbsHtml);
+                }
             } else {
-                imgEl.classList.add('hidden'); noImgEl.classList.remove('hidden');
+                imgEl.classList.add('hidden'); 
+                noImgEl.classList.remove('hidden');
             }
 
             // Reviews
@@ -1431,11 +1465,17 @@
             document.getElementById('add-mkt-location').value = '';
             document.getElementById('add-mkt-contact').value = '';
             document.getElementById('add-mkt-whatsapp').value = '';
-            document.getElementById('add-mkt-image').value = '';
             document.getElementById('add-mkt-desc').value = '';
+            
+            window.uploadedMktImages = [];
+            const previewContainer = document.getElementById('mkt-upload-preview');
+            if (previewContainer) {
+                previewContainer.innerHTML = '';
+                previewContainer.classList.add('hidden');
+            }
         };
 
-        window.saveMarketplaceListing = async function() {
+        window.saveMarketplaceListing = async function(event) {
             const title = document.getElementById('add-mkt-title').value.trim();
             const type = document.getElementById('add-mkt-type').value;
             const category = document.getElementById('add-mkt-category').value;
@@ -1444,7 +1484,6 @@
             const location = document.getElementById('add-mkt-location').value.trim();
             const contact = document.getElementById('add-mkt-contact').value.trim();
             const whatsapp = document.getElementById('add-mkt-whatsapp').value.trim();
-            const imageUrl = document.getElementById('add-mkt-image').value.trim();
             const desc = document.getElementById('add-mkt-desc').value.trim();
 
             if(!title || !price || !location || !contact || !whatsapp || !desc) {
@@ -1466,7 +1505,7 @@
                     location: location,
                     contact: contact,
                     whatsapp: whatsapp,
-                    imageUrl: imageUrl,
+                    imageUrls: window.uploadedMktImages || [],
                     description: desc,
                     sellerId: window.currentUserProfile.email,
                     sellerName: window.currentUserProfile.name,
@@ -1522,8 +1561,10 @@
             box.innerHTML = '';
             
             data.forEach(item => {
-                const imgHtml = item.imageUrl 
-                    ? `<img src="${item.imageUrl}" class="w-full h-full object-cover" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl"></i></div>` 
+                const targetImg = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl;
+                const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
+                const imgHtml = targetImg 
+                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl"></i></div>` 
                     : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-solid fa-image text-3xl mb-1 opacity-50"></i></div>`;
                 
                 let typeColor = 'bg-black/60';
@@ -1575,11 +1616,30 @@
 
             const imgEl = document.getElementById('view-mkt-img');
             const noImgEl = document.getElementById('view-mkt-no-img');
-            if(item.imageUrl) {
-                imgEl.src = item.imageUrl; imgEl.classList.remove('hidden'); noImgEl.classList.add('hidden');
-                imgEl.onerror = () => { imgEl.classList.add('hidden'); noImgEl.classList.remove('hidden'); };
+            const galleryContainer = imgEl.parentElement;
+            const existingThumbs = document.getElementById('mkt-gallery-thumbs');
+            if(existingThumbs) existingThumbs.remove();
+
+            const targetImages = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls : (item.imageUrl ? [item.imageUrl] : []);
+
+            if(targetImages.length > 0) {
+                imgEl.src = targetImages[0].replace('/upload/', '/upload/f_webp,q_auto/'); 
+                imgEl.classList.remove('hidden'); 
+                noImgEl.classList.add('hidden');
+                
+                if(targetImages.length > 1) {
+                    let thumbsHtml = `<div id="mkt-gallery-thumbs" class="flex gap-2 absolute bottom-4 left-0 right-0 justify-center z-10 p-2 bg-black/20 backdrop-blur-sm">`;
+                    targetImages.forEach(url => {
+                        const optThumb = url.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/');
+                        const optFull = url.replace('/upload/', '/upload/f_webp,q_auto/');
+                        thumbsHtml += `<img src="${optThumb}" onclick="window.switchGalleryImage('view-mkt-img', '${optFull}')" class="w-12 h-12 rounded border-2 border-white shadow cursor-pointer hover:opacity-80 transition object-cover">`;
+                    });
+                    thumbsHtml += `</div>`;
+                    galleryContainer.insertAdjacentHTML('beforeend', thumbsHtml);
+                }
             } else {
-                imgEl.classList.add('hidden'); noImgEl.classList.remove('hidden');
+                imgEl.classList.add('hidden'); 
+                noImgEl.classList.remove('hidden');
             }
 
             // Clean WhatsApp number
@@ -1713,8 +1773,6 @@
                 } catch(e) { window.showToast("Admin action failed.", "error"); }
             }
         };
-
-        // --- NEW: NOTICE MANAGEMENT ADMIN LOGIC ---
         
         window.renderAdminNotices = function() {
             if(!window.isAdmin) return;
@@ -2030,6 +2088,67 @@
                     </div>
                 `;
             });
+        };
+
+        // --- CLOUDINARY CENTRALIZED SYSTEM ---
+        window.uploadedHostelImages = [];
+        window.uploadedMktImages = [];
+
+        const cloudinaryConfig = {
+            cloudName: "YOUR_CLOUD_NAME", 
+            uploadPreset: "YOUR_UPLOAD_PRESET", 
+            maxFileSize: 3000000, 
+            clientAllowedFormats: ["jpg", "jpeg", "png", "webp"], 
+            sources: ["local", "camera"],
+            multiple: true
+        };
+
+        if(document.getElementById('btn-upload-hostel-images')) {
+            const hostelWidget = cloudinary.createUploadWidget({
+                ...cloudinaryConfig,
+                maxFiles: 10,
+                folder: "uds-hub/accommodation"
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    window.uploadedHostelImages.push(result.info.secure_url);
+                    renderUploadPreviews('hostel-upload-preview', window.uploadedHostelImages);
+                } else if (error) {
+                    window.showToast("Image upload failed or exceeded limits.", "error");
+                }
+            });
+            document.getElementById('btn-upload-hostel-images').addEventListener("click", () => hostelWidget.open(), false);
+        }
+
+        if(document.getElementById('btn-upload-mkt-images')) {
+            const mktWidget = cloudinary.createUploadWidget({
+                ...cloudinaryConfig,
+                maxFiles: 5,
+                folder: "uds-hub/marketplace"
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    window.uploadedMktImages.push(result.info.secure_url);
+                    renderUploadPreviews('mkt-upload-preview', window.uploadedMktImages);
+                }
+            });
+            document.getElementById('btn-upload-mkt-images').addEventListener("click", () => mktWidget.open(), false);
+        }
+
+        function renderUploadPreviews(containerId, imageArray) {
+            const container = document.getElementById(containerId);
+            if(imageArray.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+            container.classList.remove('hidden');
+            container.innerHTML = imageArray.map((url, index) => `
+                <div class="relative w-16 h-16 flex-shrink-0 rounded border border-gray-300 overflow-hidden">
+                    <img src="${url.replace('/upload/', '/upload/w_100,f_webp,q_auto/')}" class="w-full h-full object-cover">
+                </div>
+            `).join('');
+        }
+
+        window.switchGalleryImage = function(imgElementId, newUrl) {
+            document.getElementById(imgElementId).src = newUrl;
         };
     </script>
 </body>
