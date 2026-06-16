@@ -2149,6 +2149,15 @@
 
         window.switchGalleryImage = function(imgElementId, newUrl) {
             document.getElementById(imgElementId).src = newUrl;
+            <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("UDS Hub PWA Ready"))
+      .catch(err => console.error(err));
+  });
+}
+</script>
         };
     </script>
 </body>
