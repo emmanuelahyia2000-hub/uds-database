@@ -2149,16 +2149,96 @@
 
         window.switchGalleryImage = function(imgElementId, newUrl) {
             document.getElementById(imgElementId).src = newUrl;
-            <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("UDS Hub PWA Ready"))
-      .catch(err => console.error(err));
-  });
-}
-</script>
         };
     </script>
+
+<div id="pwa-splash-screen" style="z-index: 99999;" class="fixed inset-0 flex flex-col items-center justify-center bg-[#1B365D] text-white transition-opacity duration-500 ease-out">
+    <div class="text-center animate-pulse flex flex-col items-center">
+        <i class="fa-solid fa-graduation-cap text-6xl mb-4"></i>
+        <h1 class="text-3xl font-normal tracking-tight">UDS <span class="font-bold text-white">Hub</span></h1>
+        <p class="text-sm opacity-75 mt-2">Academic Search & Accommodation</p>
+    </div>
+    <div class="absolute bottom-10 text-xs font-medium tracking-wide opacity-90 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+        Powered by Germcy Brain 🧠
+    </div>
+</div>
+
+<script>
+    // 1. Fast loading, hardware-accelerated splash screen dismiss configuration
+    document.addEventListener("DOMContentLoaded", () => {
+        const splashScreen = document.getElementById('pwa-splash-screen');
+        if (splashScreen) {
+            setTimeout(() => {
+                splashScreen.classList.add('opacity-0');
+                setTimeout(() => {
+                    splashScreen.remove();
+                }, 500);
+            }, 800); // Fast transition delay ensures no application launch drag
+        }
+    });
+
+    // 2. Safe registration of the standalone service worker instance
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => console.log('UDS Hub SW registered.'))
+                .catch(error => console.error('UDS Hub SW registration failed:', error));
+        });
+    }
+
+    // 3. Intelligent Install Prompt Logic matching existing '#pwa-install-footer' 
+    let udsHubDeferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (event) => {
+        // Intercept native banner prompt
+        event.preventDefault();
+        udsHubDeferredPrompt = event;
+
+        // Verify dismissal cooldown constraint (re-prompt after 24 hours check)
+        const lastPwaDismissTimestamp = localStorage.getItem('pwa_prompt_dismissed_time');
+        const currentTimestamp = Date.now();
+        const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 Hours in Milliseconds
+
+        if (!lastPwaDismissTimestamp || (currentTimestamp - parseInt(lastPwaDismissTimestamp)) > cooldownPeriod) {
+            const installFooterContainer = document.getElementById('pwa-install-footer');
+            if (installFooterContainer) {
+                installFooterContainer.classList.remove('hidden');
+                // Support horizontal flex alignment if it is visible
+                if (!installFooterContainer.classList.contains('flex')) {
+                    installFooterContainer.classList.add('flex');
+                }
+            }
+        }
+    });
+
+    // 4. Connects seamlessly with your existing template's installPWA() click binding
+    window.installPWA = function() {
+        const installFooterContainer = document.getElementById('pwa-install-footer');
+        if (!udsHubDeferredPrompt) return;
+        
+        if (installFooterContainer) {
+            installFooterContainer.classList.add('hidden');
+            installFooterContainer.classList.remove('flex');
+        }
+        
+        udsHubDeferredPrompt.prompt();
+        udsHubDeferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User installed UDS Hub App.');
+            } else {
+                console.log('User rejected install prompt.');
+                localStorage.setItem('pwa_prompt_dismissed_time', Date.now().toString());
+            }
+            udsHubDeferredPrompt = null;
+        });
+    };
+
+    // 5. Intercept dismissal tracking hook if user manually presses the built-in "Later" option
+    document.addEventListener('click', (event) => {
+        if (event.target && event.target.getAttribute('onclick') === "document.getElementById('pwa-install-footer').classList.add('hidden')") {
+            localStorage.setItem('pwa_prompt_dismissed_time', Date.now().toString());
+        }
+    });
+</script>
 </body>
 </html>
