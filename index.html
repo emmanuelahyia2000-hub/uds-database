@@ -3342,9 +3342,16 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         const pwaBanner = document.getElementById('persistent-pwa-banner');
         const pwaInstallBtn = document.getElementById('persistent-install-btn');
 
-        // 1. Show the banner ONLY when Chrome confirms installation is possible.
-        // This natively solves the "isInstalled" check, as this event won't fire if already installed.
-        window.addEventListener('beforeinstallprompt', () => {
+       // Define the variable to hold the event
+        let udsHubDeferredPrompt;
+
+        // 1. Capture the event for Chromium browsers (Android, Chrome, Edge)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the default mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later. THIS WAS MISSING.
+            udsHubDeferredPrompt = e;
+            
             pwaBanner.classList.remove('hidden');
             requestAnimationFrame(() => {
                 setTimeout(() => {
@@ -3353,9 +3360,10 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             });
         });
 
-        // 2. Handle the Install Button Click safely without false alerts.
+        // 2. Handle the Install Button Click safely for all devices
         pwaInstallBtn.addEventListener('click', async () => {
-            if (typeof udsHubDeferredPrompt !== 'undefined' && udsHubDeferredPrompt) {
+            if (udsHubDeferredPrompt) {
+                // Show the native install prompt for Edge/Chrome/Android
                 udsHubDeferredPrompt.prompt();
                 const { outcome } = await udsHubDeferredPrompt.userChoice;
                 
@@ -3363,6 +3371,11 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     pwaBanner.classList.add('translate-y-full');
                     setTimeout(() => pwaBanner.classList.add('hidden'), 500);
                 }
+                // Clear the prompt variable as it can only be used once
+                udsHubDeferredPrompt = null;
+            } else {
+                // Fallback instructions for iOS Safari users
+                alert("To install UDS Hub on iOS: Tap the 'Share' icon at the bottom of your screen, then tap 'Add to Home Screen'.");
             }
         });
 
@@ -3370,6 +3383,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         window.addEventListener('appinstalled', () => {
             pwaBanner.classList.add('translate-y-full');
             setTimeout(() => pwaBanner.classList.add('hidden'), 500);
+            udsHubDeferredPrompt = null;
         });
     </script>
     <!-- ========================================== -->
