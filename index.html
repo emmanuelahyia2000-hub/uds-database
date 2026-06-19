@@ -3371,10 +3371,10 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                         pwaBanner.classList.add('translate-y-full');
                         setTimeout(() => pwaBanner.classList.add('hidden'), 500);
                     }
-                } else if (typeof window.installPWA === 'function') {
-                    // Fallback to your global function if udsHubDeferredPrompt isn't directly accessible
+               } else if (typeof window.installPWA === 'function' && udsHubDeferredPrompt) {
                     window.installPWA();
                 } else {
+                    alert("Chrome is blocking the install. \n\n1. Ensure you are not using the file:/// protocol.\n2. Ensure your Service Worker is active in DevTools.\n3. The app might already be installed.");
                     console.warn("Installation prompt is not ready. Please try again or use the browser menu.");
                 }
             });
