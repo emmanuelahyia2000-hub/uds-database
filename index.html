@@ -3338,52 +3338,38 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const pwaBanner = document.getElementById('persistent-pwa-banner');
-            const pwaInstallBtn = document.getElementById('persistent-install-btn');
+   <script>
+        const pwaBanner = document.getElementById('persistent-pwa-banner');
+        const pwaInstallBtn = document.getElementById('persistent-install-btn');
 
-            // 1. Check if the app is already running natively
-            const isInstalled = () => {
-                return window.matchMedia('(display-mode: standalone)').matches || 
-                       window.navigator.standalone === true || 
-                       document.referrer.includes('android-app://');
-            };
+        // 1. Show the banner ONLY when Chrome confirms installation is possible.
+        // This natively solves the "isInstalled" check, as this event won't fire if already installed.
+        window.addEventListener('beforeinstallprompt', () => {
+            pwaBanner.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    pwaBanner.classList.remove('translate-y-full');
+                }, 100);
+            });
+        });
 
-            // 2. Show the banner if NOT installed
-            if (!isInstalled()) {
-                pwaBanner.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        pwaBanner.classList.remove('translate-y-full');
-                    }, 100);
-                });
-            }
-
-            // 3. Handle the Install Button Click natively reusing udsHubDeferredPrompt
-            pwaInstallBtn.addEventListener('click', async () => {
-                // Assuming udsHubDeferredPrompt is declared globally in your existing scripts
-                if (typeof udsHubDeferredPrompt !== 'undefined' && udsHubDeferredPrompt) {
-                    udsHubDeferredPrompt.prompt();
-                    const { outcome } = await udsHubDeferredPrompt.userChoice;
-                    
-                    if (outcome === 'accepted') {
-                        pwaBanner.classList.add('translate-y-full');
-                        setTimeout(() => pwaBanner.classList.add('hidden'), 500);
-                    }
-               } else if (typeof window.installPWA === 'function' && udsHubDeferredPrompt) {
-                    window.installPWA();
-                } else {
-                    alert("Chrome is blocking the install. \n\n1. Ensure you are not using the file:/// protocol.\n2. Ensure your Service Worker is active in DevTools.\n3. The app might already be installed.");
-                    console.warn("Installation prompt is not ready. Please try again or use the browser menu.");
+        // 2. Handle the Install Button Click safely without false alerts.
+        pwaInstallBtn.addEventListener('click', async () => {
+            if (typeof udsHubDeferredPrompt !== 'undefined' && udsHubDeferredPrompt) {
+                udsHubDeferredPrompt.prompt();
+                const { outcome } = await udsHubDeferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    pwaBanner.classList.add('translate-y-full');
+                    setTimeout(() => pwaBanner.classList.add('hidden'), 500);
                 }
-            });
+            }
+        });
 
-            // 4. Catch the native successful installation event to hide the banner instantly
-            window.addEventListener('appinstalled', () => {
-                pwaBanner.classList.add('translate-y-full');
-                setTimeout(() => pwaBanner.classList.add('hidden'), 500);
-            });
+        // 3. Catch the native successful installation event to hide the banner instantly.
+        window.addEventListener('appinstalled', () => {
+            pwaBanner.classList.add('translate-y-full');
+            setTimeout(() => pwaBanner.classList.add('hidden'), 500);
         });
     </script>
     <!-- ========================================== -->
