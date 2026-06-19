@@ -361,10 +361,10 @@
     </main>
 
     <div id="pwa-install-footer" class="hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-geminiSurface border-t border-gray-200 dark:border-gray-800 p-4 z-50 flex items-center justify-between shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)] transition-transform">
-        <span id="pwa-install-text" class="text-sm font-medium text-gray-800 dark:text-white">Install UDS Hub App for a better experience</span>
+        <span class="text-sm font-medium text-gray-800 dark:text-white">Install UDS Hub App for a better experience</span>
         <div class="flex gap-2">
             <button onclick="document.getElementById('pwa-install-footer').classList.add('hidden')" class="px-4 py-2 rounded-full text-sm text-gray-500 hover:bg-gray-100 dark:hover:bg-geminiBase transition">Later</button>
-            <button id="pwa-install-btn" onclick="installPWA()" class="px-5 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:opacity-90 transition">Install</button>
+            <button onclick="installPWA()" class="px-5 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:opacity-90 transition">Install</button>
         </div>
     </div>
 
@@ -543,9 +543,9 @@
                 </div>
             </div>
 
-            <div class="flex-grow flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+            <div class="flex-grow flex overflow-hidden">
                 
-                <div id="anova-data-panel" class="w-full md:w-80 bg-gray-50 dark:bg-geminiBase border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800 p-5 flex flex-col shrink-0 md:overflow-y-auto transition-all h-auto md:h-full">
+                <div id="anova-data-panel" class="w-80 bg-gray-50 dark:bg-geminiBase border-r border-gray-200 dark:border-gray-800 p-5 flex flex-col shrink-0 overflow-y-auto transition-all">
                     <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Analysis Type</label>
                     <select id="anova-test-type" class="w-full p-3 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none dark:text-white cursor-pointer mb-4">
                         <option value="oneway">One-Way ANOVA</option>
@@ -560,14 +560,14 @@
                         <button onclick="loadSampleData()" class="text-[10px] text-blue-500 hover:underline">Load Sample</button>
                     </div>
                     <p class="text-[10px] text-gray-400 mb-2">Format: GroupName, Val1, Val2, Val3... (One group per line)</p>
-                    <textarea id="anova-raw-data" rows="8" class="w-full p-3 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-xl font-mono text-xs outline-none dark:text-white resize-none flex-grow mb-4 whitespace-pre" placeholder="Control, 12, 14, 15, 13&#10;TreatmentA, 18, 20, 19, 21&#10;TreatmentB, 22, 24, 25, 23"></textarea>
+                    <textarea id="anova-raw-data" rows="12" class="w-full p-3 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-xl font-mono text-xs outline-none dark:text-white resize-none flex-grow mb-4 whitespace-pre" placeholder="Control, 12, 14, 15, 13&#10;TreatmentA, 18, 20, 19, 21&#10;TreatmentB, 22, 24, 25, 23"></textarea>
                     
                     <button onclick="executeAdvancedAnova()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl transition shadow-md flex justify-center items-center gap-2">
                         <i class="fa-solid fa-calculator"></i> Calculate
                     </button>
                 </div>
 
-                <div id="anova-views-container" class="flex-grow relative md:overflow-y-auto bg-white dark:bg-geminiSurface p-6 h-auto md:h-full">
+                <div id="anova-views-container" class="flex-grow relative overflow-y-auto bg-white dark:bg-geminiSurface p-6">
                     
                     <div id="view-quick" class="anova-view block max-w-4xl mx-auto space-y-6">
                         <h2 class="text-2xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">Quick Results</h2>
@@ -712,12 +712,31 @@
                     <div id="view-hostel-map" class="w-full h-48 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-geminiBase z-10"></div>
                 </div>
 
-                <div class="pt-2">
-                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Community Reviews</h4>
-                    <div id="view-hostel-reviews" class="space-y-3 mb-5"></div>
-                    <div class="flex gap-2 bg-gray-50 dark:bg-geminiBase p-2 rounded-2xl border border-gray-100 dark:border-gray-800">
-                        <input type="text" id="add-review-text" placeholder="Write a quick review..." class="flex-grow px-3 py-2 bg-transparent text-sm outline-none dark:text-white">
-                        <button onclick="submitHostelReview()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-xl text-sm font-medium transition hover:opacity-90">Post</button>
+               <div class="pt-2">
+                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex justify-between items-center">
+                        <span>Community Reviews</span>
+                        <div id="view-hostel-stars-display" class="text-yellow-400 text-sm tracking-widest flex items-center"></div>
+                    </h4>
+                    
+                    <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl mb-4 w-full h-40 hidden" id="hostel-chart-container">
+                        <canvas id="hostel-rating-chart"></canvas>
+                    </div>
+
+                    <div id="view-hostel-reviews" class="space-y-3 mb-5 max-h-48 overflow-y-auto pr-2"></div>
+
+                    <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center gap-1 mb-3 text-gray-300 text-xl" id="hostel-interactive-star-selector">
+                            <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(1)"></i>
+                            <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(2)"></i>
+                            <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(3)"></i>
+                            <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(4)"></i>
+                            <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(5)"></i>
+                            <span class="text-xs text-gray-500 ml-3 font-medium" id="selected-hostel-star-text">Tap a star to rate</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="add-review-text" placeholder="Write a public review..." class="flex-grow px-3 py-2 bg-white dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white">
+                            <button onclick="window.submitHostelReview()" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-xl text-sm font-medium transition hover:opacity-90">Post</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -822,7 +841,26 @@
                             <span id="view-mkt-category" class="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-wider">Category</span>
                         </div>
                         <h2 id="view-mkt-title" class="text-2xl font-medium text-gray-900 dark:text-gray-100 leading-tight mb-3">Loading...</h2>
-                        <div class="text-3xl font-black text-gray-900 dark:text-blue-300" id="view-mkt-price">GHS --</div>
+                     <div class="text-3xl font-black text-gray-900 dark:text-blue-300" id="view-mkt-price">GHS --</div>
+                        
+                        <div class="flex items-center gap-2 mt-2">
+                            <div id="view-mkt-stars-display" class="text-yellow-400 text-sm tracking-widest">
+                                <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium" id="view-mkt-total-ratings">(0 Ratings)</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <button id="btn-mkt-like" onclick="toggleMarketplaceLike()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 transition text-sm font-medium">
+                                <i class="fa-regular fa-thumbs-up" id="icon-mkt-like"></i> <span id="view-mkt-likes-count">0</span>
+                            </button>
+                            <button id="btn-mkt-dislike" onclick="toggleMarketplaceDislike()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-600 transition text-sm font-medium">
+                                <i class="fa-regular fa-thumbs-down" id="icon-mkt-dislike"></i> <span id="view-mkt-dislikes-count">0</span>
+                            </button>
+                            <div class="flex items-center gap-1.5 ml-auto text-gray-400 text-sm">
+                                <i class="fa-regular fa-eye"></i> <span id="view-mkt-views-count">0</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-4 flex items-center gap-4 border border-transparent dark:border-gray-800">
@@ -844,8 +882,34 @@
                     <div>
                         <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Details</h4>
                         <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-4 text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                            <div class="flex justify-between border-b border-gray-200 dark:border-gray-800 pb-2"><span class="font-medium">Condition:</span> <span id="view-mkt-condition" class="text-gray-800 dark:text-gray-100">--</span></div>
+                           <div class="flex justify-between border-b border-gray-200 dark:border-gray-800 pb-2"><span class="font-medium">Condition:</span> <span id="view-mkt-condition" class="text-gray-800 dark:text-gray-100">--</span></div>
                             <div class="flex justify-between pt-1"><span class="font-medium">Posted:</span> <span id="view-mkt-date" class="text-gray-800 dark:text-gray-100">--</span></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider">Ratings & Public Comments</h4>
+                        
+                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl mb-4 w-full h-40 hidden" id="mkt-chart-container">
+                            <canvas id="mkt-rating-chart"></canvas>
+                        </div>
+
+                        <div id="view-mkt-comments-feed" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2">
+                            </div>
+
+                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-1 mb-3 text-gray-300 text-xl" id="interactive-star-selector">
+                                <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(1)"></i>
+                                <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(2)"></i>
+                                <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(3)"></i>
+                                <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(4)"></i>
+                                <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(5)"></i>
+                                <span class="text-xs text-gray-500 ml-3 font-medium" id="selected-star-text">Tap a star to rate</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" id="add-mkt-comment-text" placeholder="Write a public comment..." class="flex-grow px-3 py-2 bg-white dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white">
+                                <button onclick="window.submitMarketplaceReview()" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-xl text-sm font-medium transition hover:opacity-90">Post</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -885,7 +949,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+       import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDXS37SUTMwr_8zaTsgW4PApzqWqrCbYvY", authDomain: "uds-data-base.firebaseapp.com", projectId: "uds-data-base", storageBucket: "uds-data-base.firebasestorage.app", messagingSenderId: "511461186280", appId: "1:511461186280:web:6e55e4030440dfc5cc475d", measurementId: "G-W7KYCT8F3K" };
@@ -893,7 +957,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc; window.firebaseUpdateDoc = updateDoc; window.firebaseArrayUnion = arrayUnion;
+       window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc; window.firebaseUpdateDoc = updateDoc; window.firebaseArrayUnion = arrayUnion; window.firebaseArrayRemove = arrayRemove;
 
         let currentUserProfile = null; 
         let globalMaterialsCache = [];
@@ -920,9 +984,16 @@
                 
                 window.showRandomQuote();
 
-                // Show Smart Notice Badge & Automatically verify versions
+              // Show Smart Notice Badge & Automatically verify versions
                 document.getElementById('smart-notice-badge-container').classList.remove('hidden');
                 if(window.checkFeatureVersionUpdates) setTimeout(window.checkFeatureVersionUpdates, 1500);
+
+                // Setup Personal Notifications Listener
+                if(window.personalNotifUnsubscribe) window.personalNotifUnsubscribe();
+                window.personalNotifUnsubscribe = onSnapshot(doc(db, "user_notifications", currentUserProfile.email), (docSnap) => {
+                    window.personalNotifications = docSnap.exists() ? (docSnap.data().alerts || []) : [];
+                    if(window.compileSmartNotices) window.compileSmartNotices();
+                });
 
                 // MASTER ADMINISTRATOR PROTECTION
                 if(currentUserProfile.email === "emmanuelahyia2000@gmail.com") { 
@@ -1072,6 +1143,35 @@
     </script>
 
     <script>
+        // PWA Setup
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err)); }); }
+        let deferredPrompt;
+        window.hasInstalledPWA = false;
+        
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+            setTimeout(() => {
+                if (deferredPrompt && !window.hasInstalledPWA) {
+                    document.getElementById('pwa-install-footer').classList.remove('hidden'); 
+                }
+            }, 1000); 
+        });
+        
+        window.installPWA = async () => { 
+            if (deferredPrompt) { 
+                deferredPrompt.prompt(); 
+                const { outcome } = await deferredPrompt.userChoice; 
+                if (outcome === 'accepted') {
+                    window.hasInstalledPWA = true;
+                    document.getElementById('pwa-install-footer').classList.add('hidden'); 
+                }
+                deferredPrompt = null; 
+            } else { 
+                alert("App is already installed or browser blocked automatic install."); 
+            } 
+        };
+
         // UI toggles & functions
         window.toggleSidebar = function() {
             const sidebar = document.getElementById('app-sidebar');
@@ -1163,15 +1263,20 @@
             else if (titleLower.includes('.doc') || titleLower.includes('.docx')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-8 h-8 object-contain">'; }
             iconEl.innerHTML = iconHtml;
 
-            let finalUrl = url;
+           let finalUrl = url;
             const fileIdMatch = url.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
 
-            if (fileIdMatch && fileIdMatch[1]) {
+            // If it is an embedded folder, preserve the URL completely
+            if (finalUrl.includes('embeddedfolderview')) {
+                // Do nothing, folder URL is already perfectly formatted
+            } 
+            // For all files with a valid Drive ID, use the universal Drive previewer
+            else if (fileIdMatch && fileIdMatch[1]) {
                 const fileId = fileIdMatch[1];
-                if (titleLower.includes('.ppt') || titleLower.includes('.pptx')) { finalUrl = `https://docs.google.com/presentation/d/${fileId}/embed?start=false&loop=false&delayms=3000`; } 
-                else if (titleLower.includes('.doc') || titleLower.includes('.docx')) { finalUrl = `https://docs.google.com/document/d/${fileId}/preview`; }
-                else { finalUrl = url.includes('/view') ? url.replace('/view', '/preview') : url; }
-            } else {
+                finalUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+            } 
+            // Fallback for standard links
+            else {
                 if (finalUrl.includes('/view')) finalUrl = finalUrl.replace('/view', '/preview');
             }
 
@@ -1777,7 +1882,20 @@
             box.className = "grid grid-cols-1 md:grid-cols-2 gap-5 mb-8 w-full px-2";
             box.innerHTML = '';
             
-            data.forEach(hostel => {
+          data.forEach(hostel => {
+                // Calculate Star Ratings for the preview card
+                let totalStars = 0;
+                let validRatingsCount = 0;
+                if (hostel.reviews) {
+                    hostel.reviews.forEach(r => {
+                        if (r.rating > 0) { totalStars += r.rating; validRatingsCount++; }
+                    });
+                }
+                const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
+                const starHtml = validRatingsCount > 0 
+                    ? `<i class="fa-solid fa-star text-yellow-400 mr-1"></i>${avgRating} (${validRatingsCount})` 
+                    : `<i class="fa-regular fa-star text-gray-400 mr-1"></i>New`;
+
                 const targetImg = (hostel.imageUrls && hostel.imageUrls.length > 0) ? hostel.imageUrls[0] : hostel.photoUrl;
                 const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
                 const imgStr = targetImg ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-40 object-cover" onerror="this.src=''; this.className='hidden'">` : `<div class="w-full h-40 bg-gray-100 dark:bg-geminiBase flex items-center justify-center text-gray-400"><i class="fa-solid fa-image text-2xl opacity-50"></i></div>`;
@@ -1792,7 +1910,9 @@
                             <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2 leading-relaxed flex-grow">${hostel.description || 'No description provided'}</p>
                             <div class="flex justify-between items-center pt-3 border-t border-gray-50 dark:border-gray-800/50">
                                 <span class="font-bold text-gray-900 dark:text-white text-sm">GHS ${hostel.price} <span class="text-[10px] text-gray-400 font-normal">/ yr</span></span>
-                                <span class="text-[10px] text-gray-500 uppercase tracking-wider font-medium bg-gray-50 dark:bg-geminiBase px-2 py-1 rounded-lg"><i class="fa-regular fa-comments mr-1"></i>${hostel.reviews ? hostel.reviews.length : 0} Reviews</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] text-gray-600 dark:text-gray-300 font-medium">${starHtml}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1852,20 +1972,107 @@
                 noImgEl.classList.remove('hidden');
             }
 
-            // Reviews
+          // Reviews, Ratings & Chart Processing
+            const reviewsArr = hostel.reviews || [];
+            let totalStars = 0;
+            let validRatingsCount = 0;
+            const ratingCounts = {5:0, 4:0, 3:0, 2:0, 1:0};
+            const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
+            let currentUserHasRated = false;
+            
             const reviewsBox = document.getElementById('view-hostel-reviews');
-            if(!hostel.reviews || hostel.reviews.length === 0) {
-                reviewsBox.innerHTML = '<p class="text-xs text-gray-400 italic bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl text-center">No reviews yet. Be the first to share your experience.</p>';
-            } else {
-                reviewsBox.innerHTML = '';
-                hostel.reviews.forEach(r => {
+            if(reviewsBox) reviewsBox.innerHTML = '';
+
+            reviewsArr.sort((a,b) => b.timestamp - a.timestamp).forEach(r => {
+                if(r.rating > 0) {
+                    totalStars += r.rating;
+                    validRatingsCount++;
+                    ratingCounts[r.rating]++;
+                }
+                if(userEmail && r.authorId === userEmail && r.rating > 0) currentUserHasRated = true;
+
+               if(r.text && reviewsBox) {
+                    let starIcons = '';
+                    if(r.rating > 0) { starIcons = `<span class="text-yellow-400 text-[10px] ml-2"><i class="fa-solid fa-star"></i> ${r.rating}</span>`; }
+                    
+                    const helpfulCount = r.helpfulVotes ? r.helpfulVotes.length : 0;
+                    const isHelpful = userEmail && r.helpfulVotes && r.helpfulVotes.includes(userEmail) ? 'text-blue-500 font-bold bg-blue-50 dark:bg-blue-900/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300';
+
                     reviewsBox.innerHTML += `
-                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl text-sm">
-                            <span class="font-medium text-gray-800 dark:text-gray-200 block text-xs mb-1">${r.authorName}</span>
-                            <span class="text-gray-600 dark:text-gray-400 leading-relaxed">${r.text}</span>
+                        <div class="bg-white dark:bg-[#1A1A1C] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                            <span class="font-medium text-gray-800 dark:text-gray-200 text-xs block mb-1"><i class="fa-regular fa-user mr-1 opacity-50"></i>${r.authorName} ${starIcons}</span>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm whitespace-pre-wrap block mb-2">${r.text}</span>
+                            <button onclick="window.toggleHelpfulVote('accommodations', '${hostel.id}', ${r.timestamp})" class="text-[10px] px-2 py-1 rounded-lg transition ${isHelpful}"><i class="fa-solid fa-thumbs-up mr-1"></i> Helpful (${helpfulCount})</button>
                         </div>
                     `;
-                });
+                }
+            });
+
+            if(reviewsBox && (reviewsArr.length === 0 || !reviewsArr.some(r => r.text))) {
+                reviewsBox.innerHTML = '<p class="text-xs text-gray-400 italic bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl text-center">No reviews yet. Be the first to share your experience.</p>';
+            }
+
+            // Update Header Average Stars
+            const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
+            const headerStarsDisplay = document.getElementById('view-hostel-stars-display');
+            if(headerStarsDisplay) {
+                headerStarsDisplay.innerHTML = '';
+                for(let i=1; i<=5; i++) {
+                    if(i <= Math.round(avgRating)) headerStarsDisplay.innerHTML += `<i class="fa-solid fa-star"></i>`;
+                    else headerStarsDisplay.innerHTML += `<i class="fa-regular fa-star text-gray-300 dark:text-gray-600"></i>`;
+                }
+                if(avgRating > 0) headerStarsDisplay.innerHTML += `<span class="text-gray-800 dark:text-gray-100 font-bold ml-2 text-base">${avgRating}</span> <span class="text-gray-400 text-xs ml-1 font-normal">(${validRatingsCount})</span>`;
+            }
+
+            // Lock star selector if user already rated
+            const starSelectorBox = document.getElementById('hostel-interactive-star-selector');
+            if(starSelectorBox) {
+                if(currentUserHasRated) {
+                    starSelectorBox.innerHTML = `<span class="text-xs text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800"><i class="fa-solid fa-check-circle mr-1"></i> You have already rated this hostel</span>`;
+                    window.currentTempHostelRating = 0; 
+                } else {
+                    starSelectorBox.innerHTML = `
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(1)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(2)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(3)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(4)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempHostelRating(5)"></i>
+                        <span class="text-xs text-gray-500 ml-3 font-medium" id="selected-hostel-star-text">Tap to rate</span>
+                    `;
+                }
+            }
+
+            // Draw the Play Store Style Chart
+            const chartContainer = document.getElementById('hostel-chart-container');
+            if(chartContainer) {
+                if(validRatingsCount > 0) {
+                    chartContainer.classList.remove('hidden');
+                    const ctx = document.getElementById('hostel-rating-chart').getContext('2d');
+                    if(window.hostelChartInstance) window.hostelChartInstance.destroy();
+                    
+                    window.hostelChartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['5', '4', '3', '2', '1'],
+                            datasets: [{
+                                data: [ratingCounts[5], ratingCounts[4], ratingCounts[3], ratingCounts[2], ratingCounts[1]],
+                                backgroundColor: ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'],
+                                borderRadius: 4, barThickness: 10
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                            scales: {
+                                x: { display: false, max: validRatingsCount },
+                                y: { grid: { display: false }, border: { display: false }, ticks: { font: { family: "'Inter', sans-serif", weight: 'bold' } } }
+                            }
+                        }
+                    });
+                } else {
+                    chartContainer.classList.add('hidden');
+                }
             }
 
             document.getElementById('view-hostel-modal').classList.remove('hidden');
@@ -1886,24 +2093,70 @@
             window.selectedHostelId = null;
         };
 
-        window.submitHostelReview = async function() {
-            if(!window.currentUserProfile) { window.showToast("Sign in to review", "error"); return; }
-            const text = document.getElementById('add-review-text').value.trim();
-            if(!text || !window.selectedHostelId) return;
+       window.currentTempHostelRating = 0;
+        window.hostelChartInstance = null;
 
+        window.setTempHostelRating = function(num) {
+            window.currentTempHostelRating = num;
+            const container = document.getElementById('hostel-interactive-star-selector');
+            if(!container) return;
+            const stars = container.querySelectorAll('.fa-star');
+            stars.forEach((star, idx) => {
+                if(idx < num) {
+                    star.classList.remove('fa-regular', 'text-gray-300');
+                    star.classList.add('fa-solid', 'text-yellow-400');
+                } else {
+                    star.classList.remove('fa-solid', 'text-yellow-400');
+                    star.classList.add('fa-regular', 'text-gray-300');
+                }
+            });
+            document.getElementById('selected-hostel-star-text').innerText = num + (num === 1 ? " Star" : " Stars");
+        };
+
+        window.submitHostelReview = async function() {
+            if(!window.currentUserProfile) { window.showToast("Sign in to post a review", "error"); return; }
+            const id = window.selectedHostelId;
+            if(!id) return;
+
+            const commentInput = document.getElementById('add-review-text');
+            const commentText = commentInput ? commentInput.value.trim() : "";
+            const rating = window.currentTempHostelRating;
+
+            if(rating === 0 && commentText === "") {
+                window.showToast("Please select a star rating or write a comment.", "error"); return;
+            }
+
+            const hostel = window.accommodationsCache.find(h => h.id === id);
+            const reviewsArr = hostel.reviews || [];
+            const userEmail = window.currentUserProfile.email;
+
+            // Check if they already rated
+            const hasRated = reviewsArr.some(r => r.authorId === userEmail && r.rating > 0);
+            if(hasRated && rating > 0) {
+                window.showToast("You have already rated this hostel.", "error");
+                return;
+            }
+
+            const docRef = window.firebaseDoc(window.firebaseDb, "accommodations", id);
+            
             try {
-                const docRef = window.firebaseDoc(window.firebaseDb, "accommodations", window.selectedHostelId);
                 await window.firebaseUpdateDoc(docRef, {
                     reviews: window.firebaseArrayUnion({
-                        authorId: window.currentUserProfile.email,
+                        authorId: userEmail,
                         authorName: window.currentUserProfile.name,
-                        text: text,
+                        rating: rating,
+                        text: commentText,
                         timestamp: new Date().getTime()
                     })
                 });
-                document.getElementById('add-review-text').value = '';
-                window.showToast("Review Added", "success");
-            } catch(e) { window.showToast("Failed to post review", "error"); }
+                
+                if(commentInput) commentInput.value = '';
+                window.currentTempHostelRating = 0;
+                window.showToast("Review posted successfully!", "success");
+                
+                // Refresh the modal instantly to show the new chart and comment
+                setTimeout(() => window.openHostelDetails(id), 300);
+            } catch(e) { window.showToast("Failed to post. Check connection.", "error"); }
         };
 
         window.renderLeaderboard = function() {
@@ -1988,9 +2241,12 @@
                     imageUrls: window.uploadedMktImages || [],
                     description: desc,
                     sellerId: window.currentUserProfile.email,
-                    sellerName: window.currentUserProfile.name,
+                  sellerName: window.currentUserProfile.name,
                     timestamp: new Date().getTime(),
-                    views: 0
+                    views: 0,
+                    likes: [],
+                    dislikes: [],
+                    viewedBy: []
                 });
                 
                 window.showToast("Listing Published Successfully!", "success");
@@ -2064,9 +2320,12 @@
                             <p class="text-[10px] text-gray-400 mb-3 truncate uppercase tracking-wider">${item.category}</p>
                             <div class="mt-auto">
                                 <span class="font-bold text-gray-900 dark:text-white text-base">${priceText}</span>
-                                <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
+                               <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
                                     <span class="text-[10px] text-gray-500 truncate pr-2 font-medium"><i class="fa-solid fa-store mr-1.5 opacity-70"></i>${item.sellerName.split(' ')[0]}</span>
-                                    <span class="text-[9px] text-gray-400 whitespace-nowrap">${timeString}</span>
+                                    <div class="flex items-center gap-2 text-[10px] text-gray-400 font-medium">
+                                        <span><i class="fa-solid fa-thumbs-up opacity-70 mr-0.5"></i> ${item.likes ? item.likes.length : 0}</span>
+                                        <span><i class="fa-solid fa-eye opacity-70 mr-0.5"></i> ${item.viewedBy ? item.viewedBy.length : (item.views || 0)}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2090,8 +2349,147 @@
             document.getElementById('view-mkt-seller').innerText = item.sellerName;
             document.getElementById('view-mkt-location').innerHTML = `<i class="fa-solid fa-location-dot mr-1.5 opacity-70"></i> ${item.location}`;
             document.getElementById('view-mkt-desc').innerText = item.description || 'No description provided.';
-            document.getElementById('view-mkt-condition').innerText = item.condition || 'N/A';
+           document.getElementById('view-mkt-condition').innerText = item.condition || 'N/A';
             document.getElementById('view-mkt-date').innerText = new Date(item.timestamp).toLocaleDateString();
+
+            // NEW: View count, Likes, Dislikes connection
+            window.currentMarketplaceItemId = id; 
+            const likesArr = item.likes || [];
+            const dislikesArr = item.dislikes || [];
+            const viewedByArr = item.viewedBy || [];
+            
+            document.getElementById('view-mkt-likes-count').innerText = likesArr.length;
+            document.getElementById('view-mkt-dislikes-count').innerText = dislikesArr.length;
+            document.getElementById('view-mkt-views-count').innerText = viewedByArr.length > 0 ? viewedByArr.length : (item.views || 0);
+
+            const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
+            const likeIcon = document.getElementById('icon-mkt-like');
+            const dislikeIcon = document.getElementById('icon-mkt-dislike');
+
+            if (userEmail && likesArr.includes(userEmail)) {
+                likeIcon.classList.replace('fa-regular', 'fa-solid');
+                likeIcon.classList.add('text-blue-600');
+            } else {
+                likeIcon.classList.replace('fa-solid', 'fa-regular');
+                likeIcon.classList.remove('text-blue-600');
+            }
+
+            if (userEmail && dislikesArr.includes(userEmail)) {
+                dislikeIcon.classList.replace('fa-regular', 'fa-solid');
+                dislikeIcon.classList.add('text-red-600');
+            } else {
+                dislikeIcon.classList.replace('fa-solid', 'fa-regular');
+                dislikeIcon.classList.remove('text-red-600');
+            }
+
+          if (userEmail) { window.recordMarketplaceView(id, userEmail, viewedByArr); }
+
+            // --- NEW RATING, CHART, AND REVIEWS PROCESSING ---
+            const reviewsArr = item.reviews || [];
+            let totalStars = 0;
+            let validRatingsCount = 0;
+            const ratingCounts = {5:0, 4:0, 3:0, 2:0, 1:0};
+            
+            const commentsFeed = document.getElementById('view-mkt-comments-feed');
+            if(commentsFeed) commentsFeed.innerHTML = '';
+            
+            let currentUserHasRated = false;
+
+            // 1. Calculate Ratings & Print Comments
+            reviewsArr.sort((a,b) => b.timestamp - a.timestamp).forEach(rev => {
+                if(rev.rating > 0) {
+                    totalStars += rev.rating;
+                    validRatingsCount++;
+                    ratingCounts[rev.rating]++;
+                }
+                if(userEmail && rev.userId === userEmail && rev.rating > 0) currentUserHasRated = true;
+
+               if(rev.comment && commentsFeed) {
+                    let starIcons = '';
+                    if(rev.rating > 0) { starIcons = `<span class="text-yellow-400 text-[10px] ml-2"><i class="fa-solid fa-star"></i> ${rev.rating}</span>`; }
+                    
+                    const helpfulCount = rev.helpfulVotes ? rev.helpfulVotes.length : 0;
+                    const isHelpful = userEmail && rev.helpfulVotes && rev.helpfulVotes.includes(userEmail) ? 'text-blue-500 font-bold bg-blue-50 dark:bg-blue-900/20' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300';
+
+                    commentsFeed.innerHTML += `
+                        <div class="bg-white dark:bg-[#1A1A1C] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                            <span class="font-medium text-gray-800 dark:text-gray-200 text-xs block mb-1"><i class="fa-regular fa-user mr-1 opacity-50"></i>${rev.userName} ${starIcons}</span>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm whitespace-pre-wrap block mb-2">${rev.comment}</span>
+                            <button onclick="window.toggleHelpfulVote('marketplace', '${item.id}', ${rev.timestamp})" class="text-[10px] px-2 py-1 rounded-lg transition ${isHelpful}"><i class="fa-solid fa-thumbs-up mr-1"></i> Helpful (${helpfulCount})</button>
+                        </div>
+                    `;
+                }
+            });
+
+            if(commentsFeed && (reviewsArr.length === 0 || !reviewsArr.some(r => r.comment))) {
+                commentsFeed.innerHTML = `<p class="text-xs text-gray-400 italic text-center p-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">No comments yet. Be the first to share your thoughts!</p>`;
+            }
+
+            // 2. Update Header Average Stars
+            const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
+            const headerStarsDisplay = document.getElementById('view-mkt-stars-display');
+            const totalRatingsDisplay = document.getElementById('view-mkt-total-ratings');
+            if(totalRatingsDisplay) totalRatingsDisplay.innerText = `(${validRatingsCount} Ratings)`;
+            
+            if(headerStarsDisplay) {
+                headerStarsDisplay.innerHTML = '';
+                for(let i=1; i<=5; i++) {
+                    if(i <= Math.round(avgRating)) headerStarsDisplay.innerHTML += `<i class="fa-solid fa-star"></i>`;
+                    else headerStarsDisplay.innerHTML += `<i class="fa-regular fa-star text-gray-300 dark:text-gray-600"></i>`;
+                }
+                if(avgRating > 0) headerStarsDisplay.innerHTML += `<span class="text-gray-800 dark:text-white font-bold ml-2">${avgRating}</span>`;
+            }
+
+            // 3. Lock star selector if user already rated
+            const starSelectorBox = document.getElementById('interactive-star-selector');
+            if(starSelectorBox) {
+                if(currentUserHasRated) {
+                    starSelectorBox.innerHTML = `<span class="text-xs text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800"><i class="fa-solid fa-check-circle mr-1"></i> You have already rated this product</span>`;
+                    window.currentTempRating = 0; 
+                } else {
+                    starSelectorBox.innerHTML = `
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(1)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(2)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(3)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(4)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(5)"></i>
+                        <span class="text-xs text-gray-500 ml-3 font-medium" id="selected-star-text">Tap to rate</span>
+                    `;
+                }
+            }
+
+            // 4. Draw the Play Store Style Chart!
+            const chartContainer = document.getElementById('mkt-chart-container');
+            if(chartContainer) {
+                if(validRatingsCount > 0) {
+                    chartContainer.classList.remove('hidden');
+                    const ctx = document.getElementById('mkt-rating-chart').getContext('2d');
+                    if(window.mktChartInstance) window.mktChartInstance.destroy();
+                    
+                    window.mktChartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['5', '4', '3', '2', '1'],
+                            datasets: [{
+                                data: [ratingCounts[5], ratingCounts[4], ratingCounts[3], ratingCounts[2], ratingCounts[1]],
+                                backgroundColor: ['#22c55e', '#84cc16', '#eab308', '#f97316', '#ef4444'], // Green to Red
+                                borderRadius: 4, barThickness: 10
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y', // This turns it sideways like the Play Store
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                            scales: {
+                                x: { display: false, max: validRatingsCount },
+                                y: { grid: { display: false }, border: { display: false }, ticks: { font: { family: "'Inter', sans-serif", weight: 'bold' } } }
+                            }
+                        }
+                    });
+                } else {
+                    chartContainer.classList.add('hidden');
+                }
+            }
 
             const imgEl = document.getElementById('view-mkt-img');
             const noImgEl = document.getElementById('view-mkt-no-img');
@@ -2165,7 +2563,209 @@
                 `;
             });
         };
+window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
+            if (!viewedByArr.includes(userEmail)) {
+                try {
+                    await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "marketplace", id), {
+                        viewedBy: window.firebaseArrayUnion(userEmail),
+                        views: (viewedByArr.length || 0) + 1 
+                    });
+                } catch(e) { console.log("View count error", e); }
+            }
+        };
 
+        window.toggleMarketplaceLike = async function() {
+            if(!window.currentUserProfile) { window.showToast("Sign in to like this item", "error"); return; }
+            const id = window.currentMarketplaceItemId;
+            if(!id) return;
+            
+            const item = window.marketplaceCache.find(i => i.id === id);
+            const userEmail = window.currentUserProfile.email;
+            const likesArr = item.likes || [];
+            
+            const docRef = window.firebaseDoc(window.firebaseDb, "marketplace", id);
+            
+          try {
+                if (likesArr.includes(userEmail)) {
+                    await window.firebaseUpdateDoc(docRef, { likes: window.firebaseArrayRemove(userEmail) });
+                } else {
+                    await window.firebaseUpdateDoc(docRef, { 
+                        likes: window.firebaseArrayUnion(userEmail),
+                        dislikes: window.firebaseArrayRemove(userEmail) 
+                    });
+                }
+                // NEW: Refresh the popup instantly so the user sees their like!
+                setTimeout(() => window.openMarketplaceDetails(id), 300);
+            } catch(e) { window.showToast("Network error.", "error"); }
+        };
+
+        window.toggleMarketplaceDislike = async function() {
+            if(!window.currentUserProfile) { window.showToast("Sign in to dislike this item", "error"); return; }
+            const id = window.currentMarketplaceItemId;
+            if(!id) return;
+            
+            const item = window.marketplaceCache.find(i => i.id === id);
+            const userEmail = window.currentUserProfile.email;
+            const dislikesArr = item.dislikes || [];
+            
+            const docRef = window.firebaseDoc(window.firebaseDb, "marketplace", id);
+            
+          try {
+                if (dislikesArr.includes(userEmail)) {
+                    await window.firebaseUpdateDoc(docRef, { dislikes: window.firebaseArrayRemove(userEmail) });
+                } else {
+                    await window.firebaseUpdateDoc(docRef, { 
+                        dislikes: window.firebaseArrayUnion(userEmail),
+                        likes: window.firebaseArrayRemove(userEmail) 
+                    });
+                }
+                // NEW: Refresh the popup instantly so the user sees their dislike!
+                setTimeout(() => window.openMarketplaceDetails(id), 300);
+            } catch(e) { window.showToast("Network error.", "error"); }
+        };
+
+        window.currentTempRating = 0;
+        window.mktChartInstance = null;
+
+        window.setTempMktRating = function(num) {
+            window.currentTempRating = num;
+            const container = document.getElementById('interactive-star-selector');
+            if(!container) return;
+            const stars = container.querySelectorAll('.fa-star');
+            stars.forEach((star, idx) => {
+                if(idx < num) {
+                    star.classList.remove('fa-regular', 'text-gray-300');
+                    star.classList.add('fa-solid', 'text-yellow-400');
+                } else {
+                    star.classList.remove('fa-solid', 'text-yellow-400');
+                    star.classList.add('fa-regular', 'text-gray-300');
+                }
+            });
+            document.getElementById('selected-star-text').innerText = num + (num === 1 ? " Star" : " Stars");
+        };
+
+        window.submitMarketplaceReview = async function() {
+            if(!window.currentUserProfile) { window.showToast("Sign in to post a review", "error"); return; }
+            const id = window.currentMarketplaceItemId;
+            if(!id) return;
+
+            const commentInput = document.getElementById('add-mkt-comment-text');
+            const commentText = commentInput ? commentInput.value.trim() : "";
+            const rating = window.currentTempRating;
+
+            if(rating === 0 && commentText === "") {
+                window.showToast("Please select a star rating or write a comment.", "error"); return;
+            }
+
+            const item = window.marketplaceCache.find(i => i.id === id);
+            const reviewsArr = item.reviews || [];
+            const userEmail = window.currentUserProfile.email;
+
+            const hasRated = reviewsArr.some(r => r.userId === userEmail && r.rating > 0);
+            if(hasRated && rating > 0) {
+                window.showToast("You have already rated this item.", "error");
+                return;
+            }
+
+            const docRef = window.firebaseDoc(window.firebaseDb, "marketplace", id);
+            
+            try {
+                // We use ArrayUnion to securely add the review to the product in the database
+                await window.firebaseUpdateDoc(docRef, { 
+                    reviews: window.firebaseArrayUnion({
+                        userId: userEmail,
+                        userName: window.currentUserProfile.name,
+                        rating: rating,
+                        comment: commentText,
+                        timestamp: new Date().getTime()
+                    })
+                });
+                
+                if(commentInput) commentInput.value = '';
+                window.currentTempRating = 0;
+                window.showToast("Review posted successfully!", "success");
+                
+                // Refresh the modal instantly to show the new chart and comment
+                setTimeout(() => window.openMarketplaceDetails(id), 300);
+            } catch(e) { window.showToast("Failed to post. Check connection.", "error"); }
+        };
+
+// --- NOTIFICATION & HELPFUL VOTE ENGINE ---
+        window.sendOwnerNotification = async function(ownerEmail, listingName, actionType, actorName) {
+            if(!ownerEmail || ownerEmail === window.currentUserProfile.email) return; // Don't notify self
+            const docRef = window.firebaseDoc(window.firebaseDb, "user_notifications", ownerEmail);
+            try {
+                await window.firebaseUpdateDoc(docRef, {
+                    alerts: window.firebaseArrayUnion({
+                        id: 'notif_' + Date.now(),
+                        listingName, actionType, actorName,
+                        timestamp: Date.now()
+                    })
+                });
+            } catch(e) {
+                await window.firebaseSetDoc(docRef, {
+                    alerts: [{
+                        id: 'notif_' + Date.now(),
+                        listingName, actionType, actorName,
+                        timestamp: Date.now()
+                    }]
+                });
+            }
+        };
+
+        window.toggleHelpfulVote = async function(collectionName, listingId, reviewTimestamp) {
+            if(!window.currentUserProfile) { window.showToast("Sign in to vote", "error"); return; }
+            
+            const cache = collectionName === 'accommodations' ? window.accommodationsCache : window.marketplaceCache;
+            const listing = cache.find(i => i.id === listingId);
+            if(!listing) return;
+
+            const reviewsArr = listing.reviews || [];
+            const reviewIndex = reviewsArr.findIndex(r => r.timestamp === reviewTimestamp);
+            if(reviewIndex === -1) return;
+
+            const review = reviewsArr[reviewIndex];
+            const helpfulVotes = review.helpfulVotes || [];
+            const userEmail = window.currentUserProfile.email;
+            const hasVoted = helpfulVotes.includes(userEmail);
+
+            if(hasVoted) {
+                helpfulVotes.splice(helpfulVotes.indexOf(userEmail), 1);
+            } else {
+                helpfulVotes.push(userEmail);
+                // Notify the author of the comment that someone found it helpful
+                const commentAuthorId = review.authorId || review.userId;
+                window.sendOwnerNotification(commentAuthorId, listing.title || listing.name, 'helpful', window.currentUserProfile.name);
+            }
+
+            reviewsArr[reviewIndex].helpfulVotes = helpfulVotes;
+            const docRef = window.firebaseDoc(window.firebaseDb, collectionName, listingId);
+            
+            try {
+                await window.firebaseUpdateDoc(docRef, { reviews: reviewsArr });
+                if(collectionName === 'accommodations') window.openHostelDetails(listingId);
+                if(collectionName === 'marketplace') window.openMarketplaceDetails(listingId);
+            } catch(e) { window.showToast("Failed to register vote", "error"); }
+        }
+
+        // Hook up comments to notifications (overriding original submit functions to add notification trigger)
+        const originalSubmitHostelReview = window.submitHostelReview;
+        window.submitHostelReview = async function() {
+            await originalSubmitHostelReview();
+            const hostel = window.accommodationsCache.find(h => h.id === window.selectedHostelId);
+            if(hostel && window.currentUserProfile) {
+                window.sendOwnerNotification(hostel.contributorId, hostel.name, 'comment', window.currentUserProfile.name);
+            }
+        };
+
+        const originalSubmitMktReview = window.submitMarketplaceReview;
+        window.submitMarketplaceReview = async function() {
+            await originalSubmitMktReview();
+            const item = window.marketplaceCache.find(i => i.id === window.currentMarketplaceItemId);
+            if(item && window.currentUserProfile) {
+                window.sendOwnerNotification(item.sellerId, item.title, 'comment', window.currentUserProfile.name);
+            }
+        };
 
         // --- ADMIN MASTER CONTROL LOGIC ---
         window.renderAdminAccommodations = function() {
@@ -2400,20 +3000,51 @@
             }
         };
 
-        window.markAllUpdatesRead = function() {
+       window.markAllUpdatesRead = async function() {
             if (window.currentUserProfile) {
                 const tsKey = `uds_updates_seen_${window.currentUserProfile.email}`;
                 localStorage.setItem(tsKey, Date.now().toString());
                 
                 const verKey = `uds_lastSeenVersion_${window.currentUserProfile.email}`;
                 localStorage.setItem(verKey, window.currentUpdateVersion.toString());
+
+                // Clear personal notifications from the database
+                if(window.personalNotifications && window.personalNotifications.length > 0) {
+                    try {
+                        const docRef = window.firebaseDoc(window.firebaseDb, "user_notifications", window.currentUserProfile.email);
+                        await window.firebaseUpdateDoc(docRef, { alerts: [] });
+                    } catch(e) {}
+                }
             }
             window.closeSmartNoticeCenter();
             window.compileSmartNotices();
         };
 
-        window.compileSmartNotices = function() {
+       window.compileSmartNotices = function() {
             let updates = [];
+
+            // 0. Personal Owner Notifications (Priority 0 - Highest)
+            if (window.personalNotifications && window.personalNotifications.length > 0) {
+                window.personalNotifications.forEach(n => {
+                    let actionText = "interacted with";
+                    let iconHtml = '<i class="fa-solid fa-bell text-blue-500 text-xl"></i>';
+                    
+                    if(n.actionType === 'comment') { actionText = "commented on"; iconHtml = '<i class="fa-regular fa-comment text-blue-500 text-xl"></i>'; }
+                    if(n.actionType === 'helpful') { actionText = "found your comment helpful on"; iconHtml = '<i class="fa-solid fa-thumbs-up text-green-500 text-xl"></i>'; }
+                    
+                    updates.push({
+                        id: n.id,
+                        type: 'Personal Alert',
+                        title: `${n.actorName} ${actionText} your listing.`,
+                        content: `Listing: ${n.listingName}`,
+                        priority: 0,
+                        timestamp: n.timestamp,
+                        icon: iconHtml,
+                        action: 'closeSmartNoticeCenter();',
+                        actionText: 'Acknowledge'
+                    });
+                });
+            }
             
             // 1. Announcements (Priority 1 & 2) - Uses the updated window.announcementsCache (published only)
             if (window.announcementsCache) {
@@ -2662,50 +3293,18 @@
         });
     }
 
-    // MODIFIED: 3. Intelligent Install Prompt Logic for BOTH iOS and Android
+    // 3. Intelligent Install Prompt Logic matching existing '#pwa-install-footer' 
     let udsHubDeferredPrompt;
     
-    // iOS Detection Helper
-    const isIos = () => {
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        return /iphone|ipad|ipod/.test(userAgent);
-    };
-    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-
-    // Prompt iOS Users Manually (Since Apple doesn't support automatic PWA install events)
-    window.addEventListener('load', () => {
-        const lastPwaDismissTimestamp = localStorage.getItem('pwa_prompt_dismissed_time');
-        const currentTimestamp = Date.now();
-        const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 Hours in Milliseconds
-
-        if (isIos() && !isInStandaloneMode()) {
-            if (!lastPwaDismissTimestamp || (currentTimestamp - parseInt(lastPwaDismissTimestamp)) > cooldownPeriod) {
-                const installFooterContainer = document.getElementById('pwa-install-footer');
-                if (installFooterContainer) {
-                    const textEl = document.getElementById('pwa-install-text');
-                    const installBtn = document.getElementById('pwa-install-btn');
-                    
-                    if(textEl) textEl.innerHTML = "Install UDS Hub: Tap <i class='fa-solid fa-arrow-up-from-bracket mx-1'></i> Share, then <b>Add to Home Screen</b>";
-                    if(installBtn) installBtn.classList.add('hidden'); // iOS users install via Share menu natively
-                    
-                    installFooterContainer.classList.remove('hidden');
-                    if (!installFooterContainer.classList.contains('flex')) {
-                        installFooterContainer.classList.add('flex');
-                    }
-                }
-            }
-        }
-    });
-    
-    // Prompt Android / Desktop Users Automatically
     window.addEventListener('beforeinstallprompt', (event) => {
+        // Intercept native banner prompt
         event.preventDefault();
         udsHubDeferredPrompt = event;
 
-        // Verify dismissal cooldown constraint
+        // Verify dismissal cooldown constraint (re-prompt after 24 hours check)
         const lastPwaDismissTimestamp = localStorage.getItem('pwa_prompt_dismissed_time');
         const currentTimestamp = Date.now();
-        const cooldownPeriod = 24 * 60 * 60 * 1000; 
+        const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 Hours in Milliseconds
 
         if (!lastPwaDismissTimestamp || (currentTimestamp - parseInt(lastPwaDismissTimestamp)) > cooldownPeriod) {
             const installFooterContainer = document.getElementById('pwa-install-footer');
