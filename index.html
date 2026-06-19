@@ -9,8 +9,8 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1B365D">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="/icons/icons/-192.png">
+   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1142,35 +1142,8 @@
         });
     </script>
 
-    <script>
-        // PWA Setup
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed', err)); }); }
-        let deferredPrompt;
-        window.hasInstalledPWA = false;
-        
-        window.addEventListener('beforeinstallprompt', (e) => { 
-            e.preventDefault(); 
-            deferredPrompt = e; 
-            setTimeout(() => {
-                if (deferredPrompt && !window.hasInstalledPWA) {
-                    document.getElementById('pwa-install-footer').classList.remove('hidden'); 
-                }
-            }, 1000); 
-        });
-        
-        window.installPWA = async () => { 
-            if (deferredPrompt) { 
-                deferredPrompt.prompt(); 
-                const { outcome } = await deferredPrompt.userChoice; 
-                if (outcome === 'accepted') {
-                    window.hasInstalledPWA = true;
-                    document.getElementById('pwa-install-footer').classList.add('hidden'); 
-                }
-                deferredPrompt = null; 
-            } else { 
-                alert("App is already installed or browser blocked automatic install."); 
-            } 
-        };
+   <script>
+        // PWA logic has been consolidated to the dedicated script at the bottom of the document.
 
         // UI toggles & functions
         window.toggleSidebar = function() {
@@ -3347,5 +3320,72 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         }
     });
 </script>
+<!-- ========================================== -->
+    <!-- PERSISTENT PWA INSTALL BANNER              -->
+    <!-- ========================================== -->
+    <div id="persistent-pwa-banner" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-500 ease-in-out z-[100] hidden">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="text-3xl flex-shrink-0">📱</div>
+                <div class="flex-1">
+                    <h4 class="text-base font-bold text-gray-900 dark:text-white leading-tight">Install UDS Hub App</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Get faster access, notifications, and a full-screen experience.</p>
+                </div>
+            </div>
+            <button id="persistent-install-btn" class="w-full sm:w-auto whitespace-nowrap px-6 py-2.5 bg-[#1B365D] hover:bg-blue-900 text-white text-sm font-semibold rounded-lg shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1B365D]">
+                Install Now
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const pwaBanner = document.getElementById('persistent-pwa-banner');
+            const pwaInstallBtn = document.getElementById('persistent-install-btn');
+
+            // 1. Check if the app is already running natively
+            const isInstalled = () => {
+                return window.matchMedia('(display-mode: standalone)').matches || 
+                       window.navigator.standalone === true || 
+                       document.referrer.includes('android-app://');
+            };
+
+            // 2. Show the banner if NOT installed
+            if (!isInstalled()) {
+                pwaBanner.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        pwaBanner.classList.remove('translate-y-full');
+                    }, 100);
+                });
+            }
+
+            // 3. Handle the Install Button Click natively reusing udsHubDeferredPrompt
+            pwaInstallBtn.addEventListener('click', async () => {
+                // Assuming udsHubDeferredPrompt is declared globally in your existing scripts
+                if (typeof udsHubDeferredPrompt !== 'undefined' && udsHubDeferredPrompt) {
+                    udsHubDeferredPrompt.prompt();
+                    const { outcome } = await udsHubDeferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        pwaBanner.classList.add('translate-y-full');
+                        setTimeout(() => pwaBanner.classList.add('hidden'), 500);
+                    }
+                } else if (typeof window.installPWA === 'function') {
+                    // Fallback to your global function if udsHubDeferredPrompt isn't directly accessible
+                    window.installPWA();
+                } else {
+                    console.warn("Installation prompt is not ready. Please try again or use the browser menu.");
+                }
+            });
+
+            // 4. Catch the native successful installation event to hide the banner instantly
+            window.addEventListener('appinstalled', () => {
+                pwaBanner.classList.add('translate-y-full');
+                setTimeout(() => pwaBanner.classList.add('hidden'), 500);
+            });
+        });
+    </script>
+    <!-- ========================================== -->
 </body>
 </html>
