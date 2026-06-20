@@ -83,16 +83,50 @@
         #view-hostel-map { z-index: 10; }
         .leaflet-container { font-family: inherit; }
 
-        /* Marketplace Line Clamp */
+       /* Marketplace Line Clamp */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;  
             overflow: hidden;
         }
+
+        /* --- PREMIUM GLASSMORPHISM OVERRIDES --- */
+        body, html.dark body { background: transparent !important; }
+        
+        aside, section, .bg-white, .bg-geminiSurface, .bg-geminiLightSurface, #smart-notification-banner, nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        html:not(.dark) .bg-white, html:not(.dark) .bg-geminiLightSurface, html:not(.dark) nav {
+            background-color: rgba(255, 255, 255, 0.75) !important;
+            border-color: rgba(229, 231, 235, 0.5) !important;
+        }
+
+        html.dark .bg-geminiSurface, html.dark .bg-white, html.dark nav {
+            background-color: rgba(30, 31, 32, 0.75) !important;
+            border-color: rgba(75, 85, 99, 0.4) !important;
+        }
+
+        /* Keep text inputs solid so users can read what they type */
+        input, select, textarea {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: none !important;
+        }
+        html.dark input, html.dark select, html.dark textarea {
+            background-color: rgba(19, 19, 20, 0.9) !important;
+            backdrop-filter: none !important;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white bg-fixed bg-gradient-to-br from-blue-50/80 via-gray-100 to-slate-200/80 dark:from-slate-900 dark:via-gray-900 dark:to-blue-950/80">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white">
+
+    <div class="fixed inset-0 z-[-2] overflow-hidden pointer-events-none bg-slate-100 dark:bg-[#0c0c0e]">
+        <div id="global-bg-slideshow" class="absolute inset-0 w-full h-full opacity-40 dark:opacity-30 transition-opacity duration-1000"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-slate-200/20 dark:from-slate-900/20 dark:via-transparent dark:to-blue-950/20"></div>
+    </div>
 
     <div id="smart-notification-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 transform -translate-y-[150%] opacity-0 flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-lg px-6 py-3 rounded-full pointer-events-none">
         <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -488,15 +522,31 @@
     </div>
     
     <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[300] bg-[#f8f9fa] dark:bg-[#000000] flex flex-col transition-opacity duration-300">
-        <div class="flex justify-between items-center px-4 md:px-6 py-3 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
+       <div class="flex justify-between items-center px-4 md:px-6 py-3 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
             <div class="flex items-center gap-3 overflow-hidden">
                 <div id="doc-reader-icon" class="text-2xl drop-shadow-sm flex-shrink-0">📄</div>
                 <div class="flex flex-col min-w-0">
-                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-medium text-sm md:text-base truncate max-w-[50vw]">Document Loading...</h3>
+                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-medium text-sm md:text-base truncate max-w-[30vw] md:max-w-[40vw]">Document Loading...</h3>
                     <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-            <div class="flex gap-2 shrink-0">
+            
+            <div class="flex items-center gap-1 md:gap-2 bg-gray-50 dark:bg-[#131314] p-1 md:px-2 rounded-full border border-gray-200 dark:border-gray-700">
+                <button onclick="ttsReadDocument()" id="tts-play-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition" title="Read Aloud">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button onclick="ttsPauseDocument()" id="tts-pause-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition hidden" title="Pause">
+                    <i class="fa-solid fa-pause"></i>
+                </button>
+                <button onclick="ttsResumeDocument()" id="tts-resume-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 transition hidden" title="Resume">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <button onclick="ttsStopDocument()" id="tts-stop-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition hidden" title="Stop">
+                    <i class="fa-solid fa-stop"></i>
+                </button>
+            </div>
+
+            <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
@@ -1298,10 +1348,69 @@
             document.body.style.overflow = 'hidden';
         };
         
-        window.terminateDocViewer = function() { 
+       window.terminateDocViewer = function() { 
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
+            if(window.speechSynthesis) window.speechSynthesis.cancel();
+            if(window.resetTtsUi) window.resetTtsUi();
+        };
+
+        // --- UDS LEARNING ASSISTANT: PHASE 1 (TEXT-TO-SPEECH) ---
+        let currentTtsUtterance = null;
+        
+        window.resetTtsUi = function() {
+            document.getElementById('tts-play-btn').classList.remove('hidden');
+            document.getElementById('tts-pause-btn').classList.add('hidden');
+            document.getElementById('tts-resume-btn').classList.add('hidden');
+            document.getElementById('tts-stop-btn').classList.add('hidden');
+        };
+
+        window.ttsReadDocument = function() {
+            if (!('speechSynthesis' in window)) {
+                window.showToast("Your browser does not support text-to-speech.", "error");
+                return;
+            }
+
+            // Fallback text to demonstrate functionality until a backend text-extractor is added to bypass iframe CORS constraints.
+            const docTitle = document.getElementById('doc-reader-header-title').innerText;
+            const textToRead = "Learning Assistant activated. Document titled: " + docTitle + ". Due to browser security constraints, full document reading requires the backend extraction module to be initialized.";
+
+            window.speechSynthesis.cancel(); 
+            
+            currentTtsUtterance = new SpeechSynthesisUtterance(textToRead);
+            currentTtsUtterance.rate = 0.95; 
+            currentTtsUtterance.pitch = 1.0;
+
+            currentTtsUtterance.onend = function() { window.resetTtsUi(); };
+            currentTtsUtterance.onerror = function() { window.resetTtsUi(); };
+
+            window.speechSynthesis.speak(currentTtsUtterance);
+
+            document.getElementById('tts-play-btn').classList.add('hidden');
+            document.getElementById('tts-pause-btn').classList.remove('hidden');
+            document.getElementById('tts-stop-btn').classList.remove('hidden');
+        };
+
+        window.ttsPauseDocument = function() {
+            if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+                window.speechSynthesis.pause();
+                document.getElementById('tts-pause-btn').classList.add('hidden');
+                document.getElementById('tts-resume-btn').classList.remove('hidden');
+            }
+        };
+
+        window.ttsResumeDocument = function() {
+            if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+                document.getElementById('tts-resume-btn').classList.add('hidden');
+                document.getElementById('tts-pause-btn').classList.remove('hidden');
+            }
+        };
+
+        window.ttsStopDocument = function() {
+            window.speechSynthesis.cancel();
+            window.resetTtsUi();
         };
         
         window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
@@ -1335,24 +1444,45 @@
         };
         window.closeQuoteModal = function() { document.getElementById('quote-modal').classList.add('hidden'); };
 
-        window.slideshowData = []; window.currentSlideIndex = 0; window.slideIntervalThread = null;
+       window.slideshowData = []; window.currentSlideIndex = 0; window.slideIntervalThread = null;
+        
         window.renderSlideshow = function() {
-            const container = document.getElementById('slideshow-container'); const indicators = document.getElementById('slideshow-indicators'); const panel = document.getElementById('slideshow-panel');
+            const container = document.getElementById('slideshow-container'); 
+            const indicators = document.getElementById('slideshow-indicators'); 
+            const panel = document.getElementById('slideshow-panel');
+            const globalBg = document.getElementById('global-bg-slideshow');
+            
             if (!window.slideshowData || window.slideshowData.length === 0) { panel.classList.add('hidden'); return; }
             if(!document.getElementById('section-main-search').classList.contains('hidden')) panel.classList.remove('hidden');
+            
             container.innerHTML = ''; indicators.innerHTML = '';
+            if (globalBg) globalBg.innerHTML = '';
+            
             window.slideshowData.forEach((slide, index) => {
                 const img = document.createElement('img'); img.src = slide.url; img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; img.id = `slide-img-${index}`; container.appendChild(img);
+                
+                if (globalBg) {
+                    const bgImg = document.createElement('img'); bgImg.src = slide.url; bgImg.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; bgImg.id = `global-bg-img-${index}`; globalBg.appendChild(bgImg);
+                }
+
                 const dot = document.createElement('div'); dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-500 ${index === 0 ? 'bg-white w-4' : 'bg-white/40'}`; dot.id = `slide-dot-${index}`; indicators.appendChild(dot);
             });
-            window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 4000); 
+           window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 10000);
         };
 
         window.advanceSlide = function() {
             if (!window.slideshowData || window.slideshowData.length <= 1) return;
             const prevIndex = window.currentSlideIndex; window.currentSlideIndex = (window.currentSlideIndex + 1) % window.slideshowData.length;
-            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('w-4');
-            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
+            
+            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); 
+            document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('w-4');
+            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); 
+            document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
+            
+            const prevBg = document.getElementById(`global-bg-img-${prevIndex}`);
+            const nextBg = document.getElementById(`global-bg-img-${window.currentSlideIndex}`);
+            if (prevBg) prevBg.classList.replace('opacity-100', 'opacity-0');
+            if (nextBg) nextBg.classList.replace('opacity-0', 'opacity-100');
         };
 
         window.handleAddFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Flyer Added Successfully!", "success"); document.getElementById('admin-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add flyer.", "error"); } };
