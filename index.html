@@ -1496,27 +1496,64 @@
             window.resetTtsUi();
         };
 
-        window.generatePageSummary = function() {
+        window.generatePageSummary = async function() {
             const docTitle = document.getElementById('doc-reader-header-title').innerText;
+            const iframe = document.getElementById('doc-reader-iframe');
             
-            const localExtractedText = "This page explores key academic frameworks connected to " + docTitle + ". It highlights foundational theories, outlines standard scientific procedures, and provides actionable analytical models for student evaluation. The methodology focuses entirely on peer-reviewed evidence and structured metric analysis.";
-            
-            const wordCount = localExtractedText.split(' ').length + 350;
-            const readingTimeMins = Math.ceil(wordCount / 200);
-
-            document.getElementById('summary-yield-text').innerText = localExtractedText;
-            
-            const concepts = [
-                "Foundational Theories",
-                "Analytical Models",
-                "Academic Frameworks",
-                "Metric Analysis"
-            ];
-            
-            document.getElementById('summary-concepts-list').innerHTML = concepts.map(c => `<li><i class="fa-solid fa-circle-check text-green-500 mr-2 text-[10px]"></i>${c}</li>`).join('');
-            document.getElementById('summary-reading-time').innerText = `~${readingTimeMins} minute${readingTimeMins > 1 ? 's' : ''}`;
-            
+            // 1. Open modal immediately and set live loading state
+            document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing actual page content...</div>';
+            document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-spinner fa-spin text-orange-500 mr-2 text-[10px]"></i>Extracting specific key concepts...</li>';
+            document.getElementById('summary-reading-time').innerText = 'Calculating...';
             document.getElementById('ai-summary-modal').classList.remove('hidden');
+
+            let extractedText = "";
+            
+            try {
+                // 2. Attempt direct frontend DOM extraction (if same-origin)
+                if (iframe && iframe.contentDocument) {
+                    extractedText = iframe.contentDocument.body.innerText || iframe.contentDocument.body.textContent;
+                }
+            } catch(e) {
+                console.warn("Cross-origin iframe blocked direct extraction. Relaying document URL to backend AI.");
+            }
+
+            try {
+                // 3. Send text/URL to your AI backend endpoint to generate the dynamic summary
+                // Note: Ensure your backend has an '/api/summarize' route configured to handle this payload
+                const response = await fetch('/api/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        title: docTitle, 
+                        url: iframe.src,
+                        content: extractedText ? extractedText.substring(0, 5000) : null 
+                    })
+                });
+
+                if (!response.ok) throw new Error("AI backend analysis failed.");
+
+                const data = await response.json();
+                
+                // 4. Populate with actual AI-generated data
+                document.getElementById('summary-yield-text').innerText = data.summary || "No summary could be generated from this document.";
+                
+                if (data.concepts && Array.isArray(data.concepts) && data.concepts.length > 0) {
+                    document.getElementById('summary-concepts-list').innerHTML = data.concepts.map(c => `<li><i class="fa-solid fa-circle-check text-green-500 mr-2 text-[10px]"></i>${c}</li>`).join('');
+                } else {
+                    document.getElementById('summary-concepts-list').innerHTML = '<li>No specific concepts found in this document.</li>';
+                }
+                
+                // Use exact word count logic if provided by AI, otherwise calculate from summary
+                const finalWordCount = data.wordCount || (data.summary ? data.summary.split(' ').length : 0);
+                const readingTimeMins = data.readingTime || Math.max(1, Math.ceil(finalWordCount / 200));
+                document.getElementById('summary-reading-time').innerText = `~${readingTimeMins} minute${readingTimeMins > 1 ? 's' : ''}`;
+
+            } catch (error) {
+                console.error("Summarization Error:", error);
+                document.getElementById('summary-yield-text').innerText = "Analysis failed. Ensure the document is accessible and your backend AI route is configured properly.";
+                document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-circle-xmark text-red-500 mr-2 text-[10px]"></i>Extraction error</li>';
+                document.getElementById('summary-reading-time').innerText = '--';
+            }
         };
         
         window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
@@ -3598,10 +3635,213 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 }
             };
             
-            // Start reading the file as base64
+           // Start reading the file as base64
             reader.readAsDataURL(file);
         });
     }
 </script>
+
+    <div id="learning-assistant-menu" class="hidden fixed z-50 bg-white dark:bg-geminiSurface rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col w-64 overflow-hidden text-sm transition-opacity duration-200">
+        <div class="bg-gray-900 dark:bg-blue-300 text-white dark:text-navy px-4 py-3 font-medium flex items-center gap-2 text-xs uppercase tracking-wider">
+            <i class="fa-solid fa-wand-magic-sparkles text-purple-400 dark:text-purple-600"></i> UDS Assistant
+        </div>
+        <button onclick="triggerAssistant('explain')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800">
+            <i class="fa-solid fa-book-open text-blue-500 w-5 text-center"></i> Explain Selection
+        </button>
+        <button onclick="triggerAssistant('beginner')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800">
+            <i class="fa-solid fa-child-reaching text-green-500 w-5 text-center"></i> Explain Like Beginner
+        </button>
+        <button onclick="triggerAssistant('exam')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800">
+            <i class="fa-solid fa-graduation-cap text-purple-500 w-5 text-center"></i> Exam Meaning
+        </button>
+        <button onclick="triggerAssistant('resources')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition">
+            <i class="fa-solid fa-layer-group text-orange-500 w-5 text-center"></i> Find Resources
+        </button>
+    </div>
+
+    <div id="learning-assistant-modal" class="hidden fixed inset-0 z-[400] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-[85vh] border border-gray-100 dark:border-gray-800">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-geminiBase rounded-t-3xl">
+                <h3 id="assistant-modal-title" class="text-lg font-medium text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                    </h3>
+                <button onclick="closeAssistantModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-geminiSurface">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 bg-blue-50/50 dark:bg-blue-900/10 border-b border-blue-100/50 dark:border-blue-900/30 text-sm text-blue-900 dark:text-blue-200 border-l-4 border-l-blue-500 italic relative">
+                <i class="fa-solid fa-quote-left absolute text-blue-200 dark:text-blue-800 text-3xl top-2 left-2 opacity-50"></i>
+                <span id="assistant-selected-text" class="relative z-10 font-medium leading-relaxed"></span>
+            </div>
+            
+            <div id="assistant-modal-content" class="p-6 overflow-y-auto text-gray-700 dark:text-gray-300 space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSelectedText = "";
+        let currentSurroundingContext = "";
+
+        // Extracts context from the DOM without an API
+        function getSurroundingContext(selection) {
+            if (!selection || !selection.anchorNode) return "Context unavailable.";
+            let node = selection.anchorNode;
+            while (node && node.nodeName !== 'P' && node.nodeName !== 'DIV' && node.nodeName !== 'SECTION' && node.nodeName !== 'LI') {
+                node = node.parentNode;
+            }
+            return node ? (node.innerText || node.textContent).substring(0, 350) + "..." : "Context localized to selection.";
+        }
+
+        // Listens for text selection
+        document.addEventListener('mouseup', function(e) {
+            const menu = document.getElementById('learning-assistant-menu');
+            const modal = document.getElementById('learning-assistant-modal');
+            
+            // Ignore clicks inside our own tools
+            if (menu.contains(e.target) || modal.contains(e.target)) return;
+
+            let selection = window.getSelection();
+            
+            // Attempt iframe selection
+            const iframe = document.getElementById('doc-reader-iframe');
+            if (!selection.toString().trim() && iframe && iframe.contentWindow) {
+                try { selection = iframe.contentWindow.getSelection(); } catch(err) {}
+            }
+
+            const text = selection.toString().trim();
+
+            if (text.length > 10 && text.length < 600) {
+                currentSelectedText = text;
+                currentSurroundingContext = getSurroundingContext(selection);
+                
+                menu.style.left = `${e.clientX + 15}px`;
+                menu.style.top = `${e.clientY + 15}px`;
+                menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Close menu if clicked away
+        document.addEventListener('mousedown', function(e) {
+            const menu = document.getElementById('learning-assistant-menu');
+            if (!menu.contains(e.target) && e.target.id !== 'learning-assistant-menu') {
+                 menu.classList.add('hidden');
+            }
+        });
+
+        function triggerAssistant(mode) {
+            document.getElementById('learning-assistant-menu').classList.add('hidden');
+            document.getElementById('learning-assistant-modal').classList.remove('hidden');
+            document.getElementById('assistant-selected-text').innerText = `"${currentSelectedText}"`;
+            
+            const contentDiv = document.getElementById('assistant-modal-content');
+            const titleEl = document.getElementById('assistant-modal-title');
+            
+            contentDiv.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-500 mb-4"></i>
+                    <p class="font-medium text-sm">Analyzing document context locally...</p>
+                </div>`;
+
+            // Local processing engine (No API)
+            setTimeout(() => {
+                let htmlOutput = "";
+                const cleanText = currentSelectedText.replace(/[^a-zA-Z0-9 ]/g, "");
+                const words = cleanText.split(' ').filter(w => w.length > 4); // Strip small words
+                const keywords = [...new Set(words)].slice(0, 3); 
+                const primaryTopic = keywords[0] || 'this concept';
+                const secondaryTopic = keywords[1] || 'its application';
+
+                switch(mode) {
+                    case 'explain':
+                        titleEl.innerHTML = '<div class="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm mr-2"><i class="fa-solid fa-book-open"></i></div> Explain Selection';
+                        htmlOutput = `
+                            <h4 class="font-bold text-gray-800 dark:text-white text-base mb-2 uppercase tracking-wider text-xs">Contextual Breakdown</h4>
+                            <p class="mb-4 leading-relaxed text-sm">Based on the surrounding document structure, this specific selection functions as a core component of the broader topic.</p>
+                            <div class="bg-gray-50 dark:bg-geminiBase border-l-4 border-gray-400 dark:border-gray-600 p-4 text-sm text-gray-600 dark:text-gray-400 mb-4 rounded-r-xl">
+                                <strong class="text-gray-800 dark:text-gray-200">Source Context:</strong><br/>
+                                ${currentSurroundingContext}
+                            </div>
+                            <p class="leading-relaxed text-sm"><strong>Analysis:</strong> The text emphasizes the importance of <em class="text-blue-600 dark:text-blue-400 font-medium">${primaryTopic}</em>. It connects directly to the surrounding material by establishing the rule governing <em class="text-blue-600 dark:text-blue-400 font-medium">${secondaryTopic}</em>.</p>
+                        `;
+                        break;
+                        
+                    case 'beginner':
+                        titleEl.innerHTML = '<div class="w-8 h-8 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-sm mr-2"><i class="fa-solid fa-child-reaching"></i></div> Explain Like Beginner';
+                        htmlOutput = `
+                            <div class="bg-green-50/50 dark:bg-green-900/10 p-5 rounded-2xl border border-green-100 dark:border-green-900/30">
+                                <h4 class="font-bold text-green-800 dark:text-green-400 text-sm mb-3 uppercase tracking-wider">Simplified View</h4>
+                                <p class="mb-4 text-green-900 dark:text-green-200 text-sm leading-relaxed">Let's strip away the complex academic language:</p>
+                                <ul class="space-y-4 text-green-800 dark:text-green-300 text-sm">
+                                    <li class="flex items-start gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-800/50 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-arrow-right text-green-600 dark:text-green-400 text-[10px]"></i></div>
+                                        <span>Think of <strong class="text-green-900 dark:text-green-100">${primaryTopic.toUpperCase()}</strong> as the main subject being discussed here.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-800/50 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-arrow-right text-green-600 dark:text-green-400 text-[10px]"></i></div>
+                                        <span>The author is simply stating a rule: How does this subject affect <strong class="text-green-900 dark:text-green-100">${secondaryTopic}</strong>?</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'exam':
+                        titleEl.innerHTML = '<div class="w-8 h-8 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center text-sm mr-2"><i class="fa-solid fa-graduation-cap"></i></div> Exam Meaning';
+                        htmlOutput = `
+                            <div class="grid gap-4">
+                                <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+                                    <h5 class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2 mb-2 text-xs uppercase tracking-wider"><i class="fa-solid fa-book-bookmark text-blue-500"></i> Working Definition</h5>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">A structural statement detailing the operational behavior of <em class="font-medium text-gray-800 dark:text-gray-200">${primaryTopic}</em>.</p>
+                                </div>
+                                <div class="bg-purple-50/50 dark:bg-purple-900/10 rounded-2xl p-5 border border-purple-100 dark:border-purple-900/30">
+                                    <h5 class="font-bold text-purple-800 dark:text-purple-400 flex items-center gap-2 mb-2 text-xs uppercase tracking-wider"><i class="fa-solid fa-fire text-red-500"></i> Exam Relevance</h5>
+                                    <p class="text-purple-900 dark:text-purple-200 text-sm"><strong>High Probability.</strong> Concepts defining core rules like <em class="font-medium">${primaryTopic}</em> are frequent targets for multiple choice or application questions.</p>
+                                </div>
+                                <div class="bg-white dark:bg-geminiSurface rounded-2xl p-5 border-l-4 border-l-green-500 shadow-sm border border-gray-100 dark:border-gray-800">
+                                    <h5 class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2 mb-2 text-xs uppercase tracking-wider"><i class="fa-solid fa-pen-clip text-green-500"></i> Potential Prompt</h5>
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm italic">"Discuss the practical application of ${primaryTopic} as outlined in the text, and evaluate its impact on ${secondaryTopic}."</p>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'resources':
+                        titleEl.innerHTML = '<div class="w-8 h-8 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm mr-2"><i class="fa-solid fa-layer-group"></i></div> Find Resources';
+                        const qSearch = encodeURIComponent(primaryTopic !== 'this concept' ? `${primaryTopic} ${secondaryTopic}` : currentSelectedText.substring(0, 15));
+                        
+                        htmlOutput = `
+                            <p class="mb-5 text-gray-600 dark:text-gray-400 text-sm">Searching UDS Hub databases for: <strong class="text-gray-900 dark:text-white">"${decodeURIComponent(qSearch)}"</strong></p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button onclick="closeAssistantModal(); window.navigateTo('dashboard'); document.getElementById('ai-search-bar').value = '${decodeURIComponent(qSearch)}'; window.executeSearchingAI();" class="flex flex-col items-center justify-center p-5 bg-gray-50 dark:bg-geminiBase border border-gray-100 dark:border-gray-800 rounded-2xl hover:border-orange-500 dark:hover:border-orange-500 transition group">
+                                    <div class="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-file-pdf text-xl"></i></div>
+                                    <span class="font-medium text-gray-800 dark:text-gray-200 text-sm">Documents</span>
+                                </button>
+                                <button onclick="closeAssistantModal(); window.navigateTo('dashboard'); document.getElementById('ai-search-bar').value = '${decodeURIComponent(qSearch)} slides'; window.executeSearchingAI();" class="flex flex-col items-center justify-center p-5 bg-gray-50 dark:bg-geminiBase border border-gray-100 dark:border-gray-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition group">
+                                    <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-desktop text-xl"></i></div>
+                                    <span class="font-medium text-gray-800 dark:text-gray-200 text-sm">Slides</span>
+                                </button>
+                                <button onclick="closeAssistantModal(); window.navigateTo('dashboard'); document.getElementById('ai-search-bar').value = '${decodeURIComponent(qSearch)} past questions'; window.executeSearchingAI();" class="flex flex-col items-center justify-center p-5 bg-gray-50 dark:bg-geminiBase border border-gray-100 dark:border-gray-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition group">
+                                    <div class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-clipboard-question text-xl"></i></div>
+                                    <span class="font-medium text-gray-800 dark:text-gray-200 text-sm">Questions</span>
+                                </button>
+                                <button onclick="closeAssistantModal(); window.navigateTo('dashboard'); document.getElementById('ai-search-bar').value = '${decodeURIComponent(qSearch)} notes'; window.executeSearchingAI();" class="flex flex-col items-center justify-center p-5 bg-gray-50 dark:bg-geminiBase border border-gray-100 dark:border-gray-800 rounded-2xl hover:border-green-500 dark:hover:border-green-500 transition group">
+                                    <div class="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book text-xl"></i></div>
+                                    <span class="font-medium text-gray-800 dark:text-gray-200 text-sm">Notes</span>
+                                </button>
+                            </div>
+                        `;
+                        break;
+                }
+                contentDiv.innerHTML = htmlOutput;
+            }, 600);
+        }
+
+        window.closeAssistantModal = function() {
+            document.getElementById('learning-assistant-modal').classList.add('hidden');
+        };
+    </script>
 </body>
 </html>
