@@ -3882,11 +3882,15 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             const promptInstruction = `You are a helpful AI Tutor assisting a university student. Use the following extracted document context to answer their question accurately. \n\nContext: "${documentContext}" \n\nQuestion: "${question}"`;
 
             try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: promptInstruction })
-                });
+              const response = await fetch('/api/ai-tutor', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        mode: 'general', 
+        selectedText: question, 
+        context: documentContext 
+    })
+});
 
                 if(!response.ok) throw new Error("API Route failed");
                 const data = await response.json();
