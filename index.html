@@ -600,16 +600,23 @@
                 <div id="ai-tutor-chat-feed" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm bg-white dark:bg-geminiSurface">
                     <div class="flex items-start gap-3">
                         <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">
-                            Hello! Select any text in your document, and use the popup menu to generate quizzes or get explanations.
+                       <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Hello! I am your AI Tutor. I have read this document. Ask me to explain concepts, summarize details, or generate a quiz!
                         </div>
                     </div>
                 </div>
 
-                <div id="ai-tutor-loader" class="hidden p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-geminiBase shrink-0">
+                <div id="ai-tutor-loader" class="hidden p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-geminiBase shrink-0">
                     <p class="text-xs text-purple-600 dark:text-purple-400 font-medium flex items-center gap-2 animate-pulse">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing context...
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Thinking...
                     </p>
+                </div>
+                
+                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
+                    <input type="text" id="ai-tutor-input" placeholder="Ask about this document..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') submitAiTutorQuestion()">
+                    <button onclick="submitAiTutorQuestion()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -3796,69 +3803,8 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
     }
 </script>
 
-   <div id="learning-assistant-menu" class="hidden fixed z-[400] bg-white dark:bg-geminiSurface rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col w-[260px] overflow-hidden text-sm transition-opacity duration-200">
-        <div class="bg-gray-900 dark:bg-blue-300 text-white dark:text-navy px-4 py-3 font-medium flex items-center gap-2 text-xs uppercase tracking-wider">
-            <i class="fa-solid fa-wand-magic-sparkles text-purple-400 dark:text-purple-600"></i> AI Tutor actions
-        </div>
-        <button onclick="triggerAiTutor('explain')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800 font-medium">
-            <span class="w-5 text-center text-lg">📖</span> Explain Selection
-        </button>
-        <button onclick="triggerAiTutor('summarize')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800 font-medium">
-            <span class="w-5 text-center text-lg">✨</span> Summarize Visible Content
-        </button>
-        <button onclick="triggerAiTutor('beginner')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800 font-medium">
-            <span class="w-5 text-center text-lg">🎓</span> Explain Like Beginner
-        </button>
-        <button onclick="triggerAiTutor('quiz')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition border-b border-gray-50 dark:border-gray-800 font-medium">
-            <span class="w-5 text-center text-lg">📝</span> Generate Quiz
-        </button>
-        <button onclick="triggerAiTutor('confused')" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 text-left text-gray-700 dark:text-gray-200 transition font-medium">
-            <span class="w-5 text-center text-lg">💡</span> I Don't Understand
-        </button>
-    </div>
-
-    <script>
-       let currentSelectedText = "";
-
-        // Listens for text selection
-        document.addEventListener('mouseup', function(e) {
-            const menu = document.getElementById('learning-assistant-menu');
-            const panel = document.getElementById('ai-tutor-panel');
-            
-            // Ignore clicks inside our own tools
-            if (menu.contains(e.target) || (panel && panel.contains(e.target))) return;
-
-            let selection = window.getSelection();
-            
-            // Attempt iframe selection (works if cross-origin policy allows, otherwise relies on local text)
-            const iframe = document.getElementById('doc-reader-iframe');
-            if (!selection.toString().trim() && iframe && iframe.contentWindow) {
-                try { selection = iframe.contentWindow.getSelection(); } catch(err) {}
-            }
-
-            const text = selection.toString().trim();
-
-            if (text.length > 5 && text.length < 1500) {
-                currentSelectedText = text;
-                
-                // Position and show menu
-                menu.style.left = `${Math.min(e.clientX + 10, window.innerWidth - 270)}px`;
-                menu.style.top = `${e.clientY + 15}px`;
-                menu.classList.remove('hidden');
-            } else {
-                menu.classList.add('hidden');
-            }
-        });
-
-        // Close menu if clicked away
-        document.addEventListener('mousedown', function(e) {
-            const menu = document.getElementById('learning-assistant-menu');
-            if (!menu.contains(e.target) && e.target.id !== 'learning-assistant-menu') {
-                 menu.classList.add('hidden');
-            }
-        });
-
-        window.toggleAiTutorPanel = function() {
+   <script>
+        window.toggleAiTutorPanel = async function() {
             const panel = document.getElementById('ai-tutor-panel');
             const container = document.getElementById('doc-iframe-container');
             const openBtn = document.getElementById('ai-tutor-open-btn');
@@ -3874,6 +3820,21 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 } else {
                     container.classList.add('hidden'); // Hide iframe on small mobile
                 }
+
+                // Autoload document context quietly if not already cached
+                const iframe = document.getElementById('doc-reader-iframe');
+                const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+                if (fileIdMatch) {
+                    const fileId = fileIdMatch[1];
+                    if (!window.documentAnalysisCache[fileId]) {
+                        const docTitle = document.getElementById('doc-reader-header-title').innerText;
+                        try {
+                            window.documentAnalysisCache[fileId] = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
+                        } catch (e) {
+                            console.error("Silent context extraction failed:", e);
+                        }
+                    }
+                }
             } else {
                 // Close Panel
                 panel.classList.remove('w-full', 'md:w-[380px]', 'lg:w-[420px]');
@@ -3884,49 +3845,33 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             }
         };
 
-        window.triggerAiTutor = async function(mode) {
-            document.getElementById('learning-assistant-menu').classList.add('hidden');
-            
-            // Ensure panel is open
-            if(document.getElementById('ai-tutor-panel').classList.contains('w-0')) {
-                window.toggleAiTutorPanel();
-            }
+        window.submitAiTutorQuestion = async function() {
+            const inputEl = document.getElementById('ai-tutor-input');
+            const question = inputEl.value.trim();
+            if (!question) return;
 
             const feed = document.getElementById('ai-tutor-chat-feed');
             const loader = document.getElementById('ai-tutor-loader');
+            const iframe = document.getElementById('doc-reader-iframe');
             
-            let promptInstruction = "";
-            let userActionLabel = "";
+            inputEl.value = ''; // Clear input immediately
 
-            switch(mode) {
-                case 'explain':
-                    userActionLabel = "📖 Explain this selection.";
-                    promptInstruction = `Explain the following text clearly and concisely. Text: "${currentSelectedText}"`;
-                    break;
-                case 'summarize':
-                    userActionLabel = "✨ Summarize the visible content.";
-                    promptInstruction = `Provide a concise summary of the following text. Use bullet points for key takeaways. Text: "${currentSelectedText}"`;
-                    break;
-                case 'beginner':
-                    userActionLabel = "🎓 Explain this like I'm a beginner.";
-                    promptInstruction = `Explain the following text as if you were talking to a high school student learning it for the first time. Use simple analogies. Text: "${currentSelectedText}"`;
-                    break;
-                case 'quiz':
-                    userActionLabel = "📝 Generate a quiz from this.";
-                    promptInstruction = `Create 3 multiple-choice quiz questions based on the following text to test my understanding. Provide the answers at the very end. Text: "${currentSelectedText}"`;
-                    break;
-                case 'confused':
-                    userActionLabel = "💡 I don't understand this part.";
-                    promptInstruction = `I am confused by the following text. Break it down step-by-step and identify the core concept. Text: "${currentSelectedText}"`;
-                    break;
+            // 1. Gather Document Context using the Extraction Pipeline
+            let documentContext = "Document context could not be extracted automatically.";
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if (fileIdMatch) {
+                const fileId = fileIdMatch[1];
+                if (window.documentAnalysisCache[fileId] && window.documentAnalysisCache[fileId].summary) {
+                    documentContext = "Extracted Keywords: " + window.documentAnalysisCache[fileId].concepts.join(", ") + 
+                                      ". Core Summary: " + window.documentAnalysisCache[fileId].summary;
+                }
             }
 
-            // Append User Message to Chat Feed
+            // Append User Question to Chat
             feed.innerHTML += `
                 <div class="flex items-start gap-3 justify-end mt-4">
                     <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
-                        <span class="font-medium">${userActionLabel}</span><br>
-                        <span class="text-xs opacity-75 italic block mt-1 border-t border-purple-400/50 pt-1">"${currentSelectedText.substring(0, 70)}..."</span>
+                        ${question}
                     </div>
                 </div>
             `;
@@ -3934,8 +3879,9 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             feed.scrollTop = feed.scrollHeight;
             loader.classList.remove('hidden');
 
+            const promptInstruction = `You are a helpful AI Tutor assisting a university student. Use the following extracted document context to answer their question accurately. \n\nContext: "${documentContext}" \n\nQuestion: "${question}"`;
+
             try {
-                // Call Secure Serverless Endpoint utilizing Qwen via OpenRouter
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -3960,7 +3906,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     <div class="flex items-start gap-3 mt-4">
                         <div class="w-8 h-8 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
                         <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 max-w-[85%]">
-                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/chat\` route is configured correctly with the OpenRouter key.
+                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/chat\` route is online.
                         </div>
                     </div>
                 `;
