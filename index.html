@@ -1496,62 +1496,180 @@
             window.resetTtsUi();
         };
 
+       window.documentAnalysisCache = window.documentAnalysisCache || {};
+        
+        window.loadLocalProcessorScript = function(src) {
+            return new Promise((resolve, reject) => {
+                if (document.querySelector(`script[src="${src}"]`)) return resolve();
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        };
+
+        window.extractTextAndSummarize = async function(fileId, fileType) {
+            // 1. Local NLP Extractive Summarization Engine
+            const summarizeLocalText = (text) => {
+                const stopWords = new Set(['the','is','in','at','of','on','and','a','to','it','for','with','as','by','this','that','are','be','from','or','an','was','will','can','which','these','but','have','has','not','they','we','you','their','what','when','where','how']);
+                const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+                const wordFreq = {};
+                const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+                
+                let totalWords = 0;
+                words.forEach(w => {
+                    if (w.length > 3 && !stopWords.has(w) && isNaN(w)) {
+                        wordFreq[w] = (wordFreq[w] || 0) + 1;
+                        totalWords++;
+                    }
+                });
+
+                // Score sentences based on frequency of important words
+                const sentenceScores = sentences.map(sentence => {
+                    const sWords = sentence.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+                    let score = 0;
+                    sWords.forEach(w => { if (wordFreq[w]) score += wordFreq[w]; });
+                    return { sentence: sentence.trim(), score: score / (sWords.length || 1), index: sentences.indexOf(sentence) };
+                });
+
+                // Sort by score, pick top 15% (or minimum 3 sentences), then re-sort by original order to maintain flow
+                sentenceScores.sort((a, b) => b.score - a.score);
+                const summaryLength = Math.max(3, Math.ceil(sentences.length * 0.15)); 
+                const topSentences = sentenceScores.slice(0, summaryLength).sort((a, b) => a.index - b.index);
+                
+                const sortedWords = Object.keys(wordFreq).sort((a, b) => wordFreq[b] - wordFreq[a]);
+                const keywords = sortedWords.slice(0, 8);
+
+                return {
+                    summary: topSentences.map(s => s.sentence).join(' '),
+                    concepts: keywords,
+                    wordCount: text.split(/\s+/).length
+                };
+            };
+
+            // 2. Setup Secure CORS Proxy to fetch Google Drive file bytes
+            const downloadUrl = `https://corsproxy.io/?https://drive.google.com/uc?export=download&id=${fileId}`;
+            let rawText = "";
+
+            try {
+                // Phase A: PDF Extraction & OCR Fallback
+                if (fileType.includes('.pdf')) {
+                    await window.loadLocalProcessorScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js');
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                    
+                    const pdf = await window.pdfjsLib.getDocument(downloadUrl).promise;
+                    
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        rawText += textContent.items.map(item => item.str).join(' ') + " ";
+                    }
+
+                    // OCR Trigger: If it's a scanned PDF, the text length will be suspiciously low
+                    if (rawText.replace(/\s/g, '').length < 100) {
+                        document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-expand fa-spin"></i> Document is an image/scan. Booting local OCR Engine...</div>';
+                        await window.loadLocalProcessorScript('https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js');
+                        
+                        rawText = "";
+                        const worker = await Tesseract.createWorker('eng');
+                        
+                        // Scan up to the first 3 pages to prevent browser memory crashes
+                        const pagesToScan = Math.min(pdf.numPages, 3);
+                        for (let i = 1; i <= pagesToScan; i++) {
+                            const page = await pdf.getPage(i);
+                            const viewport = page.getViewport({scale: 1.5});
+                            const canvas = document.createElement('canvas');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
+                            
+                            const { data: { text } } = await worker.recognize(canvas);
+                            rawText += text + " ";
+                        }
+                        await worker.terminate();
+                    }
+                } 
+                // Phase B: Word Document Extraction
+                else if (fileType.includes('.doc') || fileType.includes('.docx')) {
+                    await window.loadLocalProcessorScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js');
+                    const response = await fetch(downloadUrl);
+                    const arrayBuffer = await response.arrayBuffer();
+                    const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
+                    rawText = result.value;
+                }
+                // Phase C: PowerPoint Extraction (Parse XML Zip)
+                else if (fileType.includes('.ppt') || fileType.includes('.pptx')) {
+                    await window.loadLocalProcessorScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+                    const response = await fetch(downloadUrl);
+                    const arrayBuffer = await response.arrayBuffer();
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    
+                    // Extract text from every slide XML file
+                    for (const [filename, file] of Object.entries(zip.files)) {
+                        if (filename.startsWith('ppt/slides/slide') && filename.endsWith('.xml')) {
+                            const slideXml = await file.async('string');
+                            // Strip XML tags to leave just the text content
+                            rawText += slideXml.replace(/<[^>]+>/g, ' ') + " ";
+                        }
+                    }
+                }
+                // Phase D: Standard Text fallback
+                else {
+                    const response = await fetch(downloadUrl);
+                    rawText = await response.text();
+                }
+
+                const cleanedText = rawText.trim();
+                if (cleanedText.length < 20) throw new Error("Empty document or unreadable image format.");
+
+                return summarizeLocalText(cleanedText);
+
+            } catch (err) {
+                console.error("Local Extraction Pipeline Error:", err);
+                throw err;
+            }
+        };
+
         window.generatePageSummary = async function() {
             const docTitle = document.getElementById('doc-reader-header-title').innerText;
             const iframe = document.getElementById('doc-reader-iframe');
             
-            // 1. Open modal immediately and set live loading state
-            document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing actual page content...</div>';
-            document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-spinner fa-spin text-orange-500 mr-2 text-[10px]"></i>Extracting specific key concepts...</li>';
+            document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Reading entire document into local memory...</div>';
+            document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-spinner fa-spin text-orange-500 mr-2 text-[10px]"></i>Building local knowledge model...</li>';
             document.getElementById('summary-reading-time').innerText = 'Calculating...';
             document.getElementById('ai-summary-modal').classList.remove('hidden');
 
-            let extractedText = "";
-            
-            try {
-                // 2. Attempt direct frontend DOM extraction (if same-origin)
-                if (iframe && iframe.contentDocument) {
-                    extractedText = iframe.contentDocument.body.innerText || iframe.contentDocument.body.textContent;
-                }
-            } catch(e) {
-                console.warn("Cross-origin iframe blocked direct extraction. Relaying document URL to backend AI.");
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if (!fileIdMatch) {
+                document.getElementById('summary-yield-text').innerText = "Unable to locate secure document ID for extraction.";
+                return;
             }
+            
+            const fileId = fileIdMatch[1];
+            const fileType = docTitle.toLowerCase();
 
             try {
-                // 3. Send text/URL to your AI backend endpoint to generate the dynamic summary
-                // Note: Ensure your backend has an '/api/summarize' route configured to handle this payload
-                const response = await fetch('/api/summarize', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        title: docTitle, 
-                        url: iframe.src,
-                        content: extractedText ? extractedText.substring(0, 5000) : null 
-                    })
-                });
+                // Retrieve from active memory session if already processed
+                let data = window.documentAnalysisCache[fileId];
 
-                if (!response.ok) throw new Error("AI backend analysis failed.");
-
-                const data = await response.json();
-                
-                // 4. Populate with actual AI-generated data
-                document.getElementById('summary-yield-text').innerText = data.summary || "No summary could be generated from this document.";
-                
-                if (data.concepts && Array.isArray(data.concepts) && data.concepts.length > 0) {
-                    document.getElementById('summary-concepts-list').innerHTML = data.concepts.map(c => `<li><i class="fa-solid fa-circle-check text-green-500 mr-2 text-[10px]"></i>${c}</li>`).join('');
-                } else {
-                    document.getElementById('summary-concepts-list').innerHTML = '<li>No specific concepts found in this document.</li>';
+                if (!data) {
+                    data = await window.extractTextAndSummarize(fileId, fileType);
+                    window.documentAnalysisCache[fileId] = data; // Store in memory
                 }
                 
-                // Use exact word count logic if provided by AI, otherwise calculate from summary
-                const finalWordCount = data.wordCount || (data.summary ? data.summary.split(' ').length : 0);
-                const readingTimeMins = data.readingTime || Math.max(1, Math.ceil(finalWordCount / 200));
+                document.getElementById('summary-yield-text').innerText = data.summary;
+                
+                if (data.concepts && data.concepts.length > 0) {
+                    document.getElementById('summary-concepts-list').innerHTML = data.concepts.map(c => `<li class="capitalize"><i class="fa-solid fa-circle-check text-green-500 mr-2 text-[10px]"></i>${c}</li>`).join('');
+                }
+                
+                const readingTimeMins = Math.max(1, Math.ceil(data.wordCount / 200));
                 document.getElementById('summary-reading-time').innerText = `~${readingTimeMins} minute${readingTimeMins > 1 ? 's' : ''}`;
 
             } catch (error) {
-                console.error("Summarization Error:", error);
-                document.getElementById('summary-yield-text').innerText = "Analysis failed. Ensure the document is accessible and your backend AI route is configured properly.";
-                document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-circle-xmark text-red-500 mr-2 text-[10px]"></i>Extraction error</li>';
+                document.getElementById('summary-yield-text').innerText = "Text could not be extracted from this document.";
+                document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-circle-xmark text-red-500 mr-2 text-[10px]"></i>Extraction failed</li>';
                 document.getElementById('summary-reading-time').innerText = '--';
             }
         };
