@@ -83,50 +83,16 @@
         #view-hostel-map { z-index: 10; }
         .leaflet-container { font-family: inherit; }
 
-       /* Marketplace Line Clamp */
+        /* Marketplace Line Clamp */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;  
             overflow: hidden;
         }
-
-        /* --- PREMIUM GLASSMORPHISM OVERRIDES --- */
-        body, html.dark body { background: transparent !important; }
-        
-        aside, section, .bg-white, .bg-geminiSurface, .bg-geminiLightSurface, #smart-notification-banner, nav {
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        html:not(.dark) .bg-white, html:not(.dark) .bg-geminiLightSurface, html:not(.dark) nav {
-            background-color: rgba(255, 255, 255, 0.75) !important;
-            border-color: rgba(229, 231, 235, 0.5) !important;
-        }
-
-        html.dark .bg-geminiSurface, html.dark .bg-white, html.dark nav {
-            background-color: rgba(30, 31, 32, 0.75) !important;
-            border-color: rgba(75, 85, 99, 0.4) !important;
-        }
-
-        /* Keep text inputs solid so users can read what they type */
-        input, select, textarea {
-            background-color: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: none !important;
-        }
-        html.dark input, html.dark select, html.dark textarea {
-            background-color: rgba(19, 19, 20, 0.9) !important;
-            backdrop-filter: none !important;
-        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white">
-
-    <div class="fixed inset-0 z-[-2] overflow-hidden pointer-events-none bg-slate-100 dark:bg-[#0c0c0e]">
-        <div id="global-bg-slideshow" class="absolute inset-0 w-full h-full opacity-40 dark:opacity-30 transition-opacity duration-1000"></div>
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-slate-200/20 dark:from-slate-900/20 dark:via-transparent dark:to-blue-950/20"></div>
-    </div>
+<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white bg-fixed bg-gradient-to-br from-blue-50/80 via-gray-100 to-slate-200/80 dark:from-slate-900 dark:via-gray-900 dark:to-blue-950/80">
 
     <div id="smart-notification-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 transform -translate-y-[150%] opacity-0 flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-lg px-6 py-3 rounded-full pointer-events-none">
         <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -522,16 +488,15 @@
     </div>
     
     <div id="google-document-reader-modal" class="hidden fixed inset-0 z-[300] bg-[#f8f9fa] dark:bg-[#000000] flex flex-col transition-opacity duration-300">
-       <div class="flex justify-between items-center px-4 md:px-6 py-3 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
+        <div class="flex justify-between items-center px-4 md:px-6 py-3 bg-white dark:bg-[#1e1e1e] border-b border-gray-200 dark:border-gray-800 shadow-sm z-10">
             <div class="flex items-center gap-3 overflow-hidden">
                 <div id="doc-reader-icon" class="text-2xl drop-shadow-sm flex-shrink-0">📄</div>
                 <div class="flex flex-col min-w-0">
-                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-medium text-sm md:text-base truncate max-w-[30vw] md:max-w-[40vw]">Document Loading...</h3>
+                    <h3 id="doc-reader-header-title" class="text-gray-800 dark:text-gray-100 font-medium text-sm md:text-base truncate max-w-[50vw]">Document Loading...</h3>
                     <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-            
-           <div class="flex items-center gap-1 md:gap-2 bg-gray-50 dark:bg-[#131314] p-1 md:px-2 rounded-full border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-1 md:gap-2 bg-gray-50 dark:bg-[#131314] p-1 md:px-2 rounded-full border border-gray-200 dark:border-gray-700">
                 <button onclick="ttsReadDocument()" id="tts-play-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition shrink-0" title="Read Aloud">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
@@ -568,7 +533,7 @@
                 </button>
             </div>
         </div>
-       <div class="relative flex-grow w-full bg-gray-100 dark:bg-[#0a0a0a] overflow-hidden flex">
+        <div class="relative flex-grow w-full bg-gray-100 dark:bg-[#0a0a0a] overflow-hidden flex">
             <div class="relative flex-grow h-full min-w-0 transition-all duration-300" id="doc-iframe-container">
                 <div id="doc-reader-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-[#131314] z-20 transition-opacity duration-300">
                     <div class="w-12 h-12 border-4 border-gray-100 border-t-blue-500 dark:border-gray-800 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
@@ -624,6 +589,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
     <div id="gpa-calculator-modal" class="hidden fixed inset-0 z-[120] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-xl w-full border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden max-h-[90vh]">
@@ -697,14 +663,16 @@
                 </div>
             </div>
 
-           <div class="flex-grow flex flex-col md:flex-row overflow-hidden">
+            <div class="flex-grow flex overflow-hidden">
                 
-                <div id="anova-data-panel" class="w-full md:w-80 max-h-[40vh] md:max-h-full bg-gray-50 dark:bg-geminiBase border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800 p-5 flex flex-col shrink-0 overflow-y-auto transition-all">
-                   <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Analysis Type</label>
+                <div id="anova-data-panel" class="w-80 bg-gray-50 dark:bg-geminiBase border-r border-gray-200 dark:border-gray-800 p-5 flex flex-col shrink-0 overflow-y-auto transition-all">
+                    <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Analysis Type</label>
                     <select id="anova-test-type" class="w-full p-3 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none dark:text-white cursor-pointer mb-4">
-                        <option value="crd">Completely Randomized Design (CRD)</option>
-                        <option value="rcbd" disabled>Randomized Complete Block Design (RCBD) - Coming Soon</option>
-                        <option value="lsd" disabled>Latin Square Design (LSD) - Coming Soon</option>
+                        <option value="oneway">One-Way ANOVA</option>
+                        <option value="twoway" disabled>Two-Way ANOVA (Coming Soon)</option>
+                        <option value="rm" disabled>Repeated Measures (Coming Soon)</option>
+                        <option value="ancova" disabled>ANCOVA (Coming Soon)</option>
+                        <option value="manova" disabled>MANOVA (Coming Soon)</option>
                     </select>
 
                     <div class="flex justify-between items-center mb-2">
@@ -1719,6 +1687,220 @@
                 document.getElementById('summary-reading-time').innerText = '--';
             }
         };
+
+        window.toggleAiTutorPanel = async function() {
+            const panel = document.getElementById('ai-tutor-panel');
+            const container = document.getElementById('doc-iframe-container');
+            const openBtn = document.getElementById('ai-tutor-open-btn');
+            
+            if (panel.classList.contains('w-0')) {
+                // Open Panel
+                panel.classList.remove('w-0');
+                panel.classList.add('w-full', 'md:w-[380px]', 'lg:w-[420px]');
+                openBtn.classList.add('hidden');
+                
+                if (window.innerWidth >= 768) {
+                    container.classList.add('md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
+                } else {
+                    container.classList.add('hidden'); // Hide iframe on small mobile
+                }
+
+             // Autoload document context quietly if not already cached
+                const iframe = document.getElementById('doc-reader-iframe');
+                const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+                if (fileIdMatch) {
+                    const fileId = fileIdMatch[1];
+                    if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
+                    if (!window.documentAnalysisCache[fileId]) {
+                        const docTitle = document.getElementById('doc-reader-header-title').innerText;
+                        try {
+                            window.documentAnalysisCache[fileId] = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
+                        } catch (e) {
+                            console.error("Silent context extraction failed:", e);
+                        }
+                    }
+                }
+            } else {
+                // Close Panel
+                panel.classList.remove('w-full', 'md:w-[380px]', 'lg:w-[420px]');
+                panel.classList.add('w-0');
+                container.classList.remove('hidden', 'md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
+                
+                setTimeout(() => { openBtn.classList.remove('hidden'); }, 300);
+            }
+        };
+
+       window.communityDiscussionsCache = {};
+
+        window.loadCommunityDiscussions = async function(documentId) {
+            const container = document.getElementById('ai-tutor-community-discussions');
+            const feed = document.getElementById('ai-tutor-community-feed');
+            if(!container || !feed) return;
+
+            try {
+                const ref = window.firebaseCollection(window.firebaseDb, "document_ai_discussions");
+                onSnapshot(ref, (snapshot) => {
+                    let discussions = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if(data.documentId === documentId) discussions.push({ id: doc.id, ...data });
+                    });
+
+                    window.communityDiscussionsCache[documentId] = discussions;
+
+                    if(discussions.length > 0) {
+                        container.classList.remove('hidden');
+                        feed.innerHTML = '';
+                        
+                        discussions.sort((a, b) => b.helpfulVotes - a.helpfulVotes || b.createdAt - a.createdAt);
+
+                        discussions.forEach(d => {
+                            feed.innerHTML += `
+                                <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                                    <span class="text-[9px] text-gray-500 uppercase tracking-wider font-bold block mb-1.5"><i class="fa-solid fa-user-graduate mr-1"></i>Anonymous Student</span>
+                                    <p class="font-medium text-gray-800 dark:text-gray-200 mb-2"><span class="text-blue-500 font-bold mr-1">Q:</span> ${d.question}</p>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3 text-xs leading-relaxed"><span class="text-purple-500 font-bold mr-1">A:</span> ${d.answer}</p>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="window.voteCommunityDiscussion('${d.id}', 1)" class="text-[10px] px-2.5 py-1.5 rounded-lg transition bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 hover:opacity-80 font-medium"><i class="fa-solid fa-thumbs-up mr-1"></i> Helpful (${d.helpfulVotes || 0})</button>
+                                        <button onclick="window.voteCommunityDiscussion('${d.id}', -1)" class="text-[10px] w-7 h-7 rounded-lg text-gray-400 hover:text-red-500 bg-gray-100 dark:bg-gray-800 transition flex items-center justify-center"><i class="fa-solid fa-thumbs-down"></i></button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                });
+            } catch (e) {
+                console.error("Failed to load community discussions.", e);
+            }
+        };
+
+        window.voteCommunityDiscussion = async function(discussionId, value) {
+            try {
+                const docRef = window.firebaseDoc(window.firebaseDb, "document_ai_discussions", discussionId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const currentVotes = docSnap.data().helpfulVotes || 0;
+                    await window.firebaseUpdateDoc(docRef, { helpfulVotes: Math.max(0, currentVotes + value) });
+                }
+            } catch(e) {}
+        };
+
+        window.submitAiTutorQuestion = async function() {
+            const inputEl = document.getElementById('ai-tutor-input');
+            const question = inputEl.value.trim();
+            if (!question) return;
+
+            const feed = document.getElementById('ai-tutor-chat-feed');
+            const loader = document.getElementById('ai-tutor-loader');
+            const iframe = document.getElementById('doc-reader-iframe');
+            
+            inputEl.value = ''; 
+
+            const docTitle = document.getElementById('doc-reader-header-title').innerText || "Unknown Document";
+            let documentContext = `Document Title: ${docTitle}\nCurrent Page/Extracted Text: Context not yet available.`;
+            
+            let fileId = null;
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if (fileIdMatch) {
+                fileId = fileIdMatch[1];
+                if (window.documentAnalysisCache[fileId] && window.documentAnalysisCache[fileId].summary) {
+                    documentContext = `Document Title: ${docTitle}\nExtracted Keywords: ${window.documentAnalysisCache[fileId].concepts.join(", ")}\nExtracted Document Text: ${window.documentAnalysisCache[fileId].summary}`;
+                }
+            }
+
+            feed.innerHTML += `
+                <div class="flex items-start gap-3 justify-end mt-4">
+                    <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
+                        ${question}
+                    </div>
+                </div>
+            `;
+            
+            feed.scrollTop = feed.scrollHeight;
+            loader.classList.remove('hidden');
+
+            // --- SEARCH BEFORE AI ENGINE ---
+            if (fileId && window.communityDiscussionsCache[fileId]) {
+                const existingDiscussions = window.communityDiscussionsCache[fileId];
+                const questionWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
+                
+                let bestMatch = null;
+                let highestScore = 0;
+
+                existingDiscussions.forEach(d => {
+                    const existingWords = d.question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+                    let matches = 0;
+                    questionWords.forEach(w => { if (existingWords.includes(w)) matches++; });
+                    const score = matches / (questionWords.length || 1);
+                    if (score > 0.6 && score > highestScore) {
+                        highestScore = score;
+                        bestMatch = d;
+                    }
+                });
+
+                if (bestMatch) {
+                    loader.classList.add('hidden');
+                    feed.innerHTML += `
+                        <div class="flex items-start gap-3 mt-4">
+                            <div class="w-8 h-8 shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-users text-xs"></i></div>
+                            <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
+                                <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
+                                ${bestMatch.answer.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                    feed.scrollTop = feed.scrollHeight;
+                    return; 
+                }
+            }
+
+            try {
+              const response = await fetch('/api/ai-tutor', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ mode: 'general', selectedText: question, context: documentContext })
+              });
+
+                if(!response.ok) throw new Error("API Route failed");
+                const data = await response.json();
+                const aiResponseText = data.response || data.reply || "No response received.";
+                
+                feed.innerHTML += `
+                    <div class="flex items-start gap-3 mt-4">
+                        <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
+                        <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
+                            ${aiResponseText.replace(/\n/g, '<br>')}
+                        </div>
+                    </div>
+                `;
+
+                if (fileId) {
+                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "document_ai_discussions"), {
+                        documentId: fileId,
+                        documentTitle: docTitle,
+                        question: question,
+                        answer: aiResponseText,
+                        helpfulVotes: 0,
+                        createdAt: new Date().getTime()
+                    });
+                }
+
+            } catch(error) {
+                feed.innerHTML += `
+                    <div class="flex items-start gap-3 mt-4">
+                        <div class="w-8 h-8 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
+                        <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 max-w-[85%] text-xs font-medium">
+                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
+                        </div>
+                    </div>
+                `;
+            } finally {
+                loader.classList.add('hidden');
+                feed.scrollTop = feed.scrollHeight;
+            }
+        };
         
         window.openAuthModal = function() { if (window.currentUserProfile) { window.firebaseSignOut(window.firebaseAuth); return; } document.getElementById('auth-gateway-modal').classList.remove('hidden'); toggleAuthTab('login'); };
         window.closeAuthModal = function() { document.getElementById('auth-gateway-modal').classList.add('hidden'); };
@@ -1751,45 +1933,24 @@
         };
         window.closeQuoteModal = function() { document.getElementById('quote-modal').classList.add('hidden'); };
 
-       window.slideshowData = []; window.currentSlideIndex = 0; window.slideIntervalThread = null;
-        
+        window.slideshowData = []; window.currentSlideIndex = 0; window.slideIntervalThread = null;
         window.renderSlideshow = function() {
-            const container = document.getElementById('slideshow-container'); 
-            const indicators = document.getElementById('slideshow-indicators'); 
-            const panel = document.getElementById('slideshow-panel');
-            const globalBg = document.getElementById('global-bg-slideshow');
-            
+            const container = document.getElementById('slideshow-container'); const indicators = document.getElementById('slideshow-indicators'); const panel = document.getElementById('slideshow-panel');
             if (!window.slideshowData || window.slideshowData.length === 0) { panel.classList.add('hidden'); return; }
             if(!document.getElementById('section-main-search').classList.contains('hidden')) panel.classList.remove('hidden');
-            
             container.innerHTML = ''; indicators.innerHTML = '';
-            if (globalBg) globalBg.innerHTML = '';
-            
             window.slideshowData.forEach((slide, index) => {
                 const img = document.createElement('img'); img.src = slide.url; img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; img.id = `slide-img-${index}`; container.appendChild(img);
-                
-                if (globalBg) {
-                    const bgImg = document.createElement('img'); bgImg.src = slide.url; bgImg.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; bgImg.id = `global-bg-img-${index}`; globalBg.appendChild(bgImg);
-                }
-
                 const dot = document.createElement('div'); dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-500 ${index === 0 ? 'bg-white w-4' : 'bg-white/40'}`; dot.id = `slide-dot-${index}`; indicators.appendChild(dot);
             });
-           window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 10000);
+            window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 4000); 
         };
 
         window.advanceSlide = function() {
             if (!window.slideshowData || window.slideshowData.length <= 1) return;
             const prevIndex = window.currentSlideIndex; window.currentSlideIndex = (window.currentSlideIndex + 1) % window.slideshowData.length;
-            
-            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); 
-            document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('w-4');
-            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); 
-            document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
-            
-            const prevBg = document.getElementById(`global-bg-img-${prevIndex}`);
-            const nextBg = document.getElementById(`global-bg-img-${window.currentSlideIndex}`);
-            if (prevBg) prevBg.classList.replace('opacity-100', 'opacity-0');
-            if (nextBg) nextBg.classList.replace('opacity-0', 'opacity-100');
+            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('w-4');
+            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
         };
 
         window.handleAddFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Flyer Added Successfully!", "success"); document.getElementById('admin-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add flyer.", "error"); } };
@@ -1880,28 +2041,14 @@
         window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
         window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
 
-       /* Academic Tools */
-        window.openGpaModal = function() { 
-            if(window.innerWidth < 1024 && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
-                window.toggleSidebar(); // Close sidebar on mobile
-            }
-            document.getElementById('gpa-calculator-modal').classList.remove('hidden'); 
-            if(document.getElementById('gpa-rows-stack').children.length===0) { 
-                window.addCourseGpaRow(); 
-                window.addCourseGpaRow(); 
-            } 
-        };
+        /* Academic Tools */
+        window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
         window.closeGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.add('hidden'); };
         window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-3"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs dark:text-white uppercase outline-none focus:ring-2 focus:ring-blue-100"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs text-center dark:text-white font-mono outline-none focus:ring-2 focus:ring-blue-100"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs text-center dark:text-white font-mono outline-none focus:ring-2 focus:ring-blue-100"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/20 py-2 rounded-lg">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 bg-red-50 dark:bg-red-900/20 w-8 h-8 rounded-full flex justify-center items-center"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
-      window.recalculateStudentGpaMetrics = function() { try { let p=0, c=0; const rows = document.getElementById('gpa-rows-stack').children; for(let row of rows) { const sv = parseFloat(row.querySelector('.gpa-score-field').value); const cv = parseFloat(row.querySelector('.gpa-credit-field').value); const label = row.querySelector('.gpa-grade-yield'); if(!isNaN(sv) && !isNaN(cv) && cv > 0) { let pt = 0; let grd = "-"; if (sv >= 80) { pt = 5.0; grd = "A"; } else if (sv >= 75) { pt = 4.5; grd = "B+"; } else if (sv >= 70) { pt = 4.0; grd = "B"; } else if (sv >= 65) { pt = 3.5; grd = "C+"; } else if (sv >= 60) { pt = 3.0; grd = "C"; } else if (sv >= 55) { pt = 2.5; grd = "D+"; } else if (sv >= 50) { pt = 2.0; grd = "D"; } else { pt = 0.0; grd = "F"; } label.innerText = grd; p += (pt * cv); c += cv; } else { label.innerText = "-"; } } const triGpa = c > 0 ? (p / c) : 0; document.getElementById('gpa-output-tri').innerText = triGpa.toFixed(2); const pc = parseFloat(document.getElementById('gpa-past-credits').value) || 0; const pp = parseFloat(document.getElementById('gpa-past-points').value) || 0; const cgpa = (pc + c) > 0 ? ((pp + p) / (pc + c)) : 0; document.getElementById('gpa-output-cgpa').innerText = cgpa.toFixed(2); } catch(e) {} };
+        window.recalculateStudentGpaMetrics = function() { try { let p=0, c=0; const rows = document.getElementById('gpa-rows-stack').children; for(let row of rows) { const sv = parseFloat(row.querySelector('.gpa-score-field').value); const cv = parseFloat(row.querySelector('.gpa-credit-field').value); const label = row.querySelector('.gpa-grade-yield'); if(!isNaN(sv) && !isNaN(cv) && cv > 0) { let pt = 0; let grd = "-"; if (sv >= 80) { pt = 5.0; grd = "A+"; } else if (sv >= 70) { pt = 4.5; grd = "A"; } else if (sv >= 65) { pt = 4.0; grd = "B+"; } else if (sv >= 60) { pt = 3.5; grd = "B"; } else if (sv >= 55) { pt = 3.0; grd = "C+"; } else if (sv >= 50) { pt = 2.5; grd = "C"; } else if (sv >= 45) { pt = 2.0; grd = "D+"; } else if (sv >= 40) { pt = 1.5; grd = "D"; } else { pt = 0.0; grd = "F"; } label.innerText = grd; p += (pt * cv); c += cv; } else { label.innerText = "-"; } } const triGpa = c > 0 ? (p / c) : 0; document.getElementById('gpa-output-tri').innerText = triGpa.toFixed(2); const pc = parseFloat(document.getElementById('gpa-past-credits').value) || 0; const pp = parseFloat(document.getElementById('gpa-past-points').value) || 0; const cgpa = (pc + c) > 0 ? ((pp + p) / (pc + c)) : 0; document.getElementById('gpa-output-cgpa').innerText = cgpa.toFixed(2); } catch(e) {} };
         
         // --- UDS HUB ADVANCED ANOVA ENGINE LOGIC ---
-        window.openResearchModal = function() { 
-            if(window.innerWidth < 1024 && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
-                window.toggleSidebar(); // Close sidebar on mobile
-            }
-            document.getElementById('research-toolkit-modal').classList.remove('hidden'); 
-        };
+        window.openResearchModal = function() { document.getElementById('research-toolkit-modal').classList.remove('hidden'); };
         window.closeResearchModal = function() { document.getElementById('research-toolkit-modal').classList.add('hidden'); };
         
         let currentAnovaResults = null;
@@ -3813,227 +3960,10 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 }
             };
             
-           // Start reading the file as base64
+            // Start reading the file as base64
             reader.readAsDataURL(file);
         });
     }
 </script>
-
-   <script>
-        window.toggleAiTutorPanel = async function() {
-            const panel = document.getElementById('ai-tutor-panel');
-            const container = document.getElementById('doc-iframe-container');
-            const openBtn = document.getElementById('ai-tutor-open-btn');
-            
-            if (panel.classList.contains('w-0')) {
-                // Open Panel
-                panel.classList.remove('w-0');
-                panel.classList.add('w-full', 'md:w-[380px]', 'lg:w-[420px]');
-                openBtn.classList.add('hidden');
-                
-                if (window.innerWidth >= 768) {
-                    container.classList.add('md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
-                } else {
-                    container.classList.add('hidden'); // Hide iframe on small mobile
-                }
-
-             // Autoload document context quietly if not already cached
-                const iframe = document.getElementById('doc-reader-iframe');
-                const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-                if (fileIdMatch) {
-                    const fileId = fileIdMatch[1];
-                    if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
-                    if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
-                    if (!window.documentAnalysisCache[fileId]) {
-                        const docTitle = document.getElementById('doc-reader-header-title').innerText;
-                        try {
-                            window.documentAnalysisCache[fileId] = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
-                        } catch (e) {
-                            console.error("Silent context extraction failed:", e);
-                        }
-                    }
-                }
-            } else {
-                // Close Panel
-                panel.classList.remove('w-full', 'md:w-[380px]', 'lg:w-[420px]');
-                panel.classList.add('w-0');
-                container.classList.remove('hidden', 'md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
-                
-                setTimeout(() => { openBtn.classList.remove('hidden'); }, 300);
-            }
-        };
-
-       window.communityDiscussionsCache = {};
-
-        window.loadCommunityDiscussions = async function(documentId) {
-            const container = document.getElementById('ai-tutor-community-discussions');
-            const feed = document.getElementById('ai-tutor-community-feed');
-            if(!container || !feed) return;
-
-            try {
-                const ref = window.firebaseCollection(window.firebaseDb, "document_ai_discussions");
-                onSnapshot(ref, (snapshot) => {
-                    let discussions = [];
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        if(data.documentId === documentId) discussions.push({ id: doc.id, ...data });
-                    });
-
-                    window.communityDiscussionsCache[documentId] = discussions;
-
-                    if(discussions.length > 0) {
-                        container.classList.remove('hidden');
-                        feed.innerHTML = '';
-                        
-                        discussions.sort((a, b) => b.helpfulVotes - a.helpfulVotes || b.createdAt - a.createdAt);
-
-                        discussions.forEach(d => {
-                            feed.innerHTML += `
-                                <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                                    <span class="text-[9px] text-gray-500 uppercase tracking-wider font-bold block mb-1.5"><i class="fa-solid fa-user-graduate mr-1"></i>Anonymous Student</span>
-                                    <p class="font-medium text-gray-800 dark:text-gray-200 mb-2"><span class="text-blue-500 font-bold mr-1">Q:</span> ${d.question}</p>
-                                    <p class="text-gray-600 dark:text-gray-400 mb-3 text-xs leading-relaxed"><span class="text-purple-500 font-bold mr-1">A:</span> ${d.answer}</p>
-                                    <div class="flex items-center gap-2">
-                                        <button onclick="window.voteCommunityDiscussion('${d.id}', 1)" class="text-[10px] px-2.5 py-1.5 rounded-lg transition bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 hover:opacity-80 font-medium"><i class="fa-solid fa-thumbs-up mr-1"></i> Helpful (${d.helpfulVotes || 0})</button>
-                                        <button onclick="window.voteCommunityDiscussion('${d.id}', -1)" class="text-[10px] w-7 h-7 rounded-lg text-gray-400 hover:text-red-500 bg-gray-100 dark:bg-gray-800 transition flex items-center justify-center"><i class="fa-solid fa-thumbs-down"></i></button>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        container.classList.add('hidden');
-                    }
-                });
-            } catch (e) {
-                console.error("Failed to load community discussions.", e);
-            }
-        };
-
-        window.voteCommunityDiscussion = async function(discussionId, value) {
-            try {
-                const docRef = window.firebaseDoc(window.firebaseDb, "document_ai_discussions", discussionId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const currentVotes = docSnap.data().helpfulVotes || 0;
-                    await window.firebaseUpdateDoc(docRef, { helpfulVotes: Math.max(0, currentVotes + value) });
-                }
-            } catch(e) {}
-        };
-
-        window.submitAiTutorQuestion = async function() {
-            const inputEl = document.getElementById('ai-tutor-input');
-            const question = inputEl.value.trim();
-            if (!question) return;
-
-            const feed = document.getElementById('ai-tutor-chat-feed');
-            const loader = document.getElementById('ai-tutor-loader');
-            const iframe = document.getElementById('doc-reader-iframe');
-            
-            inputEl.value = ''; 
-
-            const docTitle = document.getElementById('doc-reader-header-title').innerText || "Unknown Document";
-            let documentContext = `Document Title: ${docTitle}\nCurrent Page/Extracted Text: Context not yet available.`;
-            
-            let fileId = null;
-            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (fileIdMatch) {
-                fileId = fileIdMatch[1];
-                if (window.documentAnalysisCache[fileId] && window.documentAnalysisCache[fileId].summary) {
-                    documentContext = `Document Title: ${docTitle}\nExtracted Keywords: ${window.documentAnalysisCache[fileId].concepts.join(", ")}\nExtracted Document Text: ${window.documentAnalysisCache[fileId].summary}`;
-                }
-            }
-
-            feed.innerHTML += `
-                <div class="flex items-start gap-3 justify-end mt-4">
-                    <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
-                        ${question}
-                    </div>
-                </div>
-            `;
-            
-            feed.scrollTop = feed.scrollHeight;
-            loader.classList.remove('hidden');
-
-            // --- SEARCH BEFORE AI ENGINE ---
-            if (fileId && window.communityDiscussionsCache[fileId]) {
-                const existingDiscussions = window.communityDiscussionsCache[fileId];
-                const questionWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
-                
-                let bestMatch = null;
-                let highestScore = 0;
-
-                existingDiscussions.forEach(d => {
-                    const existingWords = d.question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
-                    let matches = 0;
-                    questionWords.forEach(w => { if (existingWords.includes(w)) matches++; });
-                    const score = matches / (questionWords.length || 1);
-                    if (score > 0.6 && score > highestScore) {
-                        highestScore = score;
-                        bestMatch = d;
-                    }
-                });
-
-                if (bestMatch) {
-                    loader.classList.add('hidden');
-                    feed.innerHTML += `
-                        <div class="flex items-start gap-3 mt-4">
-                            <div class="w-8 h-8 shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-users text-xs"></i></div>
-                            <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
-                                <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
-                                ${bestMatch.answer.replace(/\n/g, '<br>')}
-                            </div>
-                        </div>
-                    `;
-                    feed.scrollTop = feed.scrollHeight;
-                    return; 
-                }
-            }
-
-            try {
-              const response = await fetch('/api/ai-tutor', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ mode: 'general', selectedText: question, context: documentContext })
-              });
-
-                if(!response.ok) throw new Error("API Route failed");
-                const data = await response.json();
-                const aiResponseText = data.response || data.reply || "No response received.";
-                
-                feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4">
-                        <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
-                            ${aiResponseText.replace(/\n/g, '<br>')}
-                        </div>
-                    </div>
-                `;
-
-                if (fileId) {
-                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "document_ai_discussions"), {
-                        documentId: fileId,
-                        documentTitle: docTitle,
-                        question: question,
-                        answer: aiResponseText,
-                        helpfulVotes: 0,
-                        createdAt: new Date().getTime()
-                    });
-                }
-
-            } catch(error) {
-                feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4">
-                        <div class="w-8 h-8 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-                        <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 max-w-[85%] text-xs font-medium">
-                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
-                        </div>
-                    </div>
-                `;
-            } finally {
-                loader.classList.add('hidden');
-                feed.scrollTop = feed.scrollHeight;
-            }
-        };
-    </script>
 </body>
 </html>
