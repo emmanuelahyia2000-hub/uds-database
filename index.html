@@ -92,7 +92,11 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white bg-fixed bg-gradient-to-br from-blue-50/80 via-gray-100 to-slate-200/80 dark:from-slate-900 dark:via-gray-900 dark:to-blue-950/80">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white bg-transparent">
+
+    <div id="site-bg-slider" class="fixed inset-0 -z-50 bg-cover bg-center transition-all duration-1000 ease-in-out scale-110 blur-xl"></div>
+    
+    <div class="fixed inset-0 -z-40 bg-white/40 dark:bg-black/60 pointer-events-none"></div>
 
     <div id="smart-notification-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 transform -translate-y-[150%] opacity-0 flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-lg px-6 py-3 rounded-full pointer-events-none">
         <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -160,7 +164,6 @@
                             <li><button onclick="navigateTo('accommodation')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-building-user w-5 text-center opacity-70"></i> Accommodation Finder</button></li>
                             <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center opacity-70"></i> Marketplace</button></li>
                             <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center opacity-70"></i> GPA Engine</button></li>
-                            <li><button onclick="openResearchModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-flask w-5 text-center opacity-70"></i> ANOVA Toolkit</button></li>
                            <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center opacity-70"></i> Campus Notices</button></li>
                            <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center opacity-70"></i> Contribute File</button></li>
                         </ul>
@@ -620,129 +623,6 @@
             <div class="bg-gray-50 dark:bg-geminiBase p-6 flex justify-between items-center">
                 <div class="bg-white dark:bg-geminiSurface px-4 py-2 rounded-2xl shadow-sm"><span class="text-[10px] text-gray-500 uppercase tracking-wider block font-medium">Trimester GPA</span><span id="gpa-output-tri" class="text-xl font-bold text-gray-800 dark:text-white">0.00</span></div>
                 <div class="bg-blue-600 dark:bg-blue-500 px-6 py-2 rounded-2xl shadow-md text-right"><span class="text-[10px] text-blue-200 uppercase tracking-wider block font-medium">Cumulative GPA</span><span id="gpa-output-cgpa" class="text-2xl font-black text-white">0.00</span></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="research-toolkit-modal" class="hidden fixed inset-0 z-[125] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-[95vw] lg:max-w-[1400px] w-full border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden h-[95vh]">
-            
-            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex flex-wrap justify-between items-center gap-4 bg-gray-50 dark:bg-[#1A1A1C]">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-flask text-purple-500 bg-purple-50 dark:bg-purple-900/20 p-2.5 rounded-xl text-xl"></i>
-                    <div>
-                        <h3 class="font-bold text-lg text-gray-800 dark:text-gray-100 leading-tight">Advanced Statistics Lab</h3>
-                        <p class="text-xs text-gray-500 font-medium">UDS Hub Research Engine</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-3 flex-grow justify-center overflow-x-auto">
-                    <button onclick="switchAnovaTab('quick')" id="tab-btn-quick" class="anova-tab-btn active px-4 py-2 text-sm font-medium rounded-lg bg-purple-600 text-white transition whitespace-nowrap">Quick Calc</button>
-                    <button onclick="switchAnovaTab('step')" id="tab-btn-step" class="anova-tab-btn px-4 py-2 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition whitespace-nowrap">Step-by-Step</button>
-                    <button onclick="switchAnovaTab('researcher')" id="tab-btn-researcher" class="anova-tab-btn px-4 py-2 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition whitespace-nowrap">Researcher</button>
-                    <button onclick="switchAnovaTab('custom')" id="tab-btn-custom" class="anova-tab-btn px-4 py-2 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition whitespace-nowrap">Custom Formula</button>
-                    <button onclick="switchAnovaTab('smart')" id="tab-btn-smart" class="anova-tab-btn px-4 py-2 text-sm font-medium rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition whitespace-nowrap">Smart Dashboard</button>
-                </div>
-
-                <div class="flex items-center gap-3 shrink-0">
-                    <select id="anova-alpha-level" class="p-2 bg-white dark:bg-geminiBase border border-gray-200 dark:border-gray-700 rounded-lg text-xs outline-none dark:text-white cursor-pointer font-medium">
-                        <option value="0.10">α = 0.10</option>
-                        <option value="0.05" selected>α = 0.05</option>
-                        <option value="0.01">α = 0.01</option>
-                        <option value="0.001">α = 0.001</option>
-                    </select>
-                    <div class="relative group">
-                        <button class="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-xs font-medium hover:opacity-80 transition"><i class="fa-solid fa-download mr-1"></i> Export</button>
-                        <div class="absolute right-0 mt-2 w-40 bg-white dark:bg-geminiBase border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hidden group-hover:block z-50 overflow-hidden">
-                            <button onclick="exportAnova('pdf')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-white transition">Download PDF</button>
-                            <button onclick="exportAnova('word')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-white transition">Download Word</button>
-                            <button onclick="exportAnova('csv')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-white transition">Download Data (CSV)</button>
-                        </div>
-                    </div>
-                    <button onclick="closeResearchModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-200 dark:bg-gray-800 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-
-            <div class="flex-grow flex overflow-hidden">
-                
-                <div id="anova-data-panel" class="w-80 bg-gray-50 dark:bg-geminiBase border-r border-gray-200 dark:border-gray-800 p-5 flex flex-col shrink-0 overflow-y-auto transition-all">
-                    <label class="text-xs font-bold text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Analysis Type</label>
-                    <select id="anova-test-type" class="w-full p-3 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none dark:text-white cursor-pointer mb-4">
-                        <option value="oneway">One-Way ANOVA</option>
-                        <option value="twoway" disabled>Two-Way ANOVA (Coming Soon)</option>
-                        <option value="rm" disabled>Repeated Measures (Coming Soon)</option>
-                        <option value="ancova" disabled>ANCOVA (Coming Soon)</option>
-                        <option value="manova" disabled>MANOVA (Coming Soon)</option>
-                    </select>
-
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data Matrix (CSV)</label>
-                        <button onclick="loadSampleData()" class="text-[10px] text-blue-500 hover:underline">Load Sample</button>
-                    </div>
-                    <p class="text-[10px] text-gray-400 mb-2">Format: GroupName, Val1, Val2, Val3... (One group per line)</p>
-                    <textarea id="anova-raw-data" rows="12" class="w-full p-3 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-xl font-mono text-xs outline-none dark:text-white resize-none flex-grow mb-4 whitespace-pre" placeholder="Control, 12, 14, 15, 13&#10;TreatmentA, 18, 20, 19, 21&#10;TreatmentB, 22, 24, 25, 23"></textarea>
-                    
-                    <button onclick="executeAdvancedAnova()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl transition shadow-md flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-calculator"></i> Calculate
-                    </button>
-                </div>
-
-                <div id="anova-views-container" class="flex-grow relative overflow-y-auto bg-white dark:bg-geminiSurface p-6">
-                    
-                    <div id="view-quick" class="anova-view block max-w-4xl mx-auto space-y-6">
-                        <h2 class="text-2xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">Quick Results</h2>
-                        <div id="quick-results-yield" class="text-gray-500 dark:text-gray-400 text-center py-10 italic">Enter data and click calculate to see instant results.</div>
-                    </div>
-
-                    <div id="view-step" class="anova-view hidden max-w-4xl mx-auto space-y-6">
-                        <h2 class="text-2xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">Step-by-Step Breakdown</h2>
-                        <div id="step-results-yield" class="space-y-4">
-                            <div class="text-gray-500 dark:text-gray-400 text-center py-10 italic">Enter data to begin the step-by-step learning module.</div>
-                        </div>
-                    </div>
-
-                    <div id="view-researcher" class="anova-view hidden max-w-5xl mx-auto space-y-6">
-                        <h2 class="text-2xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">Research Report Output</h2>
-                        <div id="researcher-results-yield" class="space-y-6">
-                            <div class="text-gray-500 dark:text-gray-400 text-center py-10 italic">Enter data to generate APA-formatted tables and thesis-ready text.</div>
-                        </div>
-                    </div>
-
-                    <div id="view-custom" class="anova-view hidden max-w-4xl mx-auto">
-                        <h2 class="text-2xl font-bold dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3 mb-6">Custom Formula Engine</h2>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 bg-gray-50 dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-800">
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="mean" checked> Mean</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="variance" checked> Variance</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="sd"> Std Dev</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="ss"> Sum of Squares</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="df"> Degrees of Freedom</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="ms"> Mean Square</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="fstat"> F Statistic</label>
-                            <label class="flex items-center gap-2 text-sm dark:text-gray-200"><input type="checkbox" class="custom-metric-cb" value="pvalue"> P Value</label>
-                        </div>
-                        <div id="custom-results-yield" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="col-span-full text-gray-500 dark:text-gray-400 text-center py-10 italic">Select metrics and calculate.</div>
-                        </div>
-                    </div>
-
-                    <div id="view-smart" class="anova-view hidden w-full h-full">
-                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 h-full">
-                            <div class="flex flex-col h-full bg-gray-50 dark:bg-geminiBase rounded-2xl border border-gray-200 dark:border-gray-800 p-4 overflow-hidden">
-                                <h3 class="font-bold text-gray-800 dark:text-white mb-4 uppercase tracking-wider text-xs">Live Results</h3>
-                                <div id="smart-results-table" class="flex-grow overflow-auto bg-white dark:bg-geminiSurface rounded-xl p-4 shadow-inner">
-                                    <div class="text-gray-500 dark:text-gray-400 text-center py-10 italic">Awaiting calculation...</div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col h-full bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30 p-4 overflow-hidden">
-                                <h3 class="font-bold text-blue-800 dark:text-blue-300 mb-4 uppercase tracking-wider text-xs flex items-center gap-2"><i class="fa-solid fa-chalkboard-user"></i> Live Tutor Explanation</h3>
-                                <div id="smart-tutor-yield" class="flex-grow overflow-auto text-sm text-gray-700 dark:text-gray-300 leading-relaxed space-y-4 pr-2">
-                                    <p>Welcome to the Smart Dashboard. As calculations complete, I will explain the interpretation of the F-statistic, the critical values, and what your alpha level means for your specific data set.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
             </div>
         </div>
     </div>
@@ -2046,381 +1926,6 @@
         window.closeGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.add('hidden'); };
         window.addCourseGpaRow = function() { const id = 'gpa-row-' + Math.random().toString(36).substring(2,7); const container = document.getElementById('gpa-rows-stack'); const row = document.createElement('div'); row.id = id; row.className = "flex gap-2 items-center mb-3"; row.innerHTML = ` <input type="text" placeholder="Course" class="w-1/3 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs dark:text-white uppercase outline-none focus:ring-2 focus:ring-blue-100"> <input type="number" placeholder="Score" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-score-field w-1/4 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs text-center dark:text-white font-mono outline-none focus:ring-2 focus:ring-blue-100"> <input type="number" value="3" onkeyup="window.recalculateStudentGpaMetrics()" onchange="window.recalculateStudentGpaMetrics()" class="gpa-credit-field w-1/4 p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-xs text-center dark:text-white font-mono outline-none focus:ring-2 focus:ring-blue-100"> <div class="gpa-grade-yield w-12 text-center text-xs font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/20 py-2 rounded-lg">-</div> <button onclick="document.getElementById('${id}').remove(); window.recalculateStudentGpaMetrics();" class="text-red-400 hover:text-red-600 bg-red-50 dark:bg-red-900/20 w-8 h-8 rounded-full flex justify-center items-center"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); window.recalculateStudentGpaMetrics(); };
         window.recalculateStudentGpaMetrics = function() { try { let p=0, c=0; const rows = document.getElementById('gpa-rows-stack').children; for(let row of rows) { const sv = parseFloat(row.querySelector('.gpa-score-field').value); const cv = parseFloat(row.querySelector('.gpa-credit-field').value); const label = row.querySelector('.gpa-grade-yield'); if(!isNaN(sv) && !isNaN(cv) && cv > 0) { let pt = 0; let grd = "-"; if (sv >= 80) { pt = 5.0; grd = "A+"; } else if (sv >= 70) { pt = 4.5; grd = "A"; } else if (sv >= 65) { pt = 4.0; grd = "B+"; } else if (sv >= 60) { pt = 3.5; grd = "B"; } else if (sv >= 55) { pt = 3.0; grd = "C+"; } else if (sv >= 50) { pt = 2.5; grd = "C"; } else if (sv >= 45) { pt = 2.0; grd = "D+"; } else if (sv >= 40) { pt = 1.5; grd = "D"; } else { pt = 0.0; grd = "F"; } label.innerText = grd; p += (pt * cv); c += cv; } else { label.innerText = "-"; } } const triGpa = c > 0 ? (p / c) : 0; document.getElementById('gpa-output-tri').innerText = triGpa.toFixed(2); const pc = parseFloat(document.getElementById('gpa-past-credits').value) || 0; const pp = parseFloat(document.getElementById('gpa-past-points').value) || 0; const cgpa = (pc + c) > 0 ? ((pp + p) / (pc + c)) : 0; document.getElementById('gpa-output-cgpa').innerText = cgpa.toFixed(2); } catch(e) {} };
-        
-        // --- UDS HUB ADVANCED ANOVA ENGINE LOGIC ---
-        window.openResearchModal = function() { document.getElementById('research-toolkit-modal').classList.remove('hidden'); };
-        window.closeResearchModal = function() { document.getElementById('research-toolkit-modal').classList.add('hidden'); };
-        
-        let currentAnovaResults = null;
-
-        const statExplanations = {
-            mean: "The mean is simply the average. You add up all the numbers in a group and divide by how many numbers there are. It shows the 'center' of that group.",
-            variance: "Variance measures how spread out the numbers are from the mean. A high variance means the numbers are scattered wide; a low variance means they are tightly clustered around the average.",
-            ss: "Sum of Squares (SS) is the total variation in your data. 'SS Between' looks at differences between the groups, while 'SS Within' looks at random noise inside the groups.",
-            df: "Degrees of freedom represent the number of independent values that can vary in an analysis without breaking the mathematical constraints. Usually, it's (Count - 1).",
-            ms: "Mean Square (MS) is an estimate of variance. We find it by dividing the Sum of Squares by the Degrees of Freedom. It helps us compare the 'signal' (group differences) to the 'noise' (random error).",
-            fstat: "The F Statistic is a ratio of the Mean Square Between divided by the Mean Square Within. A large F-value means the difference between groups is much bigger than the random noise inside the groups.",
-            pvalue: "The P-value tells you the probability of seeing these results by pure luck. If the P-value is smaller than your chosen Alpha level (e.g., 0.05), you conclude the results are statistically significant.",
-            decision: "If P-value < Alpha, we 'Reject H₀' (meaning there IS a significant difference). If P-value > Alpha, we 'Fail to Reject H₀' (meaning we don't have enough proof to say the groups are different)."
-        };
-
-        window.showExplanation = function(conceptKey, title) {
-            document.getElementById('exp-modal-title').innerText = title;
-            document.getElementById('exp-modal-body').innerText = statExplanations[conceptKey] || "Explanation not available.";
-            document.getElementById('explanation-modal').classList.remove('hidden');
-        }
-
-        window.generateExplainBtn = function(key, title) {
-            return `<button onclick="showExplanation('${key}', '${title}')" class="ml-2 text-[10px] bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full font-medium transition cursor-pointer shrink-0 border border-blue-200 dark:border-blue-800"><i class="fa-solid fa-question-circle mr-1"></i>Explain</button>`;
-        }
-
-        window.switchAnovaTab = function(mode) {
-            document.querySelectorAll('.anova-tab-btn').forEach(btn => {
-                btn.classList.remove('bg-purple-600', 'text-white');
-                btn.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-800');
-            });
-            const activeBtn = document.getElementById(`tab-btn-${mode}`);
-            activeBtn.classList.remove('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-800');
-            activeBtn.classList.add('bg-purple-600', 'text-white');
-
-            document.querySelectorAll('.anova-view').forEach(view => view.classList.add('hidden'));
-            document.getElementById(`view-${mode}`).classList.remove('hidden', 'block');
-            document.getElementById(`view-${mode}`).classList.add(mode === 'smart' ? 'flex' : 'block');
-
-            if(currentAnovaResults) {
-                renderSpecificView(mode);
-            }
-        };
-
-        window.loadSampleData = function() {
-            document.getElementById('anova-raw-data').value = "Fertilizer A, 15, 17, 14, 16, 15\nFertilizer B, 21, 19, 22, 24, 20\nFertilizer C, 11, 13, 10, 12, 11";
-        }
-
-        window.executeAdvancedAnova = function() {
-            const rawData = document.getElementById('anova-raw-data').value.trim();
-            const alpha = parseFloat(document.getElementById('anova-alpha-level').value);
-            
-            if(!rawData) { window.showToast("Please enter data to calculate.", "error"); return; }
-            if(typeof jStat === 'undefined') { window.showToast("Statistical library loading... please wait 2 seconds.", "error"); return; }
-
-            try {
-                const lines = rawData.split('\n');
-                const groups = [];
-                let grandTotal = 0;
-                let totalN = 0;
-
-                lines.forEach(line => {
-                    if(!line.trim()) return;
-                    const parts = line.split(',');
-                    const name = parts[0].trim();
-                    const values = parts.slice(1).map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
-                    if(values.length > 0) {
-                        const sum = values.reduce((a,b)=>a+b,0);
-                        const mean = sum / values.length;
-                        groups.push({ name, values, n: values.length, sum, mean });
-                        grandTotal += sum;
-                        totalN += values.length;
-                    }
-                });
-
-                if(groups.length < 2) { window.showToast("Require at least 2 valid groups.", "error"); return; }
-
-                const grandMean = grandTotal / totalN;
-                const k = groups.length;
-
-                let ssBetween = 0;
-                let ssWithin = 0;
-
-                groups.forEach(g => {
-                    ssBetween += g.n * Math.pow(g.mean - grandMean, 2);
-                    g.values.forEach(v => {
-                        ssWithin += Math.pow(v - g.mean, 2);
-                    });
-                });
-
-                const ssTotal = ssBetween + ssWithin;
-                
-                const dfBetween = k - 1;
-                const dfWithin = totalN - k;
-                const dfTotal = totalN - 1;
-
-                const msBetween = ssBetween / dfBetween;
-                const msWithin = ssWithin / dfWithin;
-
-                const fStat = msBetween / msWithin;
-
-                const pValue = 1 - jStat.centralF.cdf(fStat, dfBetween, dfWithin);
-                
-                const criticalValue = jStat.centralF.inv(1 - alpha, dfBetween, dfWithin);
-                const significant = pValue < alpha;
-
-                currentAnovaResults = {
-                    alpha, groups, grandMean, totalN, k,
-                    ssBetween, ssWithin, ssTotal,
-                    dfBetween, dfWithin, dfTotal,
-                    msBetween, msWithin, fStat, pValue, criticalValue, significant
-                };
-
-                const activeTab = document.querySelector('.anova-tab-btn.bg-purple-600').id.replace('tab-btn-', '');
-                renderSpecificView(activeTab);
-
-            } catch(e) {
-                console.error(e);
-                window.showToast("Data formatting error. Check your CSV syntax.", "error");
-            }
-        }
-
-        window.renderSpecificView = function(mode) {
-            const res = currentAnovaResults;
-            if(!res) return;
-
-            if(mode === 'quick') {
-                const decisionText = res.significant 
-                    ? `<div class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-6 rounded-2xl border border-red-200 dark:border-red-800/50 mt-6 text-center shadow-sm">
-                         <h3 class="text-2xl font-black mb-2 tracking-tight">Reject H₀</h3>
-                         <p class="font-medium text-sm opacity-90">There is a statistically significant difference between the groups (p < ${res.alpha}).</p>
-                       </div>`
-                    : `<div class="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-6 rounded-2xl border border-green-200 dark:border-green-800/50 mt-6 text-center shadow-sm">
-                         <h3 class="text-2xl font-black mb-2 tracking-tight">Fail to Reject H₀</h3>
-                         <p class="font-medium text-sm opacity-90">There is no statistically significant difference between the groups (p ≥ ${res.alpha}).</p>
-                       </div>`;
-
-                document.getElementById('quick-results-yield').innerHTML = `
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
-                            <span class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">F-Statistic</span>
-                            <span class="text-2xl font-mono text-gray-800 dark:text-white">${res.fStat.toFixed(4)}</span>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
-                            <span class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">P-Value</span>
-                            <span class="text-2xl font-mono text-gray-800 dark:text-white">${res.pValue.toFixed(5)}</span>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
-                            <span class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Critical Value</span>
-                            <span class="text-2xl font-mono text-gray-800 dark:text-white">${res.criticalValue.toFixed(4)}</span>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
-                            <span class="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">Total N</span>
-                            <span class="text-2xl font-mono text-gray-800 dark:text-white">${res.totalN}</span>
-                        </div>
-                    </div>
-                    ${decisionText}
-                `;
-            }
-
-            if(mode === 'step') {
-                document.getElementById('step-results-yield').innerHTML = `
-                    <div class="space-y-4">
-                        <div class="p-5 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
-                            <h3 class="font-bold text-blue-800 dark:text-blue-300 mb-2 flex items-center">Step 1: Calculate Group Means ${window.generateExplainBtn('mean', 'Means')}</h3>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-mono pl-4 border-l-2 border-blue-300">
-                                ${res.groups.map(g => `${g.name}: Sum = ${g.sum.toFixed(2)}, n = ${g.n}, Mean = ${g.mean.toFixed(3)}`).join('<br>')}
-                                <br><br><span class="font-bold">Grand Mean = ${res.grandMean.toFixed(3)}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="p-5 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-900/30">
-                            <h3 class="font-bold text-purple-800 dark:text-purple-300 mb-2 flex items-center">Step 2: Sum of Squares (SS) ${window.generateExplainBtn('ss', 'Sum of Squares')}</h3>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-mono pl-4 border-l-2 border-purple-300">
-                                SS Between = ${res.ssBetween.toFixed(4)}<br>
-                                SS Within = ${res.ssWithin.toFixed(4)}<br>
-                                SS Total = ${res.ssTotal.toFixed(4)}
-                            </div>
-                        </div>
-
-                        <div class="p-5 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
-                            <h3 class="font-bold text-indigo-800 dark:text-indigo-300 mb-2 flex items-center">Step 3: Degrees of Freedom (df) ${window.generateExplainBtn('df', 'Degrees of Freedom')}</h3>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-mono pl-4 border-l-2 border-indigo-300">
-                                df Between (Groups - 1) = ${res.k} - 1 = ${res.dfBetween}<br>
-                                df Within (TotalN - Groups) = ${res.totalN} - ${res.k} = ${res.dfWithin}<br>
-                                df Total = ${res.totalN} - 1 = ${res.dfTotal}
-                            </div>
-                        </div>
-
-                        <div class="p-5 bg-teal-50 dark:bg-teal-900/10 rounded-xl border border-teal-100 dark:border-teal-900/30">
-                            <h3 class="font-bold text-teal-800 dark:text-teal-300 mb-2 flex items-center">Step 4: Mean Squares (MS) & F ${window.generateExplainBtn('fstat', 'F-Statistic')}</h3>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-mono pl-4 border-l-2 border-teal-300">
-                                MS Between (SSb / dfb) = ${res.msBetween.toFixed(4)}<br>
-                                MS Within (SSw / dfw) = ${res.msWithin.toFixed(4)}<br>
-                                <span class="font-bold text-teal-600 dark:text-teal-400">F-Statistic (MSb / MSw) = ${res.fStat.toFixed(4)}</span>
-                            </div>
-                        </div>
-
-                        <div class="p-5 bg-gray-50 dark:bg-geminiBase rounded-xl border border-gray-200 dark:border-gray-700">
-                            <h3 class="font-bold text-gray-800 dark:text-white mb-2 flex items-center">Step 5: Final Decision ${window.generateExplainBtn('decision', 'Decision Rule')}</h3>
-                            <div class="text-sm text-gray-700 dark:text-gray-300 font-mono pl-4 border-l-2 border-gray-400">
-                                P-Value = ${res.pValue.toFixed(5)}<br>
-                                Alpha Level = ${res.alpha}<br>
-                                Conclusion: <span class="font-bold ${res.significant ? 'text-red-500' : 'text-green-500'}">${res.significant ? 'Reject H₀' : 'Fail to Reject H₀'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            if(mode === 'researcher') {
-                const apaText = `A one-way between-subjects ANOVA was conducted to compare the effect of the conditions on the dependent variable. There was a ${res.significant ? 'significant' : 'non-significant'} effect of the condition, F(${res.dfBetween}, ${res.dfWithin}) = ${res.fStat.toFixed(2)}, p = ${res.pValue.toFixed(3)}.`;
-                
-                document.getElementById('researcher-results-yield').innerHTML = `
-                    <div id="anova-export-target" class="bg-white dark:bg-geminiSurface p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                        <h3 class="text-lg font-bold mb-4">ANOVA Results Table</h3>
-                        <div class="overflow-x-auto mb-6">
-                            <table class="w-full text-left text-sm text-gray-700 dark:text-gray-300">
-                                <thead class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-200 uppercase text-[10px] tracking-wider">
-                                    <tr><th class="px-4 py-3">Source of Variation</th><th class="px-4 py-3">SS</th><th class="px-4 py-3">df</th><th class="px-4 py-3">MS</th><th class="px-4 py-3">F</th><th class="px-4 py-3">P-value</th><th class="px-4 py-3">F crit</th></tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-geminiBase">
-                                        <td class="px-4 py-3 font-medium">Between Groups</td>
-                                        <td class="px-4 py-3 font-mono">${res.ssBetween.toFixed(3)}</td>
-                                        <td class="px-4 py-3 font-mono">${res.dfBetween}</td>
-                                        <td class="px-4 py-3 font-mono">${res.msBetween.toFixed(3)}</td>
-                                        <td class="px-4 py-3 font-mono text-blue-600 dark:text-blue-400 font-bold">${res.fStat.toFixed(3)}</td>
-                                        <td class="px-4 py-3 font-mono ${res.significant ? 'text-red-500' : ''}">${res.pValue.toFixed(4)}</td>
-                                        <td class="px-4 py-3 font-mono">${res.criticalValue.toFixed(3)}</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-geminiBase">
-                                        <td class="px-4 py-3 font-medium">Within Groups</td>
-                                        <td class="px-4 py-3 font-mono">${res.ssWithin.toFixed(3)}</td>
-                                        <td class="px-4 py-3 font-mono">${res.dfWithin}</td>
-                                        <td class="px-4 py-3 font-mono">${res.msWithin.toFixed(3)}</td>
-                                        <td class="px-4 py-3 font-mono"></td><td class="px-4 py-3 font-mono"></td><td class="px-4 py-3 font-mono"></td>
-                                    </tr>
-                                    <tr class="bg-gray-50 dark:bg-gray-900/50">
-                                        <td class="px-4 py-3 font-bold">Total</td>
-                                        <td class="px-4 py-3 font-mono font-bold">${res.ssTotal.toFixed(3)}</td>
-                                        <td class="px-4 py-3 font-mono font-bold">${res.dfTotal}</td>
-                                        <td class="px-4 py-3"></td><td class="px-4 py-3"></td><td class="px-4 py-3"></td><td class="px-4 py-3"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="bg-yellow-50 dark:bg-yellow-900/10 border-l-4 border-yellow-500 p-5 rounded-r-xl">
-                        <h4 class="font-bold text-yellow-800 dark:text-yellow-400 mb-2 uppercase tracking-wider text-xs">APA Formatted Output (Ready to Copy)</h4>
-                        <p class="text-sm text-gray-800 dark:text-gray-200 font-serif leading-relaxed select-all">${apaText}</p>
-                    </div>
-                `;
-            }
-
-            if(mode === 'custom') {
-                const yieldBox = document.getElementById('custom-results-yield');
-                yieldBox.innerHTML = '';
-                
-                const checks = document.querySelectorAll('.custom-metric-cb:checked');
-                if(checks.length === 0) {
-                    yieldBox.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 italic">No metrics selected.</div>`;
-                    return;
-                }
-
-                const metrics = {
-                    mean: `Grand Mean = ${res.grandMean.toFixed(4)}`,
-                    variance: `Variance (Between) = ${res.msBetween.toFixed(4)}<br>Variance (Within) = ${res.msWithin.toFixed(4)}`,
-                    sd: `Std. Dev approx (Within) = ${Math.sqrt(res.msWithin).toFixed(4)}`,
-                    ss: `SS Total = ${res.ssTotal.toFixed(4)}`,
-                    df: `DF Total = ${res.dfTotal}`,
-                    ms: `MS Between = ${res.msBetween.toFixed(4)}`,
-                    fstat: `F = ${res.fStat.toFixed(4)}`,
-                    pvalue: `P = ${res.pValue.toFixed(5)}`
-                };
-
-                checks.forEach(cb => {
-                    const key = cb.value;
-                    yieldBox.innerHTML += `
-                        <div class="bg-white dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col justify-center">
-                            <span class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-1 flex items-center justify-between">
-                                ${cb.parentElement.innerText.trim()} ${window.generateExplainBtn(key, cb.parentElement.innerText.trim())}
-                            </span>
-                            <span class="text-lg font-mono text-gray-800 dark:text-white">${metrics[key]}</span>
-                        </div>
-                    `;
-                });
-            }
-
-            if(mode === 'smart') {
-                document.getElementById('smart-results-table').innerHTML = `
-                    <table class="w-full text-left text-xs text-gray-700 dark:text-gray-300">
-                        <thead class="bg-gray-100 dark:bg-gray-800 uppercase tracking-wider text-[9px]">
-                            <tr><th class="p-2">Metric</th><th class="p-2">Value</th></tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            <tr><td class="p-2 font-medium">F-Statistic</td><td class="p-2 font-mono">${res.fStat.toFixed(3)}</td></tr>
-                            <tr><td class="p-2 font-medium">P-Value</td><td class="p-2 font-mono ${res.significant?'text-red-500 font-bold':''}">${res.pValue.toFixed(5)}</td></tr>
-                            <tr><td class="p-2 font-medium">Critical F</td><td class="p-2 font-mono">${res.criticalValue.toFixed(3)}</td></tr>
-                            <tr><td class="p-2 font-medium">Decision</td><td class="p-2 font-bold ${res.significant?'text-red-500':'text-green-500'}">${res.significant ? 'Reject H₀' : 'Fail to Reject'}</td></tr>
-                        </tbody>
-                    </table>
-                `;
-
-                document.getElementById('smart-tutor-yield').innerHTML = `
-                    <div class="p-4 bg-white dark:bg-[#1A1A1C] rounded-xl border border-blue-100 dark:border-blue-900/30 mb-3">
-                        <p class="mb-2"><strong class="text-blue-600 dark:text-blue-400">What just happened?</strong></p>
-                        <p>You ran an ANOVA with an alpha level of <strong>${res.alpha}</strong>. The system checked if the variance <em>between</em> your ${res.k} groups was significantly larger than the variance <em>inside</em> the groups.</p>
-                    </div>
-                    
-                    <div class="p-4 bg-white dark:bg-[#1A1A1C] rounded-xl border border-blue-100 dark:border-blue-900/30 mb-3">
-                        <p class="mb-2"><strong class="text-blue-600 dark:text-blue-400">Interpreting the P-Value</strong></p>
-                        <p>Your calculated p-value is <strong>${res.pValue.toFixed(4)}</strong>. Because this number is <strong>${res.significant ? 'smaller' : 'larger'}</strong> than your alpha (${res.alpha}), we <strong>${res.significant ? 'reject' : 'fail to reject'}</strong> the null hypothesis.</p>
-                    </div>
-
-                    <div class="p-4 bg-white dark:bg-[#1A1A1C] rounded-xl border border-blue-100 dark:border-blue-900/30">
-                        <p class="mb-2"><strong class="text-blue-600 dark:text-blue-400">Plain English Conclusion</strong></p>
-                        <p>${res.significant 
-                            ? `We have strong mathematical evidence to prove that at least one of your groups is fundamentally different from the others. They are not all the same.` 
-                            : `We do not have enough mathematical proof to say these groups are different. Any differences seen in the averages are likely just random chance.`}</p>
-                    </div>
-                `;
-            }
-        }
-
-        document.getElementById('anova-alpha-level').addEventListener('change', () => {
-            if(document.getElementById('anova-raw-data').value.trim() !== '') {
-                executeAdvancedAnova();
-            }
-        });
-
-        document.addEventListener('change', function(e) {
-            if(e.target && e.target.classList.contains('custom-metric-cb')) {
-                if(currentAnovaResults) renderSpecificView('custom');
-            }
-        });
-
-        window.exportAnova = function(type) {
-            if(!currentAnovaResults) { window.showToast("Calculate first before exporting", "error"); return; }
-            if(type === 'csv') {
-                const res = currentAnovaResults;
-                let csv = "Source,SS,df,MS,F,P-value,F crit\n";
-                csv += `Between Groups,${res.ssBetween},${res.dfBetween},${res.msBetween},${res.fStat},${res.pValue},${res.criticalValue}\n`;
-                csv += `Within Groups,${res.ssWithin},${res.dfWithin},${res.msWithin},,,\n`;
-                csv += `Total,${res.ssTotal},${res.dfTotal},,,,\n`;
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ANOVA_Table.csv';
-                a.click();
-            } else if (type === 'word') {
-                switchAnovaTab('researcher');
-                const apaText = `A one-way between-subjects ANOVA was conducted to compare the effect of the conditions on the dependent variable. There was a ${currentAnovaResults.significant ? 'significant' : 'non-significant'} effect of the condition, F(${currentAnovaResults.dfBetween}, ${currentAnovaResults.dfWithin}) = ${currentAnovaResults.fStat.toFixed(2)}, p = ${currentAnovaResults.pValue.toFixed(3)}.`;
-                const blob = new Blob(['\ufeff', apaText], { type: 'application/msword' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ANOVA_Interpretation.doc';
-                a.click();
-            } else if(type === 'pdf') {
-                window.showToast("Generating PDF...", "success");
-                switchAnovaTab('researcher'); 
-                const element = document.getElementById('anova-export-target');
-                html2pdf().from(element).set({
-                    margin: 10,
-                    filename: 'ANOVA_Report.pdf',
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-                }).save();
-            }
-        }
 
         // --- ACCOMMODATION FINDER LOGIC ---
         let mapInstance = null, markerInstance = null;
@@ -3965,5 +3470,55 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         });
     }
 </script>
+<style>
+        /* Automatically turns all your large panels into Frosted Glass */
+        .rounded-2xl.bg-white, .rounded-3xl.bg-white, 
+        .rounded-2xl.bg-gray-50, .rounded-3xl.bg-gray-50,
+        aside#app-sidebar {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        }
+        
+        /* Dark Mode Glass */
+        html.dark .rounded-2xl.dark\:bg-geminiSurface, html.dark .rounded-3xl.dark\:bg-geminiSurface,
+        html.dark .rounded-2xl.dark\:bg-geminiBase, html.dark .rounded-3xl.dark\:bg-geminiBase,
+        html.dark .rounded-2xl.dark\:bg-\\[\\#1A1A1C\\], html.dark .rounded-3xl.dark\:bg-\\[\\#1A1A1C\\],
+        html.dark aside#app-sidebar {
+            background-color: rgba(19, 19, 20, 0.6) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* Protect Document Reader so it doesn't become transparent */
+        #google-document-reader-modal .bg-white, #google-document-reader-modal.dark\:bg-\\[\\#000000\\] {
+            background-color: inherit !important;
+            backdrop-filter: none !important;
+        }
+    </style>
+
+    <script>
+        /* Background Slideshow Logic */
+        const bgImages = [
+            'url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2000")',
+            'url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2000")',
+            'url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2000")'
+        ];
+        
+        let bgIndex = 0;
+        const bgSlider = document.getElementById('site-bg-slider');
+        
+        function changeBackground() {
+            if(bgSlider) {
+                bgSlider.style.backgroundImage = bgImages[bgIndex];
+                bgIndex = (bgIndex + 1) % bgImages.length;
+            }
+        }
+        
+        changeBackground(); // Initialize immediately
+        setInterval(changeBackground, 7000); // Change image every 7 seconds
+    </script>
 </body>
 </html>
