@@ -33,14 +33,17 @@
             theme: {
                 extend: {
                     colors: {
-                        navy: { DEFAULT: '#1B365D', 800: '#152947', 900: '#0F1E33' },
-                        scholarGreen: '#006621', 
-                        scholarBlue: '#1a0dab',
-                        marketplaceWarning: '#f59e0b',
-                        geminiBase: '#131314',     // AI Dark Mode Base
-                        geminiSurface: '#1E1F20',  // AI Dark Mode Surface
+                        deepNavy: '#0B1B3D',
+                        academicPurple: '#4B2E83',
+                        academicGold: '#D4AF37',
+                        lightGray: '#F3F4F6',
+                        white: '#FFFFFF',
+                        // Map semantic hooks to the new palette to propagate solid colors globally
+                        navy: { DEFAULT: '#0B1B3D', 800: '#08142E', 900: '#050D1F' },
+                        geminiBase: '#0B1B3D',
+                        geminiSurface: '#4B2E83',
                         geminiLightBase: '#FFFFFF',
-                        geminiLightSurface: '#F0F4F9' // AI Light Mode Surface
+                        geminiLightSurface: '#F3F4F6'
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -52,31 +55,31 @@
 
     <style>
         body { 
-            background-color: #ffffff; 
-            color: #1f2937; 
+            background-color: #F3F4F6; /* Solid Light Gray */
+            color: #0B1B3D; /* Solid Deep Navy */
             font-family: 'Inter', sans-serif; 
             transition: background-color 0.3s, color 0.3s;
         }
-        .theme-bg { background-color: #1B365D; } 
-        .theme-text { color: #1B365D; }
+        .theme-bg { background-color: #0B1B3D; } 
+        .theme-text { color: #4B2E83; }
         
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        html.dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+        ::-webkit-scrollbar-track { background: #F3F4F6; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; } /* Academic Gold Scrollbars */
+        html.dark ::-webkit-scrollbar-thumb { background: #D4AF37; }
         
-        .whatsapp-float { animation: pulse-glow 3s infinite ease-in-out; }
+        .whatsapp-float { animation: pulse-glow 3s infinite ease-in-out; background-color: #4B2E83 !important; }
         @keyframes pulse-glow {
-            0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(27, 54, 93, 0.3); }
-            50% { transform: scale(1.04); box-shadow: 0 6px 20px rgba(27, 54, 93, 0.5); }
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(75, 46, 131, 0.5); }
+            50% { transform: scale(1.04); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.7); }
         }
 
-        .scholar-title { font-size: 18px; line-height: 1.3; color: #1B365D; font-weight: 500; }
-        .scholar-title:hover { text-decoration: underline; cursor: pointer; }
+        .scholar-title { font-size: 18px; line-height: 1.3; color: #4B2E83; font-weight: 500; }
+        .scholar-title:hover { text-decoration: underline; color: #0B1B3D; cursor: pointer; }
 
-        html.dark body { background-color: #131314; color: #E3E3E3; }
-        html.dark .scholar-title { color: #A8C7FA; }
-        html.dark #doc-reader-iframe { background-color: #ffffff; }
+        html.dark body { background-color: #0B1B3D; color: #FFFFFF; } /* Solid Deep Navy Body */
+        html.dark .scholar-title { color: #D4AF37; } /* Academic Gold Text Link context */
+        html.dark #doc-reader-iframe { background-color: #FFFFFF; }
         
         /* Map specific styling */
         #hostel-map-picker { z-index: 10; }
@@ -92,11 +95,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-blue-200 dark:selection:bg-blue-900 selection:text-black dark:selection:text-white bg-transparent">
-
-    <div id="site-bg-slider" class="fixed inset-0 -z-50 bg-cover bg-center transition-all duration-1000 ease-in-out scale-110 blur-xl"></div>
-    
-    <div class="fixed inset-0 -z-40 bg-white/40 dark:bg-black/60 pointer-events-none"></div>
+<body class="min-h-screen flex flex-col pb-20 md:pb-0 selection:bg-academicGold selection:text-deepNavy bg-lightGray text-deepNavy dark:bg-deepNavy dark:text-white transition-colors duration-300">
 
     <div id="smart-notification-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 transform -translate-y-[150%] opacity-0 flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-lg px-6 py-3 rounded-full pointer-events-none">
         <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
@@ -105,21 +104,21 @@
         <span id="smart-notification-text" class="text-sm font-medium text-gray-800 dark:text-gray-200"></span>
     </div>
 
-    <nav class="bg-white/80 dark:bg-geminiBase/80 backdrop-blur-md px-4 md:px-6 py-3 flex justify-between items-center z-[60] sticky top-0 transition-colors border-b border-gray-200/50 dark:border-gray-800/50">
+    <nav class="bg-white dark:bg-deepNavy px-4 md:px-6 py-3 flex justify-between items-center z-[60] sticky top-0 transition-colors border-b border-academicGold/40">
         <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()" class="lg:hidden text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-geminiSurface p-2 rounded-full transition w-10 h-10 flex items-center justify-center">
+            <button onclick="toggleSidebar()" class="lg:hidden text-deepNavy dark:text-white hover:bg-lightGray dark:hover:bg-academicPurple p-2 rounded-full transition w-10 h-10 flex items-center justify-center">
                 <i class="fa-solid fa-bars text-lg"></i>
             </button>
             <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('dashboard')">
-                <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-2xl"></i>
-                <span class="text-xl md:text-2xl font-medium tracking-tight text-gray-700 dark:text-gray-200">UDS<span class="font-bold text-navy dark:text-blue-400">Hub</span></span>
+                <i class="fa-solid fa-graduation-cap text-academicPurple dark:text-academicGold text-2xl"></i>
+                <span class="text-xl md:text-2xl font-semibold tracking-tight text-deepNavy dark:text-white">UDS<span class="font-bold text-academicPurple dark:text-academicGold">Hub</span></span>
             </div>
         </div>
         
         <div class="flex items-center gap-3 md:gap-4 text-sm">
-            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-gray-600 dark:text-gray-300 hover:text-navy dark:hover:text-white font-medium bg-gray-100 dark:bg-geminiSurface px-3 py-1.5 rounded-full transition">Admin Config</button>
-            <button onclick="toggleTheme()" class="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-geminiSurface w-10 h-10 rounded-full flex items-center justify-center transition text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
-            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-navy dark:bg-blue-300 hover:bg-blue-800 dark:hover:bg-blue-200 text-white dark:text-navy px-5 py-2 rounded-full text-sm font-medium transition">Sign In</button>
+            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-deepNavy dark:text-white hover:text-academicPurple font-medium bg-lightGray dark:bg-academicPurple px-3 py-1.5 rounded-full transition">Admin Config</button>
+            <button onclick="toggleTheme()" class="text-deepNavy dark:text-white hover:bg-lightGray dark:hover:bg-academicPurple w-10 h-10 rounded-full flex items-center justify-center transition text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
+            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-academicPurple dark:bg-academicGold text-white dark:text-deepNavy hover:bg-deepNavy dark:hover:bg-white border border-transparent transition px-5 py-2 rounded-full text-sm font-medium shadow-md">Sign In</button>
         </div>
     </nav>
 
@@ -141,41 +140,40 @@
             
             <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[45] hidden transition-opacity opacity-0 lg:hidden backdrop-blur-sm"></div>
 
-            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-[50] w-72 bg-geminiLightSurface dark:bg-geminiSurface transform -translate-x-full transition-transform duration-300 lg:relative lg:translate-x-0 flex flex-col flex-shrink-0 shadow-2xl lg:shadow-none h-full lg:h-auto overflow-y-auto lg:w-64 lg:bg-transparent lg:dark:bg-transparent lg:rounded-none">
+            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-[50] w-72 bg-academicPurple text-white transform -translate-x-full transition-transform duration-300 lg:relative lg:translate-x-0 flex flex-col flex-shrink-0 shadow-2xl lg:shadow-none h-full lg:h-auto overflow-y-auto lg:w-64 lg:bg-white lg:dark:bg-deepNavy lg:text-deepNavy lg:dark:text-white lg:rounded-none">
                 
                 <div class="p-6 lg:p-0 space-y-6">
                     <div class="flex justify-between items-center lg:hidden mb-2">
-                        <span class="font-medium text-gray-800 dark:text-gray-200">Tools</span>
-                        <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+                        <span class="font-medium text-academicGold">Tools Menu</span>
+                        <button onclick="toggleSidebar()" class="text-white hover:text-academicGold w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
                     </div>
 
-                    <div class="bg-white dark:bg-geminiSurface lg:bg-transparent lg:dark:bg-transparent p-4 lg:p-0 rounded-2xl lg:rounded-none border lg:border-none border-gray-200 dark:border-gray-800">
-                        <h3 class="font-medium text-gray-900 dark:text-white text-base truncate" id="profile-name">Loading...</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1" id="profile-index">Index: --</p>
-                        <div class="inline-flex items-center px-2 py-1 rounded bg-green-50 dark:bg-green-900/20 text-xs text-scholarGreen dark:text-[#81c995] font-medium mt-1">
+                    <div class="bg-white/10 lg:bg-lightGray lg:dark:bg-academicPurple/30 p-4 rounded-2xl border border-white/10 lg:border-academicGold/20">
+                        <h3 class="font-medium text-white lg:text-deepNavy lg:dark:text-white text-base truncate" id="profile-name">Loading...</h3>
+                        <p class="text-sm text-white/70 lg:text-deepNavy/70 lg:dark:text-white/70 mb-1" id="profile-index">Index: --</p>
+                        <div class="inline-flex items-center px-2 py-1 rounded bg-academicGold text-xs text-deepNavy font-semibold mt-1">
                             Level <span id="profile-level" class="ml-1">--</span> <span class="mx-1">•</span> <span id="profile-dept" class="truncate max-w-[120px]">--</span>
                         </div>
                     </div>
 
                     <div class="pt-2">
-                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-2 lg:px-0">Academic Tools</h4>
+                        <h4 class="text-xs font-bold text-academicGold lg:text-academicPurple lg:dark:text-academicGold uppercase tracking-wider mb-3 px-2 lg:px-0">Academic Tools</h4>
                         <ul class="space-y-1 text-sm font-medium">
-                            <li><button onclick="navigateTo('dashboard')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-book-open w-5 text-center opacity-70"></i> Cloud Archive</button></li>
-                            <li><button onclick="navigateTo('accommodation')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-building-user w-5 text-center opacity-70"></i> Accommodation Finder</button></li>
-                            <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center opacity-70"></i> Marketplace</button></li>
-                            <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center opacity-70"></i> GPA Engine</button></li>
-                           <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center opacity-70"></i> Campus Notices</button></li>
-                           <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-geminiSurface flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center opacity-70"></i> Contribute File</button></li>
+                            <li><button onclick="navigateTo('dashboard')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-book-open w-5 text-center text-academicGold"></i> Cloud Archive</button></li>
+                            <li><button onclick="navigateTo('accommodation')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-building-user w-5 text-center text-academicGold"></i> Accommodation Finder</button></li>
+                            <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center text-academicGold"></i> Marketplace</button></li>
+                            <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center text-academicGold"></i> GPA Engine</button></li>
+                           <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center text-academicGold"></i> Campus Notices</button></li>
+                           <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center text-academicGold"></i> Contribute File</button></li>
                         </ul>
                     </div>
 
-                    <div class="bg-geminiLightSurface dark:bg-geminiSurface p-4 rounded-2xl">
-                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Until Resumption</h4>
-                        <div class="text-lg font-mono text-navy dark:text-blue-300 tracking-tight" id="widget-countdown-clock">--:--:--:--</div>
+                    <div class="bg-white/10 lg:bg-academicPurple lg:text-white p-4 rounded-2xl border border-white/10 shadow-sm">
+                        <h4 class="text-xs font-medium text-white/70 lg:text-academicGold mb-1">Until Resumption</h4>
+                        <div class="text-lg font-mono text-academicGold lg:text-white tracking-tight" id="widget-countdown-clock">--:--:--:--</div>
                     </div>
                 </div>
             </aside>
-
             <div class="w-full flex-grow flex flex-col min-w-0 md:pl-4">
                 
                 <div id="slideshow-panel" class="w-full mb-8 relative rounded-3xl overflow-hidden shadow-sm bg-gray-100 dark:bg-geminiSurface h-48 md:h-72 hidden group mx-auto">
@@ -269,9 +267,9 @@
                 <div id="section-main-search" class="w-full flex flex-col items-center mx-auto">
                     <div class="relative w-full max-w-3xl mb-6 group">
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-blue-500 transition"></i>
+                            <i class="fa-solid fa-magnifying-glass text-academicPurple dark:text-academicGold transition"></i>
                         </div>
-                        <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-12 pr-5 py-4 bg-gray-50/50 dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-full text-base focus:shadow-md outline-none text-gray-800 dark:text-gray-100 transition-all focus:bg-white focus:border-blue-200 dark:focus:border-gray-600 placeholder-gray-400">
+                        <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-deepNavy border border-academicPurple/30 dark:border-academicGold/30 rounded-full text-base shadow-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-academicGold placeholder-gray-400">
                     </div>
 
                     <div class="w-full max-w-3xl text-sm text-gray-500 mb-4 px-2 flex justify-between items-center">
@@ -406,6 +404,65 @@
                 <div id="section-announcements" class="hidden w-full max-w-3xl mx-auto">
                     <h2 class="text-2xl font-medium text-gray-800 dark:text-white mb-8 pb-4 border-b border-gray-100 dark:border-gray-800 px-2"><i class="fa-regular fa-bell text-blue-500 mr-2"></i>Campus Notifications</h2>
                     <div id="announcements-yield-box" class="space-y-6 px-2"></div>
+                </div>
+
+                <div id="section-career-bridge" class="hidden w-full max-w-5xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
+                        <div>
+                            <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-user-graduate mr-2 text-blue-500"></i>Alumni Career Bridge</h2>
+                            <p class="text-sm text-gray-500 mt-1">Connect with UDS alumni, find mentors, and explore career paths.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 px-2">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl text-center border border-blue-100 dark:border-blue-800/30">
+                            <i class="fa-solid fa-users text-blue-500 text-2xl mb-2"></i>
+                            <h4 class="text-2xl font-bold text-gray-800 dark:text-white">1,240</h4>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Students Mentored</p>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-2xl text-center border border-green-100 dark:border-green-800/30">
+                            <i class="fa-solid fa-briefcase text-green-500 text-2xl mb-2"></i>
+                            <h4 class="text-2xl font-bold text-gray-800 dark:text-white">350+</h4>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Internships Secured</p>
+                        </div>
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-2xl text-center border border-yellow-100 dark:border-yellow-800/30">
+                            <i class="fa-solid fa-award text-yellow-500 text-2xl mb-2"></i>
+                            <h4 class="text-2xl font-bold text-gray-800 dark:text-white">85</h4>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Scholarships Won</p>
+                        </div>
+                        <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-2xl text-center border border-purple-100 dark:border-purple-800/30">
+                            <i class="fa-solid fa-building text-purple-500 text-2xl mb-2"></i>
+                            <h4 class="text-2xl font-bold text-gray-800 dark:text-white">520+</h4>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Jobs Obtained</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 px-2 overflow-x-auto whitespace-nowrap pb-2 hide-scroll">
+                        <div class="flex gap-3">
+                            <button onclick="window.renderCareerBridge('All')" class="px-4 py-2 bg-gray-900 dark:bg-blue-300 text-white dark:text-navy rounded-full text-sm font-medium transition">All Fields</button>
+                            <button onclick="window.renderCareerBridge('Agriculture')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">Agriculture</button>
+                            <button onclick="window.renderCareerBridge('Technology')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">Technology</button>
+                            <button onclick="window.renderCareerBridge('Banking')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">Banking</button>
+                            <button onclick="window.renderCareerBridge('Research')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">Research</button>
+                            <button onclick="window.renderCareerBridge('Government')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">Government</button>
+                            <button onclick="window.renderCareerBridge('NGOs')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">NGOs</button>
+                            <button onclick="window.renderCareerBridge('Healthcare')" class="px-4 py-2 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition">Healthcare</button>
+                        </div>
+                    </div>
+
+                    <div id="cb-alumni-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 w-full px-2"></div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 px-2 mt-4 pt-8 border-t border-gray-100 dark:border-gray-800">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-5 flex items-center"><i class="fa-solid fa-ranking-star mr-2 text-yellow-500"></i> Top Mentors</h3>
+                            <div id="cb-mentors-leaderboard" class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm space-y-2"></div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-5 flex items-center"><i class="fa-solid fa-bullseye mr-2 text-green-500"></i> Student Success Stories</h3>
+                            <div id="cb-success-stories" class="space-y-4"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -987,7 +1044,71 @@
         </div>
     </div>
 
-    <div id="toast-deck" class="fixed bottom-6 left-6 z-[400] space-y-3 pointer-events-none"></div>
+    <div id="alumni-profile-modal" class="hidden fixed inset-0 z-[400] bg-black/60 flex justify-center items-center p-0 md:p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col h-full md:h-auto md:max-h-[90vh] border border-transparent dark:border-gray-800 relative overflow-hidden">
+            <button onclick="closeAlumniProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition z-20"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="overflow-y-auto flex-grow p-6 md:p-8">
+                <div class="flex flex-col md:flex-row gap-6 border-b border-gray-100 dark:border-gray-800 pb-6 mb-6">
+                    <img id="ap-photo" src="" class="w-32 h-32 rounded-full object-cover shadow-md border-4 border-white dark:border-gray-700 shrink-0 mx-auto md:mx-0">
+                    <div class="text-center md:text-left flex-grow">
+                        <h2 id="ap-name" class="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-1">Loading...</h2>
+                        <p id="ap-position" class="text-blue-600 dark:text-blue-400 font-medium mb-3">Position at Company</p>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-2 text-xs">
+                            <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-full"><i class="fa-solid fa-location-dot mr-1"></i> <span id="ap-campus">Campus</span></span>
+                            <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-full"><i class="fa-solid fa-graduation-cap mr-1"></i> Class of <span id="ap-year">Year</span></span>
+                            <span id="ap-slots" class="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full font-bold">Slots</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-timeline mr-2 text-blue-500"></i> Career Journey</h4>
+                        <ul id="ap-timeline" class="space-y-4 border-l-2 border-blue-100 dark:border-blue-900/30 pl-4 ml-2"></ul>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-quote-left mr-2 text-purple-500"></i> Professional Advice</h4>
+                            <p id="ap-advice" class="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl italic leading-relaxed"></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-trophy mr-2 text-yellow-500"></i> Key Achievements</h4>
+                            <ul id="ap-achievements" class="space-y-2 text-sm text-gray-700 dark:text-gray-300 list-disc pl-4"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 md:p-6 bg-gray-50 dark:bg-geminiBase border-t border-gray-100 dark:border-gray-800 shrink-0">
+                <button id="ap-action-btn" onclick="openQuestionGate()" class="w-full bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm hover:opacity-90 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Ask Professional Question
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="question-gate-modal" class="hidden fixed inset-0 z-[450] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 relative border border-gray-100 dark:border-gray-800">
+            <button onclick="closeQuestionGate()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-lock text-lg"></i>
+                </div>
+                <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100">Mentorship Gate</h3>
+                <p class="text-xs text-gray-500 mt-1">Submit a thoughtful, professional question to begin the conversation.</p>
+            </div>
+
+            <form onsubmit="submitProfessionalQuestion(event)" class="space-y-4">
+                <textarea id="qgate-text" required rows="4" placeholder="E.g. Dear [Name], I am seeking advice on how to transition from academic research into the corporate sector..." class="w-full p-4 bg-gray-50 dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none dark:text-white resize-none focus:ring-2 focus:ring-blue-100"></textarea>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-sm">
+                    Submit to Alumni
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-deck" class="fixed bottom-6 left-6 z-[500] space-y-3 pointer-events-none"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1229,6 +1350,7 @@
             document.getElementById('section-announcements').classList.add('hidden');
             document.getElementById('section-accommodation').classList.add('hidden');
             document.getElementById('section-marketplace').classList.add('hidden'); 
+            document.getElementById('section-career-bridge').classList.add('hidden');
             document.getElementById('slideshow-panel').classList.add('hidden');
             
             if(v === 'dashboard') { 
@@ -1243,6 +1365,10 @@
             else if(v === 'marketplace') { 
                 document.getElementById('section-marketplace').classList.remove('hidden'); 
                 window.renderMarketplace();
+            }
+            else if(v === 'career-bridge') {
+                document.getElementById('section-career-bridge').classList.remove('hidden');
+                if(window.renderCareerBridge) window.renderCareerBridge();
             }
         };
 
@@ -3338,6 +3464,140 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             });
         };
 
+        // --- ALUMNI CAREER BRIDGE LOGIC ---
+        const dummyAlumni = [
+            { id: 1, name: "Dr. Kwame Mensah", role: "Senior Agronomist", org: "FAO Ghana", campus: "Nyankpala", year: "2015", slots: 2, photo: "https://i.pravatar.cc/150?img=11", timeline: ["BSc Agriculture (UDS) - 2015", "MSc Soil Science - 2018", "Joined FAO - 2020"], advice: "Stay curious and embrace fieldwork. The real problems are on the farms, not in the textbooks.", achievements: ["Best Researcher 2021", "Published 5 papers on Arid Farming"] },
+            { id: 2, name: "Sarah Osei", role: "Software Engineer", org: "Microsoft", campus: "Navrongo", year: "2019", slots: 0, photo: "https://i.pravatar.cc/150?img=5", timeline: ["BSc Computer Science (UDS) - 2019", "Intern at Hubtel - 2020", "Joined Microsoft - 2022"], advice: "Master data structures and build practical projects. Your portfolio speaks louder than your GPA.", achievements: ["Microsoft MVP 2023", "Core Contributor to Open Source"] },
+            { id: 3, name: "David Appiah", role: "Investment Analyst", org: "Stanbic Bank", campus: "Tamale", year: "2018", slots: 5, photo: "https://i.pravatar.cc/150?img=8", timeline: ["BA Economics (UDS) - 2018", "Chartered Financial Analyst - 2021", "Senior Analyst - 2023"], advice: "Networking is just as important as your grades. Learn to communicate your value.", achievements: ["Top Analyst 2022", "Managed $5M Portfolio"] },
+            { id: 4, name: "Dr. Amina Yussif", role: "Medical Officer", org: "Tamale Teaching Hospital", campus: "Tamale", year: "2016", slots: 1, photo: "https://i.pravatar.cc/150?img=9", timeline: ["MBChB Medicine (UDS) - 2016", "Housemanship TTH - 2018", "Senior Medical Officer - 2021"], advice: "Medicine is a calling. Prioritize empathy alongside your clinical skills.", achievements: ["Lead Surgeon, Pediatrics", "Published in Ghana Med Journal"] }
+        ];
+
+       window.renderCareerBridge = function(filterCategory = 'All') {
+            const grid = document.getElementById('cb-alumni-grid');
+            const leaderboard = document.getElementById('cb-mentors-leaderboard');
+            const stories = document.getElementById('cb-success-stories');
+            if(!grid) return;
+
+            // Render Alumni Cards
+            grid.innerHTML = '';
+            
+            let filteredAlumni = dummyAlumni;
+            if (filterCategory !== 'All') {
+                filteredAlumni = dummyAlumni.filter(a => {
+                    const dataString = `${a.role} ${a.org} ${a.name}`.toLowerCase();
+                    const catString = filterCategory.toLowerCase();
+                    if (catString === 'agriculture' && dataString.includes('fao')) return true;
+                    if (catString === 'technology' && dataString.includes('microsoft')) return true;
+                    if (catString === 'banking' && dataString.includes('bank')) return true;
+                    if (catString === 'healthcare' && (dataString.includes('health') || dataString.includes('medical') || dataString.includes('hospital'))) return true;
+                    return dataString.includes(catString);
+                });
+            }
+
+            if (filteredAlumni.length === 0) {
+                 grid.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-8 text-gray-500 bg-gray-50 dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800"><p class="text-sm font-medium">No mentors available for ${filterCategory} currently.</p></div>`;
+            }
+
+            filteredAlumni.forEach(alumni => {
+                const slotBadge = alumni.slots > 0 
+                    ? `<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-wider">${alumni.slots} Slots Left</span>` 
+                    : `<span class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-wider">Fully Booked</span>`;
+                
+                grid.innerHTML += `
+                    <div class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-start gap-4 mb-4">
+                            <img src="${alumni.photo}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-100 dark:border-gray-700">
+                            <div class="flex-grow min-w-0">
+                                <h4 class="font-bold text-gray-900 dark:text-gray-100 truncate text-base">${alumni.name}</h4>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium truncate">${alumni.role}</p>
+                                <p class="text-[10px] text-gray-500 truncate uppercase tracking-wider mt-1"><i class="fa-solid fa-building mr-1"></i>${alumni.org}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-5 pt-4 border-t border-gray-50 dark:border-gray-800/50">
+                            ${slotBadge}
+                            <button onclick="openAlumniProfile(${alumni.id})" class="text-xs font-medium bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 rounded-xl hover:opacity-90 transition">View Profile</button>
+                        </div>
+                    </div>`;
+            });
+
+            // Render Leaderboard
+            leaderboard.innerHTML = '';
+            ['Dr. Amina Yussif (14 mentees)', 'Sarah Osei (9 mentees)', 'David Appiah (6 mentees)'].forEach((m, i) => {
+                leaderboard.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-geminiBase rounded-2xl border border-gray-100 dark:border-gray-800">
+                        <span class="text-sm font-medium text-gray-800 dark:text-gray-200"><span class="text-gray-400 mr-2">${i+1}.</span>${m.split(' (')[0]}</span>
+                        <span class="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-md font-bold">${m.split('(')[1].replace(')','')}</span>
+                    </div>`;
+            });
+
+            // Render Success Stories
+            stories.innerHTML = `
+                <div class="p-4 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-800/30">
+                    <p class="text-xs text-green-800 dark:text-green-300 italic mb-2">"Thanks to my mentor from Career Bridge, I successfully passed my interviews and secured a graduate role at MTN Ghana!"</p>
+                    <p class="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">— Isaac Tetteh, Level 400</p>
+                </div>
+                <div class="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800/30">
+                    <p class="text-xs text-blue-800 dark:text-blue-300 italic mb-2">"The CV review session was a game-changer. I landed a summer internship with the Ministry of Food & Agriculture."</p>
+                    <p class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">— Mary Afriyie, Level 300</p>
+                </div>`;
+        };
+
+        window.openAlumniProfile = function(id) {
+            const alumni = dummyAlumni.find(a => a.id === id);
+            if(!alumni) return;
+
+            document.getElementById('ap-photo').src = alumni.photo;
+            document.getElementById('ap-name').innerText = alumni.name;
+            document.getElementById('ap-position').innerText = `${alumni.role} at ${alumni.org}`;
+            document.getElementById('ap-campus').innerText = alumni.campus;
+            document.getElementById('ap-year').innerText = alumni.year;
+            
+            const slotEl = document.getElementById('ap-slots');
+            slotEl.innerText = alumni.slots > 0 ? `${alumni.slots} Open Slots` : 'Fully Booked';
+            slotEl.className = alumni.slots > 0 ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full font-bold" : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full font-bold";
+
+            const btn = document.getElementById('ap-action-btn');
+            if(alumni.slots > 0) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Ask Professional Question';
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = '<i class="fa-solid fa-lock"></i> Mentor Unavailable';
+            }
+
+            document.getElementById('ap-timeline').innerHTML = alumni.timeline.map(t => `<li class="relative pb-4 last:pb-0"><span class="absolute -left-[23px] top-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800"></span><span class="text-sm text-gray-700 dark:text-gray-300">${t}</span></li>`).join('');
+            document.getElementById('ap-advice').innerText = `"${alumni.advice}"`;
+            document.getElementById('ap-achievements').innerHTML = alumni.achievements.map(a => `<li>${a}</li>`).join('');
+
+            document.getElementById('alumni-profile-modal').classList.remove('hidden');
+        };
+
+        window.closeAlumniProfile = function() {
+            document.getElementById('alumni-profile-modal').classList.add('hidden');
+        };
+
+        window.openQuestionGate = function() {
+            if(!window.currentUserProfile) { window.showToast("Sign in to request mentorship.", "error"); return; }
+            document.getElementById('alumni-profile-modal').classList.add('hidden');
+            document.getElementById('question-gate-modal').classList.remove('hidden');
+        };
+
+        window.closeQuestionGate = function() {
+            document.getElementById('question-gate-modal').classList.add('hidden');
+            document.getElementById('qgate-text').value = '';
+        };
+
+        window.submitProfessionalQuestion = function(e) {
+            e.preventDefault();
+            const text = document.getElementById('qgate-text').value.trim();
+            if(!text) return;
+            
+            window.showToast("Question sent to Alumni. You will be notified when they reply.", "success");
+            window.closeQuestionGate();
+        };
+
         // --- CLOUDINARY CENTRALIZED SYSTEM ---
         window.uploadedHostelImages = [];
         window.uploadedMktImages = [];
@@ -3470,55 +3730,5 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         });
     }
 </script>
-<style>
-        /* Automatically turns all your large panels into Frosted Glass */
-        .rounded-2xl.bg-white, .rounded-3xl.bg-white, 
-        .rounded-2xl.bg-gray-50, .rounded-3xl.bg-gray-50,
-        aside#app-sidebar {
-            background-color: rgba(255, 255, 255, 0.6) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-        }
-        
-        /* Dark Mode Glass */
-        html.dark .rounded-2xl.dark\:bg-geminiSurface, html.dark .rounded-3xl.dark\:bg-geminiSurface,
-        html.dark .rounded-2xl.dark\:bg-geminiBase, html.dark .rounded-3xl.dark\:bg-geminiBase,
-        html.dark .rounded-2xl.dark\:bg-\\[\\#1A1A1C\\], html.dark .rounded-3xl.dark\:bg-\\[\\#1A1A1C\\],
-        html.dark aside#app-sidebar {
-            background-color: rgba(19, 19, 20, 0.6) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        /* Protect Document Reader so it doesn't become transparent */
-        #google-document-reader-modal .bg-white, #google-document-reader-modal.dark\:bg-\\[\\#000000\\] {
-            background-color: inherit !important;
-            backdrop-filter: none !important;
-        }
-    </style>
-
-    <script>
-        /* Background Slideshow Logic */
-        const bgImages = [
-            'url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2000")',
-            'url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2000")',
-            'url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2000")'
-        ];
-        
-        let bgIndex = 0;
-        const bgSlider = document.getElementById('site-bg-slider');
-        
-        function changeBackground() {
-            if(bgSlider) {
-                bgSlider.style.backgroundImage = bgImages[bgIndex];
-                bgIndex = (bgIndex + 1) % bgImages.length;
-            }
-        }
-        
-        changeBackground(); // Initialize immediately
-        setInterval(changeBackground, 7000); // Change image every 7 seconds
-    </script>
 </body>
 </html>
