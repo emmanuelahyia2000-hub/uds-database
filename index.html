@@ -122,16 +122,21 @@
         </div>
         
         <div class="flex items-center gap-3 md:gap-4 text-sm">
-            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-deepNavy dark:text-white hover:text-academicPurple font-medium bg-lightGray dark:bg-academicPurple px-3 py-1.5 rounded-full transition">Admin Config</button>
-            <button onclick="toggleTheme()" class="text-deepNavy dark:text-white hover:bg-lightGray dark:hover:bg-academicPurple w-10 h-10 rounded-full flex items-center justify-center transition text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
-            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-academicPurple dark:bg-academicGold text-white dark:text-deepNavy hover:bg-deepNavy dark:hover:bg-white border border-transparent transition px-5 py-2 rounded-full text-sm font-medium shadow-md">Sign In</button>
+            <button id="admin-panel-btn" onclick="toggleAdminDashboard()" class="hidden text-gray-600 dark:text-gray-300 hover:text-navy dark:hover:text-white font-medium bg-gray-100 dark:bg-geminiSurface px-3 py-1.5 rounded-full transition">Admin Config</button>
+            
+            <a href="https://wa.me/233592632127" target="_blank" class="text-gray-600 dark:text-gray-300 hover:text-[#25D366] w-10 h-10 rounded-full flex items-center justify-center transition text-xl">
+                <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            
+            <button id="nav-notification-bell" onclick="openSmartNoticeCenter()" class="hidden relative text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-geminiSurface w-10 h-10 rounded-full items-center justify-center transition text-lg">
+                <i class="fa-solid fa-bell"></i>
+                <span id="nav-smart-notice-count" class="absolute top-1.5 right-1.5 bg-red-500 border-2 border-white dark:border-[#131314] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center hidden">0</span>
+            </button>
+
+            <button onclick="toggleTheme()" class="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-geminiSurface w-10 h-10 rounded-full flex items-center justify-center transition text-lg"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
+            <button id="auth-action-btn" onclick="openAuthModal()" class="bg-navy dark:bg-blue-300 hover:bg-blue-800 dark:hover:bg-blue-200 text-white dark:text-navy px-5 py-2 rounded-full text-sm font-medium transition">Sign In</button>
         </div>
     </nav>
-
-   <a href="https://wa.me/233592632127" target="_blank" class="whatsapp-float fixed z-40 bottom-24 right-4 md:bottom-6 md:right-6 bg-[#25D366] text-white px-5 py-3 rounded-full flex items-center justify-center gap-2 shadow-lg hover:opacity-90 transition font-medium text-sm whitespace-nowrap">
-        <i class="fa-brands fa-whatsapp text-xl"></i>
-        <span>Chat to share slides / articles</span>
-    </a>
 
     <main class="flex-grow w-full py-6 px-4 md:px-8 flex flex-col items-center">
 
@@ -521,14 +526,6 @@
             <p id="quote-text" class="text-lg text-gray-600 dark:text-gray-300 mb-8 italic leading-relaxed font-serif">Loading quote...</p>
             <button onclick="closeQuoteModal()" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-8 py-3 rounded-full text-sm font-medium transition w-full max-w-xs mx-auto block hover:opacity-90">Let's Learn</button>
         </div>
-    </div>
-
-    <div id="smart-notice-badge-container" class="fixed bottom-6 left-4 md:bottom-6 md:left-6 z-40 hidden">
-        <button id="smart-notice-badge" onclick="openSmartNoticeCenter()" class="bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 px-5 py-3.5 rounded-full flex items-center gap-3 shadow-lg hover:shadow-xl transition-all font-medium text-sm">
-            <i class="fa-solid fa-bell text-blue-500 animate-pulse"></i>
-            <span id="smart-notice-text">Updates</span>
-            <span id="smart-notice-count" class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center hidden">0</span>
-        </button>
     </div>
 
     <div id="smart-notice-center-modal" class="hidden fixed inset-0 z-[260] bg-black/60 flex justify-end p-0 md:p-4 backdrop-blur-sm transition-opacity">
@@ -1154,7 +1151,8 @@
                 window.showRandomQuote();
 
               // Show Smart Notice Badge & Automatically verify versions
-                document.getElementById('smart-notice-badge-container').classList.remove('hidden');
+                document.getElementById('nav-notification-bell').classList.remove('hidden');
+                document.getElementById('nav-notification-bell').classList.add('flex');
                 if(window.checkFeatureVersionUpdates) setTimeout(window.checkFeatureVersionUpdates, 1500);
 
                 // Setup Personal Notifications Listener
@@ -1186,7 +1184,8 @@
                 document.getElementById('guest-onboarding-view').classList.remove('hidden');
                 document.getElementById('auth-action-btn').innerText = "Sign In";
                 document.getElementById('admin-panel-btn').classList.add('hidden');
-                document.getElementById('smart-notice-badge-container').classList.add('hidden');
+                document.getElementById('nav-notification-bell').classList.add('hidden');
+                document.getElementById('nav-notification-bell').classList.remove('flex');
                 window.hasShownQuote = false; 
             }
             window.currentUserProfile = currentUserProfile; 
