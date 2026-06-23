@@ -3736,109 +3736,117 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         });
     }
 </script>
-<div id="pwa-install-banner" class="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-[999] hidden transition-all duration-500 transform translate-y-20 opacity-0 max-w-xl w-full">
-        <div class="bg-white/80 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-gray-800/50 shadow-2xl p-4 rounded-2xl flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-900 flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0">
-                    UDS
+<div id="pwa-install-banner" class="fixed bottom-0 left-0 right-0 z-[999] hidden transition-all duration-500 transform translate-y-full max-w-xl mx-auto md:bottom-6 md:rounded-2xl pb-safe">
+        <div class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t md:border border-gray-200/50 dark:border-gray-800/50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-900 flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0">
+                        UDS
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Install UDS Hub</h4>
+                        <p id="pwa-banner-desc" class="text-[11px] text-gray-500 dark:text-gray-400 leading-tight">Add to your home screen for quick offline access.</p>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Install UDS Hub App</h4>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Add to your home screen for quick standalone access and instant alerts.</p>
-                </div>
+                <button onclick="dismissInstallBanner()" class="text-gray-400 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 shrink-0 hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <button onclick="dismissInstallBanner()" class="text-xs font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 px-3 py-2 rounded-xl transition">Later</button>
-                <button onclick="triggerPwaInstallation()" class="bg-navy dark:bg-blue-300 text-white dark:text-navy text-xs font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition shadow-sm">Install</button>
+            
+            <div id="pwa-action-container" class="w-full mt-1">
+                <button id="pwa-install-btn" onclick="triggerPwaInstallation()" class="w-full bg-navy dark:bg-blue-300 text-white dark:text-navy text-sm font-semibold px-4 py-3 rounded-xl hover:opacity-90 transition shadow-sm hidden">
+                    Install App Now
+                </button>
+                
+                <div id="pwa-ios-instructions" class="hidden bg-gray-50 dark:bg-gray-800/80 p-3 rounded-xl text-xs text-gray-700 dark:text-gray-300 flex items-center justify-center gap-2 font-medium border border-gray-200 dark:border-gray-700">
+                    Tap <i class="fa-solid fa-arrow-up-from-bracket text-blue-500 text-lg mx-1"></i> and select <span class="bg-white dark:bg-gray-700 px-2 py-1 rounded shadow-sm border border-gray-200 dark:border-gray-600">Add to Home Screen</span>
+                </div>
             </div>
         </div>
     </div>
-    <script>
+
+<script>
     let deferredPrompt;
     const installBanner = document.getElementById('pwa-install-banner');
+    const installBtn = document.getElementById('pwa-install-btn');
+    const iosInstructions = document.getElementById('pwa-ios-instructions');
+    const bannerDesc = document.getElementById('pwa-banner-desc');
 
-    // 1. Service Worker & Push Notification Initialization Lifecycle
+    // Detect if the user is on an Apple device
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    };
+
+    // Detect if the app is already running in standalone (installed) mode
+    const isStandalone = () => {
+        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    };
+
     window.addEventListener('load', () => {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then((registration) => {
-                    console.log('UDS Hub Service Worker Active:', registration.scope);
-                    requestNotificationPermission();
-                })
-                .catch((err) => console.error('Service Worker Registry Failure:', err));
+            navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error:', err));
         }
         
-        // Hide banner permanently if already launched in Standalone App window
-        if (window.matchMedia('(display-mode: standalone)').matches || localStorage.getItem('pwaInstalled') === 'true') {
+        // If already installed or explicitly dismissed by the user, obliterate the banner
+        if (isStandalone() || localStorage.getItem('pwaDismissed') === 'true') {
             if (installBanner) installBanner.remove();
+            return;
+        }
+
+        // iOS Logic: Show the banner immediately on page load with Apple instructions
+        if (isIos()) {
+            bannerDesc.innerText = "Install the UDS Hub web app on your iPhone for the best experience.";
+            iosInstructions.classList.remove('hidden');
+            showBanner();
         }
     });
 
-    // 2. Intercept native install prompt logic
+    // Android/Desktop Logic: Wait for the browser to confirm it's installable, then show the button
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Stop browser default mini-infobar prompt
         e.preventDefault();
         deferredPrompt = e;
-
-        // Check if user previously dismissed banner or installed it
-        if (localStorage.getItem('pwaInstalled') !== 'true') {
-            // Display banner smoothly
-            installBanner.classList.remove('hidden');
-            setTimeout(() => {
-                installBanner.classList.remove('translate-y-20', 'opacity-0');
-            }, 100);
+        
+        if (localStorage.getItem('pwaDismissed') !== 'true' && !isStandalone()) {
+            installBtn.classList.remove('hidden');
+            showBanner();
         }
     });
 
-    // 3. Execution of the custom banner click
+    function showBanner() {
+        installBanner.classList.remove('hidden');
+        setTimeout(() => {
+            installBanner.classList.remove('translate-y-full');
+            installBanner.classList.add('translate-y-0');
+        }, 100);
+    }
+
     async function triggerPwaInstallation() {
         if (!deferredPrompt) return;
-        
-        // Open native installation dialogue box 
         deferredPrompt.prompt();
-        
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User Installation choice outcome: ${outcome}`);
-        
         if (outcome === 'accepted') {
-            localStorage.setItem('pwaInstalled', 'true');
-            hideInstallBannerPermanently();
+            localStorage.setItem('pwaDismissed', 'true');
+            hideBanner();
         }
         deferredPrompt = null;
     }
 
-    // 4. Dismisals and Clean up animations
     function dismissInstallBanner() {
-        installBanner.classList.add('translate-y-20', 'opacity-0');
+        localStorage.setItem('pwaDismissed', 'true'); 
+        hideBanner();
+    }
+
+    function hideBanner() {
+        installBanner.classList.remove('translate-y-0');
+        installBanner.classList.add('translate-y-full');
         setTimeout(() => {
-            installBanner.classList.add('hidden');
+            if (installBanner) installBanner.remove();
         }, 500);
     }
 
-    function hideInstallBannerPermanently() {
-        installBanner.classList.add('translate-y-20', 'opacity-0');
-        setTimeout(() => {
-            installBanner.remove();
-        }, 500);
-    }
-
-    // Monitor success tracking event natively
-    window.addEventListener('appinstalled', (evt) => {
-        console.log('UDS Hub App installed successfully.');
-        localStorage.setItem('pwaInstalled', 'true');
-        hideInstallBannerPermanently();
+    window.addEventListener('appinstalled', () => {
+        localStorage.setItem('pwaDismissed', 'true');
+        hideBanner();
     });
-
-    // 5. Secure Core Push Notification requests
-    function requestNotificationPermission() {
-        if ('Notification' in window) {
-            Notification.requestPermission().then((permission) => {
-                if (permission === 'granted') {
-                    console.log('Background Alert Permissions accepted.');
-                }
-            });
-        }
-    }
 </script>
 </body>
 </html>
