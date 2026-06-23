@@ -1,8 +1,9 @@
 const CACHE_NAME = 'uds-hub-v1';
 const ASSETS_TO_CACHE = [
   '/',
-  '/simple (2).html',
-  '/manifest.json'
+  '/index.html',
+  '/manifest.json',
+  '/logo.png'
 ];
 
 // Install Service Worker and cache essential layouts
