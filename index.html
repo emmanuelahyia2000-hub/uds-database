@@ -4,7 +4,13 @@
     <meta name="google-site-verification" content="EVz8fPxueqGzMmY9eHSIQeK1I_DiGBOh4ZpwNBj4DAo" />  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-   <title>UDS Hub | Academic Search & Accommodation</title>
+    <title>UDS Hub | Academic Search & Accommodation</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#1B365D">
+    <meta name="apple-mobile-web-app-title" content="UDS Hub">
+    <link rel="apple-touch-icon" href="/logo-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -3728,6 +3734,110 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             // Start reading the file as base64
             reader.readAsDataURL(file);
         });
+    }
+</script>
+<div id="pwa-install-banner" class="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-[999] hidden transition-all duration-500 transform translate-y-20 opacity-0 max-w-xl w-full">
+        <div class="bg-white/80 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-gray-800/50 shadow-2xl p-4 rounded-2xl flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-900 flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0">
+                    UDS
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Install UDS Hub App</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Add to your home screen for quick standalone access and instant alerts.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="dismissInstallBanner()" class="text-xs font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 px-3 py-2 rounded-xl transition">Later</button>
+                <button onclick="triggerPwaInstallation()" class="bg-navy dark:bg-blue-300 text-white dark:text-navy text-xs font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition shadow-sm">Install</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    let deferredPrompt;
+    const installBanner = document.getElementById('pwa-install-banner');
+
+    // 1. Service Worker & Push Notification Initialization Lifecycle
+    window.addEventListener('load', () => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('UDS Hub Service Worker Active:', registration.scope);
+                    requestNotificationPermission();
+                })
+                .catch((err) => console.error('Service Worker Registry Failure:', err));
+        }
+        
+        // Hide banner permanently if already launched in Standalone App window
+        if (window.matchMedia('(display-mode: standalone)').matches || localStorage.getItem('pwaInstalled') === 'true') {
+            if (installBanner) installBanner.remove();
+        }
+    });
+
+    // 2. Intercept native install prompt logic
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Stop browser default mini-infobar prompt
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Check if user previously dismissed banner or installed it
+        if (localStorage.getItem('pwaInstalled') !== 'true') {
+            // Display banner smoothly
+            installBanner.classList.remove('hidden');
+            setTimeout(() => {
+                installBanner.classList.remove('translate-y-20', 'opacity-0');
+            }, 100);
+        }
+    });
+
+    // 3. Execution of the custom banner click
+    async function triggerPwaInstallation() {
+        if (!deferredPrompt) return;
+        
+        // Open native installation dialogue box 
+        deferredPrompt.prompt();
+        
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User Installation choice outcome: ${outcome}`);
+        
+        if (outcome === 'accepted') {
+            localStorage.setItem('pwaInstalled', 'true');
+            hideInstallBannerPermanently();
+        }
+        deferredPrompt = null;
+    }
+
+    // 4. Dismisals and Clean up animations
+    function dismissInstallBanner() {
+        installBanner.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            installBanner.classList.add('hidden');
+        }, 500);
+    }
+
+    function hideInstallBannerPermanently() {
+        installBanner.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            installBanner.remove();
+        }, 500);
+    }
+
+    // Monitor success tracking event natively
+    window.addEventListener('appinstalled', (evt) => {
+        console.log('UDS Hub App installed successfully.');
+        localStorage.setItem('pwaInstalled', 'true');
+        hideInstallBannerPermanently();
+    });
+
+    // 5. Secure Core Push Notification requests
+    function requestNotificationPermission() {
+        if ('Notification' in window) {
+            Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    console.log('Background Alert Permissions accepted.');
+                }
+            });
+        }
     }
 </script>
 </body>

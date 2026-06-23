@@ -1,0 +1,22 @@
+{
+  "name": "UDS Hub",
+  "short_name": "UDSHub",
+  "description": "Academic Search, Analytics & Accommodation Finder Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1B365D",
+  "theme_color": "#1B365D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
