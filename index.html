@@ -175,7 +175,6 @@
                             <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center text-academicGold"></i> Marketplace</button></li>
                             <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center text-academicGold"></i> GPA Engine</button></li>
                            <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center text-academicGold"></i> Campus Notices</button></li>
-                           <li><button onclick="navigateTo('know-campus')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-map-location-dot w-5 text-center text-academicGold"></i> Know UDS Campus</button></li>
                            <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center text-academicGold"></i> Contribute File</button></li>
                         </ul>
                     </div>
@@ -290,63 +289,52 @@
                     </div>
 
                   <div id="smart-materials-grid" class="flex flex-col gap-3 w-full max-w-3xl pb-8"></div>
+                </div>
 
-                    <div id="contribute-file-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
-                        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-8 relative border border-gray-100 dark:border-gray-800">
-                            <button onclick="closeContributeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 flex items-center justify-center rounded-full transition"><i class="fa-solid fa-xmark text-lg"></i></button>
-                            <div class="mb-6 text-center">
-                                <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fa-solid fa-file-arrow-up text-2xl"></i>
-                                </div>
-                                <h2 class="text-xl font-medium text-gray-900 dark:text-white">Contribute Material</h2>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Upload past questions, slides, or articles.</p>
+                <div id="contribute-file-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+                    <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-8 relative border border-gray-100 dark:border-gray-800">
+                        <button onclick="closeContributeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 flex items-center justify-center rounded-full transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+                        <div class="mb-6 text-center">
+                            <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-file-arrow-up text-2xl"></i>
+                            </div>
+                            <h2 class="text-xl font-medium text-gray-900 dark:text-white">Contribute Material</h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Upload past questions, slides, or articles.</p>
+                        </div>
+
+                        <form id="student-upload-form" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Select File (PDF, Word, or PPT)</label>
+                                <input type="file" id="upload-file" accept=".pdf,.doc,.docx,.ppt,.pptx" required
+                                    class="block w-full text-sm text-gray-500 dark:text-gray-400
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-medium
+                                    file:bg-gray-100 file:text-gray-700 dark:file:bg-gray-800 dark:file:text-gray-300
+                                    hover:file:bg-gray-200 dark:hover:file:bg-gray-700 transition-colors cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-2 bg-gray-50 dark:bg-geminiBase outline-none focus:ring-2 focus:ring-blue-100">
                             </div>
 
-                            <form id="student-upload-form" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Select File (PDF, Word, or PPT)</label>
-                                    <input type="file" id="upload-file" accept=".pdf,.doc,.docx,.ppt,.pptx" required
-                                        class="block w-full text-sm text-gray-500 dark:text-gray-400
-                                        file:mr-4 file:py-2 file:px-4
-                                        file:rounded-full file:border-0
-                                        file:text-sm file:font-medium
-                                        file:bg-gray-100 file:text-gray-700 dark:file:bg-gray-800 dark:file:text-gray-300
-                                        hover:file:bg-gray-200 dark:hover:file:bg-gray-700 transition-colors cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-2 bg-gray-50 dark:bg-geminiBase outline-none focus:ring-2 focus:ring-blue-100">
-                                </div>
-
-                                <button type="submit" id="upload-submit-btn" 
-                                    class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2">
-                                    Submit Document
-                                </button>
-                                
-                                <div id="upload-status" class="text-center font-medium text-sm hidden"></div>
-                            </form>
-                        </div>
+                            <button type="submit" id="upload-submit-btn" 
+                                class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2">
+                                Submit Document
+                            </button>
+                            
+                            <div id="upload-status" class="text-center font-medium text-sm hidden"></div>
+                        </form>
                     </div>
-
-                    <script>
-                        // Instantly open the modal - attached to window to ensure global availability
-                        window.openContributeModal = function(e) {
-                            if(e) e.preventDefault();
-                            if(window.innerWidth < 1024 && document.getElementById('app-sidebar') && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
-                                if(typeof window.toggleSidebar === 'function') window.toggleSidebar();
-                            }
-                            const modal = document.getElementById('contribute-file-modal');
-                            if(modal) {
-                                modal.classList.remove('hidden');
-                                modal.style.display = 'flex'; // Force display to override any conflicting hidden styles
-                            }
-                        };
-                        window.closeContributeModal = function(e) {
-                            if(e) e.preventDefault();
-                            const modal = document.getElementById('contribute-file-modal');
-                            if(modal) {
-                                modal.classList.add('hidden');
-                                modal.style.display = ''; 
-                            }
-                        };
-                    </script>
                 </div>
+
+                <script>
+                    window.openContributeModal = function() {
+                        if(window.innerWidth < 1024 && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
+                            window.toggleSidebar(); // Close sidebar on mobile
+                        }
+                        document.getElementById('contribute-file-modal').classList.remove('hidden');
+                    };
+                    window.closeContributeModal = function() {
+                        document.getElementById('contribute-file-modal').classList.add('hidden');
+                    };
+                </script>
 
                 <div id="section-accommodation" class="hidden w-full max-w-4xl mx-auto">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
@@ -489,106 +477,7 @@
                 </div>
             </div>
         </div>
-    </main><div id="section-know-campus" class="hidden w-full max-w-4xl mx-auto">
-                    <div class="mb-8 px-2">
-                        <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-map-location-dot mr-2 text-blue-500"></i>Know UDS Campus</h2>
-                        <p class="text-sm text-gray-500 mt-1">Explore all UDS campuses natively. Allow location access to view your position relative to the university.</p>
-                    </div>
-
-                    <div class="mb-6 px-2">
-                        <div class="relative w-full group">
-                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                            </div>
-                            <input type="text" id="campus-search-bar" onkeyup="searchCampusLocations()" placeholder="E.g. Spanish Lab, Dungu Library, ICT Center..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-2xl text-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-blue-500 placeholder-gray-400 shadow-sm">
-                        </div>
-                    </div>
-
-                    <div id="campus-search-results" class="px-2 w-full mb-4">
-                        <div id="uds-main-map" class="w-full h-[600px] rounded-3xl z-10 border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-geminiBase relative overflow-hidden">
-                            <div id="map-loading-overlay" class="absolute inset-0 bg-white/90 dark:bg-[#0B1B3D]/90 flex flex-col items-center justify-center z-20 backdrop-blur-sm transition-opacity duration-300">
-                                <i class="fa-solid fa-location-crosshairs text-4xl text-blue-500 animate-spin mb-3"></i>
-                                <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Requesting Location Access...</p>
-                                <button onclick="initUDSMap(true)" class="mt-4 bg-navy dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-full text-xs font-medium hover:opacity-90 transition">Load Map Manually</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <script>
-                        let udsNativeMap = null;
-                        let markersLayer = null;
-                        
-                        function initUDSMap(force = false) {
-                            if (udsNativeMap) {
-                                udsNativeMap.invalidateSize();
-                                return;
-                            }
-                            
-                            const overlay = document.getElementById('map-loading-overlay');
-                            if(overlay) overlay.classList.add('hidden');
-                            
-                            // Initialize map centered roughly on UDS Dungu
-                            udsNativeMap = L.map('uds-main-map').setView([9.3512, -0.8030], 12);
-                            
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                attribution: '&copy; OpenStreetMap contributors'
-                            }).addTo(udsNativeMap);
-                            
-                            markersLayer = L.layerGroup().addTo(udsNativeMap);
-                            
-                            // Pre-plot default UDS Campuses
-                            L.marker([9.3512, -0.8030]).addTo(markersLayer).bindPopup('<b style="color: #4B2E83;">UDS Dungu Campus</b><br>Main Administration & Faculties.').openPopup();
-                            L.marker([9.3986, -0.9888]).addTo(markersLayer).bindPopup('<b style="color: #4B2E83;">UDS Nyankpala Campus</b><br>Faculty of Agriculture.');
-                            
-                            // Request User Geolocation natively on the site
-                            if (navigator.geolocation && !force) {
-                                navigator.geolocation.getCurrentPosition((position) => {
-                                    const lat = position.coords.latitude;
-                                    const lng = position.coords.longitude;
-                                    
-                                    // Plot the user
-                                    L.circleMarker([lat, lng], {
-                                        color: '#4B2E83', 
-                                        fillColor: '#D4AF37', 
-                                        fillOpacity: 1.0, 
-                                        radius: 8
-                                    }).addTo(udsNativeMap).bindPopup('<b>Your Current Location</b>').openPopup();
-                                    
-                                    // Fit the map view to ensure both the user and main campus are visible
-                                    const bounds = L.latLngBounds([[lat, lng], [9.3512, -0.8030]]);
-                                    udsNativeMap.fitBounds(bounds, { padding: [50, 50] });
-                                    
-                                }, (err) => {
-                                    console.warn("Location access denied or unavailable:", err);
-                                });
-                            }
-                        }
-
-                        // Override search function to interact with the native map
-                        window.searchCampusLocations = function() {
-                            const term = document.getElementById('campus-search-bar').value.toLowerCase();
-                            if(!udsNativeMap) initUDSMap(true);
-                            
-                            if (term.includes('dungu')) {
-                                udsNativeMap.setView([9.3512, -0.8030], 16);
-                            } else if (term.includes('nyankpala') || term.includes('agric')) {
-                                udsNativeMap.setView([9.3986, -0.9888], 16);
-                            } else if (term.length > 3) {
-                                // Default broad zoom if general text is searched
-                                udsNativeMap.setView([9.3512, -0.8030], 14);
-                            }
-                        };
-                        
-                        // Hook into your navigation router to load the map right when the tab is clicked
-                        const originalCampusNavigate = window.navigateTo;
-                        window.navigateTo = function(sectionId) {
-                            if(typeof originalCampusNavigate === 'function') originalCampusNavigate(sectionId);
-                            if(sectionId === 'know-campus') {
-                                setTimeout(() => initUDSMap(), 300); // 300ms delay allows the DOM display toggle to finish first
-                            }
-                        };
-                    </script>
-                </div>
+    </main>
 
     <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-8 relative border border-gray-100 dark:border-gray-800">
@@ -838,11 +727,7 @@
 
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Amenities & Description</label>
-                    <textarea id="add-hostel-desc" rows="3" placeholder="e.g. Water available, near gate 2..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none mb-4"></textarea>
-                </div>
-                <div>
-                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Nearby Landmarks</label>
-                    <input type="text" id="add-hostel-landmarks" placeholder="e.g. Near Central Mosque, Behind SRC Hostel..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    <textarea id="add-hostel-desc" rows="3" placeholder="e.g. Water available, near gate 2..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none"></textarea>
                 </div>
                 <div class="pt-2">
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1 uppercase tracking-wider">Pin Location on Map</label>
@@ -883,19 +768,7 @@
                 </div>
 
                 <div>
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Map & Landmarks</h4>
-                        <a id="btn-hostel-directions" href="#" target="_blank" class="text-[10px] font-bold bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:opacity-80 transition">
-                            <i class="fa-solid fa-route"></i> Get Directions
-                        </a>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-[#1A1A1C] p-3 rounded-2xl mb-3 border border-gray-100 dark:border-gray-800 flex items-start gap-3">
-                        <i class="fa-solid fa-map-pin text-red-500 mt-0.5"></i>
-                        <div>
-                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Nearby Landmarks</span>
-                            <span id="view-hostel-landmarks" class="text-sm text-gray-800 dark:text-gray-200">No landmarks provided.</span>
-                        </div>
-                    </div>
+                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Map Location</h4>
                     <div id="view-hostel-map" class="w-full h-48 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-geminiBase z-10"></div>
                 </div>
 
@@ -1502,7 +1375,6 @@
             document.getElementById('section-accommodation').classList.add('hidden');
             document.getElementById('section-marketplace').classList.add('hidden'); 
             document.getElementById('section-career-bridge').classList.add('hidden');
-            document.getElementById('section-know-campus').classList.add('hidden');
             document.getElementById('slideshow-panel').classList.add('hidden');
             
             if(v === 'dashboard') { 
@@ -1521,9 +1393,6 @@
             else if(v === 'career-bridge') {
                 document.getElementById('section-career-bridge').classList.remove('hidden');
                 if(window.renderCareerBridge) window.renderCareerBridge();
-            }
-            else if(v === 'know-campus') {
-                document.getElementById('section-know-campus').classList.remove('hidden');
             }
         };
 
@@ -2173,63 +2042,7 @@
                 }
             }, 500); 
         };
-// Internal Database for "Know UDS Campus"
-        const udsLocationsDB = [
-            { id: 1, name: "Spanish Laboratory", campus: "Nyankpala Campus", desc: "Main laboratory for agricultural research and soil testing. Located near the central faculty block.", lat: 9.4075, lng: -0.9850, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/UDS_Nyankpala_Campus_Library.jpg/800px-UDS_Nyankpala_Campus_Library.jpg" },
-            { id: 2, name: "Dungu Central Library", campus: "Tamale Campus (Dungu)", desc: "The primary library for the Dungu campus, providing study spaces and extensive academic resources.", lat: 9.4321, lng: -0.8412, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/University_for_Development_Studies_Library.jpg/800px-University_for_Development_Studies_Library.jpg" },
-            { id: 3, name: "ICT Directorate / Center", campus: "Tamale Campus (Dungu)", desc: "Central hub for university networking, student portal issues, and computer labs.", lat: 9.4305, lng: -0.8430, img: "https://dummyimage.com/600x400/0b1b3d/d4af37&text=ICT+Center" },
-            { id: 4, name: "School of Medicine Block", campus: "Tamale Campus (Dungu)", desc: "Main lecture halls and administrative offices for medical and health science students.", lat: 9.4350, lng: -0.8390, img: "https://dummyimage.com/600x400/0b1b3d/d4af37&text=School+of+Medicine" }
-        ]; // Note: Update these mock images and coordinates with accurate data when you have them.
 
-        window.searchCampusLocations = function() {
-            const query = document.getElementById('campus-search-bar').value.trim().toLowerCase();
-            const resultsBox = document.getElementById('campus-search-results');
-            
-            if (!query) {
-                resultsBox.innerHTML = `
-                    <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 p-6 rounded-3xl text-center">
-                        <i class="fa-solid fa-compass text-4xl text-blue-400 mb-3"></i>
-                        <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Type a location above to explore.</p>
-                    </div>`;
-                return;
-            }
-
-            const matches = udsLocationsDB.filter(loc => loc.name.toLowerCase().includes(query) || loc.campus.toLowerCase().includes(query) || loc.desc.toLowerCase().includes(query));
-
-            if (matches.length === 0) {
-                resultsBox.innerHTML = `
-                    <div class="bg-gray-50 dark:bg-geminiSurface border border-dashed border-gray-200 dark:border-gray-800 p-8 rounded-3xl text-center">
-                        <i class="fa-solid fa-map-location-dot text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Location not found.</p>
-                        <p class="text-xs text-gray-400 mt-1">Try searching for broader terms like "Library" or "Lab".</p>
-                    </div>`;
-                return;
-            }
-
-            resultsBox.innerHTML = '';
-            matches.forEach(loc => {
-                resultsBox.innerHTML += `
-                    <div class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm flex flex-col md:flex-row mb-4">
-                        <img src="${loc.img}" class="w-full md:w-64 h-48 md:h-auto object-cover" onerror="this.src='https://dummyimage.com/600x400/0b1b3d/ffffff&text=Image+Not+Found'">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h3 class="text-xl font-medium text-gray-900 dark:text-white">${loc.name}</h3>
-                                    <span class="text-xs font-bold text-academicPurple dark:text-academicGold uppercase tracking-wider">${loc.campus}</span>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-2 mb-6 leading-relaxed">${loc.desc}</p>
-                            
-                            <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
-                                <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" target="_blank" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition w-full md:w-auto shadow-sm">
-                                    <i class="fa-solid fa-location-arrow"></i> Lead Me Here
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        };
         window.triggerDriveSync = async function(btn) { btn.innerText = "Scanning Google Drive... Please wait."; btn.disabled = true; try { const response = await fetch('/api/sync', { method: 'POST' }); const data = await response.json(); if (data.success) { window.showToast(`Success! Found and added ${data.synced} new files.`, "success"); } else { window.showToast("Sync failed. Check Vercel logs.", "error"); } } catch (err) { window.showToast("Network pipeline issue.", "error"); } finally { btn.innerText = "Start Deep Sync"; btn.disabled = false; } };
 
         window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
@@ -2288,7 +2101,6 @@
             document.getElementById('add-hostel-name').value = '';
             document.getElementById('add-hostel-price').value = '';
             document.getElementById('add-hostel-desc').value = '';
-            document.getElementById('add-hostel-landmarks').value = '';
             
             window.uploadedHostelImages = [];
             const previewContainer = document.getElementById('hostel-upload-preview');
@@ -2302,7 +2114,6 @@
             const name = document.getElementById('add-hostel-name').value.trim();
             const price = document.getElementById('add-hostel-price').value.trim();
             const desc = document.getElementById('add-hostel-desc').value.trim();
-            const landmarks = document.getElementById('add-hostel-landmarks').value.trim();
             
             if(!name || !price) { window.showToast("Name and Price are required", "error"); return; }
             
@@ -2314,7 +2125,6 @@
                     price: Number(price),
                     imageUrls: window.uploadedHostelImages || [],
                     description: desc,
-                    landmarks: landmarks,
                     lat: latlng.lat,
                     lng: latlng.lng,
                     contributorId: window.currentUserProfile.email,
@@ -2403,11 +2213,6 @@
             document.getElementById('view-hostel-title').innerText = hostel.name;
             document.getElementById('view-hostel-price').innerText = `GHS ${hostel.price} / year`;
             document.getElementById('view-hostel-desc').innerText = hostel.description || 'No description provided.';
-            document.getElementById('view-hostel-landmarks').innerText = hostel.landmarks || 'No landmarks provided.';
-            
-            // Set up the routing link to Google Maps
-            const directionsBtn = document.getElementById('btn-hostel-directions');
-            directionsBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${hostel.lat},${hostel.lng}`;
             
             const verificationBadge = document.getElementById('view-hostel-verification');
             if(hostel.verified) {
@@ -3476,7 +3281,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             document.getElementById('smart-notice-center-modal').classList.add('hidden');
         };
 
-      window.checkFeatureVersionUpdates = function() {
+       window.checkFeatureVersionUpdates = function() {
             if (!window.currentUserProfile) return;
             const verKey = `uds_lastSeenVersion_${window.currentUserProfile.email}`;
             const lastSeenUpdateVersion = parseFloat(localStorage.getItem(verKey)) || 0;
@@ -3487,9 +3292,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 const textElement = document.getElementById('smart-notification-text');
                 
                 if(window.systemFeatures && window.systemFeatures.length > 0) {
-                    // Find the newest feature by sorting timestamps to avoid showing old ones
-                    const newestFeature = [...window.systemFeatures].sort((a,b) => b.timestamp - a.timestamp)[0];
-                    textElement.textContent = `Update: ${newestFeature.title}!`;
+                    textElement.textContent = `Update: ${window.systemFeatures[0].title}!`;
                     banner.classList.remove('-translate-y-[150%]', 'opacity-0');
                     banner.classList.add('translate-y-0', 'opacity-100');
                     
@@ -3573,17 +3376,8 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 });
             }
 
-           // 2. Features (Priority 3) - Only show new/unseen features to prevent old ones from reappearing
-            let featureLastSeenTs = 0;
-            if (window.currentUserProfile) {
-                const tsKey = `uds_updates_seen_${window.currentUserProfile.email}`;
-                featureLastSeenTs = parseInt(localStorage.getItem(tsKey)) || 0;
-            }
-            window.systemFeatures.forEach(f => {
-                if (f.timestamp > featureLastSeenTs) {
-                    updates.push(f);
-                }
-            });
+            // 2. Features (Priority 3)
+            window.systemFeatures.forEach(f => updates.push(f));
 
             // 3. Resource Updates (Priority 4)
             if (window.globalMaterialsCache) {
