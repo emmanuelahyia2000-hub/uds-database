@@ -175,6 +175,7 @@
                             <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center text-academicGold"></i> Marketplace</button></li>
                             <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center text-academicGold"></i> GPA Engine</button></li>
                            <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center text-academicGold"></i> Campus Notices</button></li>
+                           <li><button onclick="navigateTo('know-campus')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-map-location-dot w-5 text-center text-academicGold"></i> Know UDS Campus</button></li>
                            <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center text-academicGold"></i> Contribute File</button></li>
                         </ul>
                     </div>
@@ -477,7 +478,28 @@
                 </div>
             </div>
         </div>
-    </main>
+    </main><div id="section-know-campus" class="hidden w-full max-w-4xl mx-auto">
+                    <div class="mb-8 px-2">
+                        <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-map-location-dot mr-2 text-blue-500"></i>Know UDS Campus</h2>
+                        <p class="text-sm text-gray-500 mt-1">Search for any lecture hall, faculty building, or landmark across all UDS campuses.</p>
+                    </div>
+
+                    <div class="mb-6 px-2">
+                        <div class="relative w-full group">
+                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                            </div>
+                            <input type="text" id="campus-search-bar" onkeyup="searchCampusLocations()" placeholder="E.g. Spanish Lab, Dungu Library, ICT Center..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-2xl text-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-blue-500 placeholder-gray-400 shadow-sm">
+                        </div>
+                    </div>
+
+                    <div id="campus-search-results" class="px-2 w-full">
+                        <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 p-6 rounded-3xl text-center">
+                            <i class="fa-solid fa-compass text-4xl text-blue-400 mb-3"></i>
+                            <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Type a location above to explore.</p>
+                        </div>
+                    </div>
+                </div>
 
     <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-8 relative border border-gray-100 dark:border-gray-800">
@@ -727,7 +749,11 @@
 
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Amenities & Description</label>
-                    <textarea id="add-hostel-desc" rows="3" placeholder="e.g. Water available, near gate 2..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none"></textarea>
+                    <textarea id="add-hostel-desc" rows="3" placeholder="e.g. Water available, near gate 2..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none mb-4"></textarea>
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Nearby Landmarks</label>
+                    <input type="text" id="add-hostel-landmarks" placeholder="e.g. Near Central Mosque, Behind SRC Hostel..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                 </div>
                 <div class="pt-2">
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1 uppercase tracking-wider">Pin Location on Map</label>
@@ -768,7 +794,19 @@
                 </div>
 
                 <div>
-                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Map Location</h4>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Map & Landmarks</h4>
+                        <a id="btn-hostel-directions" href="#" target="_blank" class="text-[10px] font-bold bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:opacity-80 transition">
+                            <i class="fa-solid fa-route"></i> Get Directions
+                        </a>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-[#1A1A1C] p-3 rounded-2xl mb-3 border border-gray-100 dark:border-gray-800 flex items-start gap-3">
+                        <i class="fa-solid fa-map-pin text-red-500 mt-0.5"></i>
+                        <div>
+                            <span class="block text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-0.5">Nearby Landmarks</span>
+                            <span id="view-hostel-landmarks" class="text-sm text-gray-800 dark:text-gray-200">No landmarks provided.</span>
+                        </div>
+                    </div>
                     <div id="view-hostel-map" class="w-full h-48 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-gray-100 dark:bg-geminiBase z-10"></div>
                 </div>
 
@@ -1270,6 +1308,25 @@
             }
 
             if(window.compileSmartNotices) window.compileSmartNotices();
+            
+            // Dropdown the banner if there's a new global update
+            if (window.currentUserProfile && window.allAnnouncementsCache.length > 0) {
+                const latestNotice = window.allAnnouncementsCache.sort((a,b) => b.timestamp - a.timestamp)[0];
+                const tsKey = `uds_updates_seen_${window.currentUserProfile.email}`;
+                const lastSeenTs = parseInt(localStorage.getItem(tsKey)) || 0;
+                
+                if (latestNotice && latestNotice.timestamp > lastSeenTs && !latestNotice.archived) {
+                    const banner = document.getElementById('smart-notification-banner');
+                    const textElement = document.getElementById('smart-notification-text');
+                    textElement.innerHTML = `<span class="text-blue-500 font-bold">Admin Update:</span> ${latestNotice.title}`;
+                    banner.classList.remove('-translate-y-[150%]', 'opacity-0');
+                    banner.classList.add('translate-y-0', 'opacity-100');
+                    setTimeout(() => {
+                        banner.classList.remove('translate-y-0', 'opacity-100');
+                        banner.classList.add('-translate-y-[150%]', 'opacity-0');
+                    }, 6000);
+                }
+            }
         });
 
         onSnapshot(doc(db, "system", "deadlines"), (snapshot) => {
@@ -1356,6 +1413,7 @@
             document.getElementById('section-accommodation').classList.add('hidden');
             document.getElementById('section-marketplace').classList.add('hidden'); 
             document.getElementById('section-career-bridge').classList.add('hidden');
+            document.getElementById('section-know-campus').classList.add('hidden');
             document.getElementById('slideshow-panel').classList.add('hidden');
             
             if(v === 'dashboard') { 
@@ -1374,6 +1432,9 @@
             else if(v === 'career-bridge') {
                 document.getElementById('section-career-bridge').classList.remove('hidden');
                 if(window.renderCareerBridge) window.renderCareerBridge();
+            }
+            else if(v === 'know-campus') {
+                document.getElementById('section-know-campus').classList.remove('hidden');
             }
         };
 
@@ -2023,7 +2084,63 @@
                 }
             }, 500); 
         };
+// Internal Database for "Know UDS Campus"
+        const udsLocationsDB = [
+            { id: 1, name: "Spanish Laboratory", campus: "Nyankpala Campus", desc: "Main laboratory for agricultural research and soil testing. Located near the central faculty block.", lat: 9.4075, lng: -0.9850, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/UDS_Nyankpala_Campus_Library.jpg/800px-UDS_Nyankpala_Campus_Library.jpg" },
+            { id: 2, name: "Dungu Central Library", campus: "Tamale Campus (Dungu)", desc: "The primary library for the Dungu campus, providing study spaces and extensive academic resources.", lat: 9.4321, lng: -0.8412, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/University_for_Development_Studies_Library.jpg/800px-University_for_Development_Studies_Library.jpg" },
+            { id: 3, name: "ICT Directorate / Center", campus: "Tamale Campus (Dungu)", desc: "Central hub for university networking, student portal issues, and computer labs.", lat: 9.4305, lng: -0.8430, img: "https://dummyimage.com/600x400/0b1b3d/d4af37&text=ICT+Center" },
+            { id: 4, name: "School of Medicine Block", campus: "Tamale Campus (Dungu)", desc: "Main lecture halls and administrative offices for medical and health science students.", lat: 9.4350, lng: -0.8390, img: "https://dummyimage.com/600x400/0b1b3d/d4af37&text=School+of+Medicine" }
+        ]; // Note: Update these mock images and coordinates with accurate data when you have them.
 
+        window.searchCampusLocations = function() {
+            const query = document.getElementById('campus-search-bar').value.trim().toLowerCase();
+            const resultsBox = document.getElementById('campus-search-results');
+            
+            if (!query) {
+                resultsBox.innerHTML = `
+                    <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 p-6 rounded-3xl text-center">
+                        <i class="fa-solid fa-compass text-4xl text-blue-400 mb-3"></i>
+                        <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Type a location above to explore.</p>
+                    </div>`;
+                return;
+            }
+
+            const matches = udsLocationsDB.filter(loc => loc.name.toLowerCase().includes(query) || loc.campus.toLowerCase().includes(query) || loc.desc.toLowerCase().includes(query));
+
+            if (matches.length === 0) {
+                resultsBox.innerHTML = `
+                    <div class="bg-gray-50 dark:bg-geminiSurface border border-dashed border-gray-200 dark:border-gray-800 p-8 rounded-3xl text-center">
+                        <i class="fa-solid fa-map-location-dot text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Location not found.</p>
+                        <p class="text-xs text-gray-400 mt-1">Try searching for broader terms like "Library" or "Lab".</p>
+                    </div>`;
+                return;
+            }
+
+            resultsBox.innerHTML = '';
+            matches.forEach(loc => {
+                resultsBox.innerHTML += `
+                    <div class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm flex flex-col md:flex-row mb-4">
+                        <img src="${loc.img}" class="w-full md:w-64 h-48 md:h-auto object-cover" onerror="this.src='https://dummyimage.com/600x400/0b1b3d/ffffff&text=Image+Not+Found'">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-xl font-medium text-gray-900 dark:text-white">${loc.name}</h3>
+                                    <span class="text-xs font-bold text-academicPurple dark:text-academicGold uppercase tracking-wider">${loc.campus}</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-2 mb-6 leading-relaxed">${loc.desc}</p>
+                            
+                            <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800">
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}" target="_blank" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition w-full md:w-auto shadow-sm">
+                                    <i class="fa-solid fa-location-arrow"></i> Lead Me Here
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        };
         window.triggerDriveSync = async function(btn) { btn.innerText = "Scanning Google Drive... Please wait."; btn.disabled = true; try { const response = await fetch('/api/sync', { method: 'POST' }); const data = await response.json(); if (data.success) { window.showToast(`Success! Found and added ${data.synced} new files.`, "success"); } else { window.showToast("Sync failed. Check Vercel logs.", "error"); } } catch (err) { window.showToast("Network pipeline issue.", "error"); } finally { btn.innerText = "Start Deep Sync"; btn.disabled = false; } };
 
         window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
@@ -2082,6 +2199,7 @@
             document.getElementById('add-hostel-name').value = '';
             document.getElementById('add-hostel-price').value = '';
             document.getElementById('add-hostel-desc').value = '';
+            document.getElementById('add-hostel-landmarks').value = '';
             
             window.uploadedHostelImages = [];
             const previewContainer = document.getElementById('hostel-upload-preview');
@@ -2095,6 +2213,7 @@
             const name = document.getElementById('add-hostel-name').value.trim();
             const price = document.getElementById('add-hostel-price').value.trim();
             const desc = document.getElementById('add-hostel-desc').value.trim();
+            const landmarks = document.getElementById('add-hostel-landmarks').value.trim();
             
             if(!name || !price) { window.showToast("Name and Price are required", "error"); return; }
             
@@ -2106,6 +2225,7 @@
                     price: Number(price),
                     imageUrls: window.uploadedHostelImages || [],
                     description: desc,
+                    landmarks: landmarks,
                     lat: latlng.lat,
                     lng: latlng.lng,
                     contributorId: window.currentUserProfile.email,
@@ -2194,6 +2314,11 @@
             document.getElementById('view-hostel-title').innerText = hostel.name;
             document.getElementById('view-hostel-price').innerText = `GHS ${hostel.price} / year`;
             document.getElementById('view-hostel-desc').innerText = hostel.description || 'No description provided.';
+            document.getElementById('view-hostel-landmarks').innerText = hostel.landmarks || 'No landmarks provided.';
+            
+            // Set up the routing link to Google Maps
+            const directionsBtn = document.getElementById('btn-hostel-directions');
+            directionsBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${hostel.lat},${hostel.lng}`;
             
             const verificationBadge = document.getElementById('view-hostel-verification');
             if(hostel.verified) {
@@ -2853,6 +2978,8 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                         likes: window.firebaseArrayUnion(userEmail),
                         dislikes: window.firebaseArrayRemove(userEmail) 
                     });
+                    // Trigger Private Notification for a Like
+                    window.sendOwnerNotification(item.sellerId, item.title, 'like', window.currentUserProfile.name);
                 }
                 // NEW: Refresh the popup instantly so the user sees their like!
                 setTimeout(() => window.openMarketplaceDetails(id), 300);
@@ -2878,6 +3005,8 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                         dislikes: window.firebaseArrayUnion(userEmail),
                         likes: window.firebaseArrayRemove(userEmail) 
                     });
+                    // Trigger Private Notification for a Dislike
+                    window.sendOwnerNotification(item.sellerId, item.title, 'dislike', window.currentUserProfile.name);
                 }
                 // NEW: Refresh the popup instantly so the user sees their dislike!
                 setTimeout(() => window.openMarketplaceDetails(id), 300);
@@ -2951,14 +3080,14 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         };
 
 // --- NOTIFICATION & HELPFUL VOTE ENGINE ---
-        window.sendOwnerNotification = async function(ownerEmail, listingName, actionType, actorName) {
+        window.sendOwnerNotification = async function(ownerEmail, listingName, actionType, actorName, messagePreview = null) {
             if(!ownerEmail || ownerEmail === window.currentUserProfile.email) return; // Don't notify self
             const docRef = window.firebaseDoc(window.firebaseDb, "user_notifications", ownerEmail);
             try {
                 await window.firebaseUpdateDoc(docRef, {
                     alerts: window.firebaseArrayUnion({
                         id: 'notif_' + Date.now(),
-                        listingName, actionType, actorName,
+                        listingName, actionType, actorName, messagePreview,
                         timestamp: Date.now()
                     })
                 });
@@ -2966,7 +3095,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 await window.firebaseSetDoc(docRef, {
                     alerts: [{
                         id: 'notif_' + Date.now(),
-                        listingName, actionType, actorName,
+                        listingName, actionType, actorName, messagePreview,
                         timestamp: Date.now()
                     }]
                 });
@@ -3011,19 +3140,27 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         // Hook up comments to notifications (overriding original submit functions to add notification trigger)
         const originalSubmitHostelReview = window.submitHostelReview;
         window.submitHostelReview = async function() {
+            const commentInput = document.getElementById('add-review-text');
+            const previewText = commentInput ? commentInput.value.trim() : "";
             await originalSubmitHostelReview();
+            
             const hostel = window.accommodationsCache.find(h => h.id === window.selectedHostelId);
-            if(hostel && window.currentUserProfile) {
-                window.sendOwnerNotification(hostel.contributorId, hostel.name, 'comment', window.currentUserProfile.name);
+            if(hostel && window.currentUserProfile && previewText) {
+                window.sendOwnerNotification(hostel.contributorId, hostel.name, 'comment', window.currentUserProfile.name, previewText);
             }
         };
 
         const originalSubmitMktReview = window.submitMarketplaceReview;
         window.submitMarketplaceReview = async function() {
+            const commentInput = document.getElementById('add-mkt-comment-text');
+            const previewText = commentInput ? commentInput.value.trim() : "";
             await originalSubmitMktReview();
+            
             const item = window.marketplaceCache.find(i => i.id === window.currentMarketplaceItemId);
-            if(item && window.currentUserProfile) {
-                window.sendOwnerNotification(item.sellerId, item.title, 'comment', window.currentUserProfile.name);
+            if(item && window.currentUserProfile && previewText) {
+                // If it ends with a question mark, tag it as a question
+                const actionType = previewText.endsWith('?') ? 'question' : 'comment';
+                window.sendOwnerNotification(item.sellerId, item.title, actionType, window.currentUserProfile.name, previewText);
             }
         };
 
@@ -3250,7 +3387,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             document.getElementById('smart-notice-center-modal').classList.add('hidden');
         };
 
-       window.checkFeatureVersionUpdates = function() {
+      window.checkFeatureVersionUpdates = function() {
             if (!window.currentUserProfile) return;
             const verKey = `uds_lastSeenVersion_${window.currentUserProfile.email}`;
             const lastSeenUpdateVersion = parseFloat(localStorage.getItem(verKey)) || 0;
@@ -3261,7 +3398,9 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 const textElement = document.getElementById('smart-notification-text');
                 
                 if(window.systemFeatures && window.systemFeatures.length > 0) {
-                    textElement.textContent = `Update: ${window.systemFeatures[0].title}!`;
+                    // Find the newest feature by sorting timestamps to avoid showing old ones
+                    const newestFeature = [...window.systemFeatures].sort((a,b) => b.timestamp - a.timestamp)[0];
+                    textElement.textContent = `Update: ${newestFeature.title}!`;
                     banner.classList.remove('-translate-y-[150%]', 'opacity-0');
                     banner.classList.add('translate-y-0', 'opacity-100');
                     
@@ -3301,15 +3440,22 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 window.personalNotifications.forEach(n => {
                     let actionText = "interacted with";
                     let iconHtml = '<i class="fa-solid fa-bell text-blue-500 text-xl"></i>';
+                    let typeTag = 'Personal Alert';
                     
-                    if(n.actionType === 'comment') { actionText = "commented on"; iconHtml = '<i class="fa-regular fa-comment text-blue-500 text-xl"></i>'; }
-                    if(n.actionType === 'helpful') { actionText = "found your comment helpful on"; iconHtml = '<i class="fa-solid fa-thumbs-up text-green-500 text-xl"></i>'; }
+                    if(n.actionType === 'comment') { actionText = "commented on"; iconHtml = '<i class="fa-regular fa-comment-dots text-blue-500 text-xl"></i>'; typeTag = 'New Comment'; }
+                    if(n.actionType === 'question') { actionText = "asked a question about"; iconHtml = '<i class="fa-solid fa-circle-question text-purple-500 text-xl"></i>'; typeTag = 'New Question'; }
+                    if(n.actionType === 'helpful') { actionText = "found your comment helpful on"; iconHtml = '<i class="fa-solid fa-thumbs-up text-green-500 text-xl"></i>'; typeTag = 'Comment Liked'; }
+                    if(n.actionType === 'like') { actionText = "liked"; iconHtml = '<i class="fa-solid fa-heart text-red-500 text-xl"></i>'; typeTag = 'New Like'; }
+                    if(n.actionType === 'dislike') { actionText = "disliked"; iconHtml = '<i class="fa-solid fa-heart-crack text-gray-500 text-xl"></i>'; typeTag = 'Dislike'; }
+                    
+                    // TikTok Style Message Box Formatting
+                    let msgBox = n.messagePreview ? `<div class="bg-gray-100 dark:bg-[#131314] p-3 rounded-xl mt-2 border-l-4 border-blue-500 text-xs italic text-gray-700 dark:text-gray-300">"${n.messagePreview}"</div>` : '';
                     
                     updates.push({
                         id: n.id,
-                        type: 'Personal Alert',
-                        title: `${n.actorName} ${actionText} your listing.`,
-                        content: `Listing: ${n.listingName}`,
+                        type: typeTag,
+                        title: `<span class="font-bold text-blue-600 dark:text-blue-400">${n.actorName}</span> ${actionText} <span class="font-bold">${n.listingName}</span>`,
+                        content: msgBox,
                         priority: 0,
                         timestamp: n.timestamp,
                         icon: iconHtml,
@@ -3338,8 +3484,17 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 });
             }
 
-            // 2. Features (Priority 3)
-            window.systemFeatures.forEach(f => updates.push(f));
+           // 2. Features (Priority 3) - Only show new/unseen features to prevent old ones from reappearing
+            let featureLastSeenTs = 0;
+            if (window.currentUserProfile) {
+                const tsKey = `uds_updates_seen_${window.currentUserProfile.email}`;
+                featureLastSeenTs = parseInt(localStorage.getItem(tsKey)) || 0;
+            }
+            window.systemFeatures.forEach(f => {
+                if (f.timestamp > featureLastSeenTs) {
+                    updates.push(f);
+                }
+            });
 
             // 3. Resource Updates (Priority 4)
             if (window.globalMaterialsCache) {
@@ -3666,7 +3821,8 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
     </script>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzVKxcoVN8zDByqSuMBrsQmLdmJEd25ZJQZUtMw-acBW7vQdur5GFw4bgz2D3OnNOBm/exec";
+    // PASTE YOUR NEW WEB APP URL HERE INSIDE THE QUOTES
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBStr9YY6K69eRej7UlbFbESngJ_PJrJoaIiwSR6Y3ReogeITFAIS2NW37t8SB-CJV/exec";
 
     const uploadForm = document.getElementById('student-upload-form');
     const fileInput = document.getElementById('upload-file');
@@ -3679,6 +3835,21 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             
             const file = fileInput.files[0];
             if (!file) return;
+
+            // Strict Frontend File Checking
+            const fileName = file.name.toLowerCase();
+            const isAllowed = fileName.endsWith('.pdf') || 
+                              fileName.endsWith('.doc') || 
+                              fileName.endsWith('.docx') || 
+                              fileName.endsWith('.ppt') || 
+                              fileName.endsWith('.pptx');
+
+            if (!isAllowed) {
+                statusText.classList.remove('hidden', 'text-blue-500', 'text-green-500');
+                statusText.classList.add('text-red-500', 'mt-2', 'block');
+                statusText.innerText = "Invalid file. Please upload a PDF, Word, or PowerPoint file.";
+                return;
+            }
 
             // 1. Show loading state
             submitBtn.disabled = true;
@@ -3712,7 +3883,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
 
                     // 5. Handle the result
                     if (result.status === 'success') {
-                        statusText.innerText = "Success! Your document is pending review.";
+                        statusText.innerText = "Success! Your document is pending review by Admins.";
                         statusText.classList.replace('text-blue-500', 'text-green-500');
                         uploadForm.reset();
                     } else {
@@ -3720,7 +3891,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     }
                 } catch (error) {
                     console.error("Upload Error:", error);
-                    statusText.innerText = "Upload failed. Please check your connection and try again.";
+                    statusText.innerText = error.message || "Upload failed. Please check your connection and try again.";
                     statusText.classList.replace('text-blue-500', 'text-red-500');
                 } finally {
                     // 6. Reset button state
