@@ -3281,7 +3281,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             document.getElementById('smart-notice-center-modal').classList.add('hidden');
         };
 
-       window.checkFeatureVersionUpdates = function() {
+      window.checkFeatureVersionUpdates = function() {
             if (!window.currentUserProfile) return;
             const verKey = `uds_lastSeenVersion_${window.currentUserProfile.email}`;
             const lastSeenUpdateVersion = parseFloat(localStorage.getItem(verKey)) || 0;
@@ -3292,7 +3292,9 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 const textElement = document.getElementById('smart-notification-text');
                 
                 if(window.systemFeatures && window.systemFeatures.length > 0) {
-                    textElement.textContent = `Update: ${window.systemFeatures[0].title}!`;
+                    // Find the newest feature by sorting timestamps to avoid showing old ones
+                    const newestFeature = [...window.systemFeatures].sort((a,b) => b.timestamp - a.timestamp)[0];
+                    textElement.textContent = `Update: ${newestFeature.title}!`;
                     banner.classList.remove('-translate-y-[150%]', 'opacity-0');
                     banner.classList.add('translate-y-0', 'opacity-100');
                     
@@ -3376,8 +3378,17 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 });
             }
 
-            // 2. Features (Priority 3)
-            window.systemFeatures.forEach(f => updates.push(f));
+           // 2. Features (Priority 3) - Only show new/unseen features to prevent old ones from reappearing
+            let featureLastSeenTs = 0;
+            if (window.currentUserProfile) {
+                const tsKey = `uds_updates_seen_${window.currentUserProfile.email}`;
+                featureLastSeenTs = parseInt(localStorage.getItem(tsKey)) || 0;
+            }
+            window.systemFeatures.forEach(f => {
+                if (f.timestamp > featureLastSeenTs) {
+                    updates.push(f);
+                }
+            });
 
             // 3. Resource Updates (Priority 4)
             if (window.globalMaterialsCache) {
