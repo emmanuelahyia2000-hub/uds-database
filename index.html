@@ -325,14 +325,25 @@
                     </div>
 
                     <script>
-                        window.openContributeModal = function() {
-                            if(window.innerWidth < 1024 && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
-                                window.toggleSidebar(); // Close sidebar on mobile
+                        // Instantly open the modal - attached to window to ensure global availability
+                        window.openContributeModal = function(e) {
+                            if(e) e.preventDefault();
+                            if(window.innerWidth < 1024 && document.getElementById('app-sidebar') && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
+                                if(typeof window.toggleSidebar === 'function') window.toggleSidebar();
                             }
-                            document.getElementById('contribute-file-modal').classList.remove('hidden');
+                            const modal = document.getElementById('contribute-file-modal');
+                            if(modal) {
+                                modal.classList.remove('hidden');
+                                modal.style.display = 'flex'; // Force display to override any conflicting hidden styles
+                            }
                         };
-                        window.closeContributeModal = function() {
-                            document.getElementById('contribute-file-modal').classList.add('hidden');
+                        window.closeContributeModal = function(e) {
+                            if(e) e.preventDefault();
+                            const modal = document.getElementById('contribute-file-modal');
+                            if(modal) {
+                                modal.classList.add('hidden');
+                                modal.style.display = ''; 
+                            }
                         };
                     </script>
                 </div>
@@ -481,7 +492,7 @@
     </main><div id="section-know-campus" class="hidden w-full max-w-4xl mx-auto">
                     <div class="mb-8 px-2">
                         <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-map-location-dot mr-2 text-blue-500"></i>Know UDS Campus</h2>
-                        <p class="text-sm text-gray-500 mt-1">Search for any lecture hall, faculty building, or landmark across all UDS campuses.</p>
+                        <p class="text-sm text-gray-500 mt-1">Explore all UDS campuses natively. Allow location access to view your position relative to the university.</p>
                     </div>
 
                     <div class="mb-6 px-2">
@@ -493,12 +504,90 @@
                         </div>
                     </div>
 
-                    <div id="campus-search-results" class="px-2 w-full">
-                        <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 p-6 rounded-3xl text-center">
-                            <i class="fa-solid fa-compass text-4xl text-blue-400 mb-3"></i>
-                            <p class="text-sm font-medium text-blue-800 dark:text-blue-300">Type a location above to explore.</p>
+                    <div id="campus-search-results" class="px-2 w-full mb-4">
+                        <div id="uds-main-map" class="w-full h-[600px] rounded-3xl z-10 border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-geminiBase relative overflow-hidden">
+                            <div id="map-loading-overlay" class="absolute inset-0 bg-white/90 dark:bg-[#0B1B3D]/90 flex flex-col items-center justify-center z-20 backdrop-blur-sm transition-opacity duration-300">
+                                <i class="fa-solid fa-location-crosshairs text-4xl text-blue-500 animate-spin mb-3"></i>
+                                <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Requesting Location Access...</p>
+                                <button onclick="initUDSMap(true)" class="mt-4 bg-navy dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-full text-xs font-medium hover:opacity-90 transition">Load Map Manually</button>
+                            </div>
                         </div>
                     </div>
+                    
+                    <script>
+                        let udsNativeMap = null;
+                        let markersLayer = null;
+                        
+                        function initUDSMap(force = false) {
+                            if (udsNativeMap) {
+                                udsNativeMap.invalidateSize();
+                                return;
+                            }
+                            
+                            const overlay = document.getElementById('map-loading-overlay');
+                            if(overlay) overlay.classList.add('hidden');
+                            
+                            // Initialize map centered roughly on UDS Dungu
+                            udsNativeMap = L.map('uds-main-map').setView([9.3512, -0.8030], 12);
+                            
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; OpenStreetMap contributors'
+                            }).addTo(udsNativeMap);
+                            
+                            markersLayer = L.layerGroup().addTo(udsNativeMap);
+                            
+                            // Pre-plot default UDS Campuses
+                            L.marker([9.3512, -0.8030]).addTo(markersLayer).bindPopup('<b style="color: #4B2E83;">UDS Dungu Campus</b><br>Main Administration & Faculties.').openPopup();
+                            L.marker([9.3986, -0.9888]).addTo(markersLayer).bindPopup('<b style="color: #4B2E83;">UDS Nyankpala Campus</b><br>Faculty of Agriculture.');
+                            
+                            // Request User Geolocation natively on the site
+                            if (navigator.geolocation && !force) {
+                                navigator.geolocation.getCurrentPosition((position) => {
+                                    const lat = position.coords.latitude;
+                                    const lng = position.coords.longitude;
+                                    
+                                    // Plot the user
+                                    L.circleMarker([lat, lng], {
+                                        color: '#4B2E83', 
+                                        fillColor: '#D4AF37', 
+                                        fillOpacity: 1.0, 
+                                        radius: 8
+                                    }).addTo(udsNativeMap).bindPopup('<b>Your Current Location</b>').openPopup();
+                                    
+                                    // Fit the map view to ensure both the user and main campus are visible
+                                    const bounds = L.latLngBounds([[lat, lng], [9.3512, -0.8030]]);
+                                    udsNativeMap.fitBounds(bounds, { padding: [50, 50] });
+                                    
+                                }, (err) => {
+                                    console.warn("Location access denied or unavailable:", err);
+                                });
+                            }
+                        }
+
+                        // Override search function to interact with the native map
+                        window.searchCampusLocations = function() {
+                            const term = document.getElementById('campus-search-bar').value.toLowerCase();
+                            if(!udsNativeMap) initUDSMap(true);
+                            
+                            if (term.includes('dungu')) {
+                                udsNativeMap.setView([9.3512, -0.8030], 16);
+                            } else if (term.includes('nyankpala') || term.includes('agric')) {
+                                udsNativeMap.setView([9.3986, -0.9888], 16);
+                            } else if (term.length > 3) {
+                                // Default broad zoom if general text is searched
+                                udsNativeMap.setView([9.3512, -0.8030], 14);
+                            }
+                        };
+                        
+                        // Hook into your navigation router to load the map right when the tab is clicked
+                        const originalCampusNavigate = window.navigateTo;
+                        window.navigateTo = function(sectionId) {
+                            if(typeof originalCampusNavigate === 'function') originalCampusNavigate(sectionId);
+                            if(sectionId === 'know-campus') {
+                                setTimeout(() => initUDSMap(), 300); // 300ms delay allows the DOM display toggle to finish first
+                            }
+                        };
+                    </script>
                 </div>
 
     <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
