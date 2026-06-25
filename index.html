@@ -365,7 +365,7 @@
                             <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-store mr-2 text-blue-500"></i>Student Marketplace</h2>
                             <p class="text-sm text-gray-500 mt-1">Buy, sell, advertise services, and find student businesses.</p>
                         </div>
-                        <button onclick="openAddMarketplaceModal()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy hover:opacity-90 text-white px-5 py-2.5 rounded-full transition font-medium text-sm flex items-center gap-2 whitespace-nowrap shadow-sm">
+                        <button onclick="openListingChoiceModal()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy hover:opacity-90 text-white px-5 py-2.5 rounded-full transition font-medium text-sm flex items-center gap-2 whitespace-nowrap shadow-sm">
                             <i class="fa-solid fa-tag"></i> Create Listing
                         </button>
                     </div>
@@ -803,6 +803,89 @@
         </div>
     </div>
 
+    <div id="listing-choice-modal" class="hidden fixed inset-0 z-[160] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-sm w-full p-6 relative border border-gray-100 dark:border-gray-800">
+            <button onclick="document.getElementById('listing-choice-modal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-medium text-lg text-gray-800 dark:text-gray-100 mb-5 text-center">Select Listing Type</h3>
+            <div class="space-y-3">
+                <button onclick="selectListingType('internal')" class="w-full flex items-center gap-4 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition group text-left shadow-sm">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-800 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 shrink-0 transition-colors">
+                        <i class="fa-solid fa-box-open text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="block font-medium text-gray-800 dark:text-gray-200 text-sm">Internal Listing</span>
+                        <span class="block text-xs text-gray-500 mt-0.5">Sell items directly to students</span>
+                    </div>
+                </button>
+                <button onclick="selectListingType('external')" class="w-full flex items-center gap-4 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition group text-left shadow-sm">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-800 text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 shrink-0 transition-colors">
+                        <i class="fa-solid fa-link text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="block font-medium text-gray-800 dark:text-gray-200 text-sm">External Product Link</span>
+                        <span class="block text-xs text-gray-500 mt-0.5">Share links from Jumia, Amazon, etc.</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-external-listing-modal" class="hidden fixed inset-0 z-[160] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border border-gray-100 dark:border-gray-800 max-h-[95vh]">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                <h3 class="font-medium text-lg text-gray-800 dark:text-gray-100 flex items-center gap-2"><i class="fa-solid fa-link text-purple-500 bg-purple-50 dark:bg-purple-900/20 p-2 rounded-full"></i>Add External Product</h3>
+                <button onclick="document.getElementById('add-external-listing-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+                <div class="flex gap-2">
+                    <input type="url" id="ext-mkt-url" placeholder="Paste Product URL (e.g., Jumia, Amazon)" class="flex-grow p-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-purple-100">
+                    <button type="button" onclick="extractExternalProductData()" id="ext-extract-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3.5 rounded-xl text-sm font-medium transition shadow-sm whitespace-nowrap flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Extract
+                    </button>
+                </div>
+
+                <div id="ext-mkt-fields" class="hidden space-y-5 mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Product Title</label>
+                            <input type="text" id="ext-mkt-title" required class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Store Name</label>
+                            <input type="text" id="ext-mkt-store" required placeholder="e.g. Jumia" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Category</label>
+                            <select id="ext-mkt-category" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
+                                <option value="Laptops">Laptops</option><option value="Phones">Phones</option><option value="Electronics">Electronics</option><option value="Books">Books</option><option value="Fashion">Fashion</option><option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Price (GHS)</label>
+                            <input type="number" id="ext-mkt-price" required class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Image URL</label>
+                            <input type="url" id="ext-mkt-image" placeholder="Leave empty if not found" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Description</label>
+                        <textarea id="ext-mkt-desc" rows="3" required class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-gray-100 dark:border-gray-800">
+                <button onclick="saveExternalMarketplaceListing(event)" id="ext-mkt-submit" class="hidden w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3.5 rounded-xl text-sm transition">Publish External Listing</button>
+            </div>
+        </div>
+    </div>
+
     <div id="add-marketplace-modal" class="hidden fixed inset-0 z-[160] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border border-gray-100 dark:border-gray-800 max-h-[95vh]">
             <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
@@ -980,6 +1063,9 @@
                     </a>
                     <a id="btn-mkt-call" href="#" class="flex-1 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center hover:opacity-90">
                         <i class="fa-solid fa-phone text-sm"></i> Call Seller
+                    </a>
+                    <a id="btn-mkt-external" href="#" target="_blank" class="hidden flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i> Visit Store
                     </a>
                 </div>
             </div>
@@ -2465,6 +2551,146 @@
 
         // --- STUDENT MARKETPLACE LOGIC ---
         
+        window.openListingChoiceModal = function() {
+            if(!window.currentUserProfile) { window.showToast("Please sign in to create a listing.", "error"); return; }
+            document.getElementById('listing-choice-modal').classList.remove('hidden');
+        };
+
+        window.selectListingType = function(type) {
+            document.getElementById('listing-choice-modal').classList.add('hidden');
+            if (type === 'internal') {
+                window.openAddMarketplaceModal();
+            } else if (type === 'external') {
+                document.getElementById('add-external-listing-modal').classList.remove('hidden');
+                document.getElementById('ext-mkt-url').value = '';
+                document.getElementById('ext-mkt-fields').classList.add('hidden');
+                document.getElementById('ext-mkt-submit').classList.add('hidden');
+            }
+        };
+
+        window.extractExternalProductData = async function() {
+            const url = document.getElementById('ext-mkt-url').value.trim();
+            if(!url) { window.showToast("Please provide a valid URL", "error"); return; }
+            
+            const btn = document.getElementById('ext-extract-btn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                // Determine store name fallback from URL
+                let storeName = "External Store";
+                try {
+                    let domain = new URL(url).hostname;
+                    storeName = domain.replace('www.', '').split('.')[0];
+                    storeName = storeName.charAt(0).toUpperCase() + storeName.slice(1);
+                } catch(e) {}
+
+                // Use Microlink API to scrape the page metadata (bypasses CORS)
+                const response = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.data) {
+                    const extracted = data.data;
+                    
+                    document.getElementById('ext-mkt-store').value = extracted.publisher || storeName;
+                    document.getElementById('ext-mkt-title').value = extracted.title || "";
+                    document.getElementById('ext-mkt-image').value = extracted.image ? extracted.image.url : (extracted.logo ? extracted.logo.url : ""); 
+                    document.getElementById('ext-mkt-desc').value = extracted.description || "";
+                    
+                    // Reveal the fields so the user can verify data and enter the price
+                    document.getElementById('ext-mkt-fields').classList.remove('hidden');
+                    document.getElementById('ext-mkt-submit').classList.remove('hidden');
+                    
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Extracted';
+                    btn.classList.replace('bg-purple-600', 'bg-green-600');
+                    btn.classList.replace('hover:bg-purple-700', 'hover:bg-green-700');
+                    
+                    window.showToast("Product data extracted! Just add the price.", "success");
+                } else {
+                    throw new Error("Extraction failed on API side");
+                }
+            } catch(error) {
+                console.error("Extraction error:", error);
+                window.showToast("Store blocked extraction. Please fill in manually.", "error");
+                
+                // Fallback: Open fields anyway so they can type it if the store blocks the scraper
+                document.getElementById('ext-mkt-store').value = storeName;
+                document.getElementById('ext-mkt-fields').classList.remove('hidden');
+                document.getElementById('ext-mkt-submit').classList.remove('hidden');
+                
+                btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Failed';
+                btn.classList.replace('bg-purple-600', 'bg-red-600');
+                btn.classList.replace('hover:bg-purple-700', 'hover:bg-red-700');
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Extract';
+                    btn.classList.replace('bg-red-600', 'bg-purple-600');
+                    btn.classList.replace('hover:bg-red-700', 'hover:bg-purple-700');
+                    btn.disabled = false;
+                }, 3000);
+            } finally {
+                if(btn.innerHTML.includes('fa-check')) btn.disabled = false;
+            }
+        };
+
+        window.saveExternalMarketplaceListing = async function(event) {
+            const url = document.getElementById('ext-mkt-url').value.trim();
+            const title = document.getElementById('ext-mkt-title').value.trim();
+            const storeName = document.getElementById('ext-mkt-store').value.trim();
+            const category = document.getElementById('ext-mkt-category').value;
+            const price = document.getElementById('ext-mkt-price').value.trim();
+            const imageUrl = document.getElementById('ext-mkt-image').value.trim();
+            const desc = document.getElementById('ext-mkt-desc').value.trim();
+
+            if(!url || !title || !storeName || !price) {
+                window.showToast("Please fill in required fields.", "error"); return;
+            }
+
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Publishing...";
+            btn.disabled = true;
+
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "marketplace"), {
+                    listingType: "external",
+                    title: title,
+                    type: "External Store",
+                    category: category,
+                    price: Number(price) || 0,
+                    condition: "Brand New",
+                    location: "Online",
+                    productUrl: url,
+                    storeName: storeName,
+                    imageUrls: imageUrl ? [imageUrl] : [],
+                    description: desc,
+                    sellerId: window.currentUserProfile.email,
+                    sellerName: window.currentUserProfile.name,
+                    timestamp: new Date().getTime(),
+                    views: 0,
+                    likes: [],
+                    dislikes: [],
+                    viewedBy: []
+                });
+                
+                window.showToast("External Listing Published!", "success");
+                document.getElementById('add-external-listing-modal').classList.add('hidden');
+                
+                // Reset styling for next time
+                const extractBtn = document.getElementById('ext-extract-btn');
+                extractBtn.disabled = false;
+                extractBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Extract';
+                extractBtn.classList.replace('bg-green-600', 'bg-purple-600');
+                extractBtn.classList.replace('hover:bg-green-700', 'hover:bg-purple-700');
+
+            } catch(e) { 
+                window.showToast("Failed to publish listing.", "error"); 
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
+
         window.openAddMarketplaceModal = function() {
             if(!window.currentUserProfile) { window.showToast("Please sign in to create a listing.", "error"); return; }
             document.getElementById('add-marketplace-modal').classList.remove('hidden');
@@ -2582,8 +2808,17 @@
                     : `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-geminiBase"><i class="fa-solid fa-image text-2xl text-gray-400 opacity-50"></i></div>`;
                 
                 let typeColor = 'bg-black/60';
+                let displayType = item.type;
                 if(item.type === 'Service') typeColor = 'bg-blue-600/80';
                 if(item.type === 'Request') typeColor = 'bg-orange-500/80';
+
+                let storeBadgeHtml = `<span class="text-[10px] text-gray-500 truncate pr-2 font-medium"><i class="fa-solid fa-store mr-1.5 opacity-70"></i>${item.sellerName.split(' ')[0]}</span>`;
+
+                if(item.listingType === 'external') {
+                    typeColor = 'bg-purple-600/80';
+                    displayType = 'External Store';
+                    storeBadgeHtml = `<span class="text-[10px] text-purple-600 dark:text-purple-400 truncate pr-2 font-medium bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md"><i class="fa-solid fa-arrow-up-right-from-square mr-1.5 opacity-70"></i>${item.storeName}</span>`;
+                }
 
                 const timeString = new Date(item.timestamp).toLocaleDateString();
                 const priceText = item.price === 0 ? 'Negotiable' : `GHS ${item.price}`;
@@ -2592,15 +2827,15 @@
                     <div class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-3xl border border-white/50 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col group cursor-pointer" onclick="openMarketplaceDetails('${item.id}')">
                         <div class="h-32 md:h-44 w-full relative shrink-0 overflow-hidden">
                             ${imgHtml}
-                            <span class="absolute top-3 right-3 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded-md backdrop-blur-md uppercase font-medium tracking-wider">${item.type}</span>
+                            <span class="absolute top-3 right-3 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded-md backdrop-blur-md uppercase font-medium tracking-wider">${displayType}</span>
                         </div>
                         <div class="p-4 flex-grow flex flex-col min-w-0">
                             <h4 class="font-medium text-gray-800 dark:text-gray-100 text-sm mb-1 line-clamp-2 leading-snug">${item.title}</h4>
-                            <p class="text-[10px] text-gray-400 mb-3 truncate uppercase tracking-wider">${item.category}</p>
+                            <p class="text-[10px] text-gray-400 mb-3 truncate uppercase tracking-wider">${item.category || 'Product'}</p>
                             <div class="mt-auto">
                                 <span class="font-bold text-gray-900 dark:text-white text-base">${priceText}</span>
                                <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
-                                    <span class="text-[10px] text-gray-500 truncate pr-2 font-medium"><i class="fa-solid fa-store mr-1.5 opacity-70"></i>${item.sellerName.split(' ')[0]}</span>
+                                    ${storeBadgeHtml}
                                     <div class="flex items-center gap-2 text-[10px] text-gray-400 font-medium">
                                         <span><i class="fa-solid fa-thumbs-up opacity-70 mr-0.5"></i> ${item.likes ? item.likes.length : 0}</span>
                                         <span><i class="fa-solid fa-eye opacity-70 mr-0.5"></i> ${item.viewedBy ? item.viewedBy.length : (item.views || 0)}</span>
@@ -2798,12 +3033,37 @@
                 noImgEl.classList.remove('hidden');
             }
 
-            // Clean WhatsApp number
-            let cleanWa = item.whatsapp.replace(/\D/g, '');
-            if(cleanWa.startsWith('0')) cleanWa = '233' + cleanWa.substring(1);
+            const btnWa = document.getElementById('btn-mkt-whatsapp');
+            const btnCall = document.getElementById('btn-mkt-call');
+            const btnExt = document.getElementById('btn-mkt-external');
 
-            document.getElementById('btn-mkt-whatsapp').href = `https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(item.sellerName)},%20I%20am%20interested%20in%20your%20listing%20on%20UDS%20Hub:%20${encodeURIComponent(item.title)}`;
-            document.getElementById('btn-mkt-call').href = `tel:${item.contact}`;
+            if (item.listingType === 'external') {
+                btnWa.classList.add('hidden');
+                btnWa.classList.remove('flex');
+                btnCall.classList.add('hidden');
+                btnCall.classList.remove('flex');
+                btnExt.classList.remove('hidden');
+                btnExt.classList.add('flex');
+                btnExt.href = item.productUrl;
+                
+                document.getElementById('view-mkt-type').innerText = 'External Store';
+                document.getElementById('view-mkt-seller').innerText = item.storeName;
+                document.getElementById('view-mkt-location').innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square mr-1.5 opacity-70"></i> External Link`;
+            } else {
+                btnExt.classList.add('hidden');
+                btnExt.classList.remove('flex');
+                btnWa.classList.remove('hidden');
+                btnWa.classList.add('flex');
+                btnCall.classList.remove('hidden');
+                btnCall.classList.add('flex');
+                
+                // Clean WhatsApp number
+                let cleanWa = item.whatsapp ? item.whatsapp.replace(/\D/g, '') : '';
+                if(cleanWa.startsWith('0')) cleanWa = '233' + cleanWa.substring(1);
+
+                btnWa.href = `https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(item.sellerName)},%20I%20am%20interested%20in%20your%20listing%20on%20UDS%20Hub:%20${encodeURIComponent(item.title)}`;
+                btnCall.href = `tel:${item.contact}`;
+            }
 
             document.getElementById('view-marketplace-modal').classList.remove('hidden');
         };
