@@ -2200,15 +2200,22 @@
             inputEl.value = ''; 
 
             const docTitle = document.getElementById('doc-reader-header-title').innerText || "Unknown Document";
-            let documentContext = `Document Title: ${docTitle}\nCurrent Page/Extracted Text: Context not yet available.`;
+            // STRICT FALLBACK: Triggered if fullText is missing, empty, or invalid.
+            let documentContext = `[SYSTEM ALERT] I am still indexing the full academic content of this document. Please wait a few seconds and ask your question again. Do NOT attempt to answer the question or guess the content.`;
             
             let fileId = null;
             const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
             if (fileIdMatch) {
                 fileId = fileIdMatch[1];
-                if (window.documentAnalysisCache[fileId] && (window.documentAnalysisCache[fileId].summary || window.documentAnalysisCache[fileId].fullText)) {
-                    const cacheData = window.documentAnalysisCache[fileId];
-                    const textToFeed = cacheData.fullText ? cacheData.fullText : cacheData.summary;
+                
+                // VALIDATION STAGE: Ensure cache exists and contains valid fullText
+                const cacheData = window.documentAnalysisCache[fileId];
+                const fullTextStr = (cacheData && typeof cacheData.fullText === 'string') ? cacheData.fullText.trim() : "";
+                const wordCount = fullTextStr.split(/\s+/).length;
+                const hasValidFullText = fullTextStr.length > 200 && wordCount > 30; // Robust verification of extraction integrity
+
+                if (hasValidFullText) {
+                    const textToFeed = cacheData.fullText; // SUMMARY FALLBACK COMPLETELY REMOVED
                     
                     // SELF-LEARNING KNOWLEDGE GRAPH: Update local document concepts with current query words to strengthen future search relationships
                     const queryWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 4);
@@ -2217,31 +2224,58 @@
                     }
 
                     // COMPLETE LIBRARY SEARCH: Fetch related documents from background engine
-                    const relatedDocs = window.findRelatedDocuments(cacheData.concepts || [], fileId);
+                    // Expand search parameters to dynamically include current query words
+                    const searchConcepts = [...new Set([...(cacheData.concepts || []), ...queryWords])];
+                    const relatedDocs = window.findRelatedDocuments(searchConcepts, fileId);
+                    
                     let relatedDocsContext = "";
                     if(relatedDocs.length > 0) {
-                        relatedDocsContext = "\n[RELATED DOCUMENTS FROM LIBRARY]\n" + relatedDocs.map((doc, idx) => `Doc ${idx+1}: ${doc.title}\nRelevance Keywords: ${doc.concepts.join(', ')}\nSummary: ${doc.summary}`).join('\n\n');
+                        const relevantMatches = [];
+                        relatedDocs.forEach((doc) => {
+                            // STRICT VALIDATION: Skip if fullText is missing or invalid. NO SUMMARIES.
+                            if (!doc.fullText || typeof doc.fullText !== 'string' || doc.fullText.trim().length < 100) return;
+                            
+                            // INTELLIGENT PASSAGE RETRIEVAL: Chunk by paragraph (or fallback to sentence grouping)
+                            let blocks = doc.fullText.split(/\n+/).map(p => p.trim()).filter(p => p.length > 30);
+                            if(blocks.length < 3) blocks = doc.fullText.split(/(?<=\.)\s+/).map(p => p.trim()).filter(p => p.length > 10);
+                            
+                            let passage = doc.fullText.substring(0, 1500); // Safe absolute fallback
+                            if (blocks.length > 0 && queryWords.length > 0) {
+                                let bestIndex = -1; let bestScore = 0;
+                                for (let i = 0; i < blocks.length; i++) {
+                                    const pText = blocks[i].toLowerCase();
+                                    let score = 0;
+                                    queryWords.forEach(kw => { if (pText.includes(kw)) score++; });
+                                    if (score > bestScore) { bestScore = score; bestIndex = i; }
+                                }
+                                
+                                // STRICT PRECISION: Only include passages with verified keyword relevance. 
+                                // Omit the document entirely if no meaningful keyword match exists.
+                                if (bestScore > 0) {
+                                    const startIdx = Math.max(0, bestIndex - 1);
+                                    const endIdx = Math.min(blocks.length - 1, bestIndex + 1);
+                                    passage = blocks.slice(startIdx, endIdx + 1).join('\n\n');
+                                    relevantMatches.push(`Library Match ${relevantMatches.length + 1}:\nKeywords: ${doc.concepts.join(', ')}\nExtracted Content: ${passage}`);
+                                }
+                            }
+                        });
+                        
+                        if(relevantMatches.length > 0) {
+                            relatedDocsContext = "\n[ENTIRE ACADEMIC LIBRARY - RELATED MATCHES]\n" + relevantMatches.join('\n\n');
+                        }
                     }
                     
-                    documentContext = `[CURRENT DOCUMENT]
-Title: ${docTitle}
-Keywords: ${cacheData.concepts ? cacheData.concepts.join(", ") : "N/A"}
-Content: ${textToFeed}
+                    documentContext = `[EXTRACTED ACADEMIC CONTENT - CURRENT DOCUMENT]
+${textToFeed}
 ${relatedDocsContext}
 
-[STRICT SEARCH PROTOCOL]
-You are the UDS Academic Knowledge Engine. You must follow this EXACT search order:
-1. Current Document (Provided above).
-2. Related Documents (Provided above).
-3. General AI Knowledge (Only if the above fail).
-
-[ACADEMIC SOURCE RANKING]
-Resolve conflicts by prioritizing: Current Document > Official Slides > Books > Past Questions > General AI.
-
-[CITATION & CONFIDENCE RULES]
-1. CITATIONS: You MUST cite your source. Use format: [Source: Document Title, Section/Context]. Do NOT invent citations.
-2. CONFIDENCE SCORING: Begin your answer with a confidence score (e.g., [Confidence: High/Medium/Low]).
-3. UNCERTAINTY: If your confidence is Low based on the provided documents, state clearly: "The provided documents do not contain strong evidence for this."`;
+[STRICT SEARCH PROTOCOL & MANDATORY RULES]
+You are the UDS Academic Knowledge Engine. You operate strictly on raw extracted text. Ignore all metadata including filenames. Base your reasoning exclusively on the extracted academic content supplied below.
+RULE 1: ABSOLUTE PROHIBITION ON METADATA GUESSING. NEVER introduce your answer with conversational filler like "It looks like you are referring to a document..." or "This text appears to be about...". NEVER attempt to guess a filename.
+RULE 2: DIVE STRAIGHT INTO THE ANSWER. Begin your response immediately with the factual academic explanation based on the text.
+RULE 3: PIPELINE SEARCH ORDER: 1. Current Document Content -> 2. Entire Academic Library (Related Matches) -> 3. General AI Knowledge.
+RULE 4: NO HALLUCINATIONS. If the exact answer is not found in the Extracted Content or Library Matches, you MUST state: "The indexed academic materials do not contain sufficient information for this specific query," before answering from General AI knowledge.
+RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabricate page numbers, titles, or authors.`;
                 }
             }
 
