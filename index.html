@@ -180,7 +180,7 @@
                     </div>
 
                     <div class="bg-white/10 lg:bg-academicPurple lg:text-white p-4 rounded-2xl border border-white/10 shadow-sm">
-                        <h4 class="text-xs font-medium text-white/70 lg:text-academicGold mb-1">Until Resumption</h4>
+                        <h4 class="text-xs font-medium text-white/70 lg:text-academicGold mb-1" id="widget-countdown-title">Countdown Event</h4>
                         <div class="text-lg font-mono text-academicGold lg:text-white tracking-tight" id="widget-countdown-clock">--:--:--:--</div>
                     </div>
                 </div>
@@ -200,26 +200,19 @@
                     </div>
                     
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                        <div class="col-span-1 xl:col-span-2 mb-2 p-5 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl">
-                            <span class="text-sm font-medium text-navy dark:text-blue-300 block mb-2">Automated Google Drive Sync</span>
-                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">Drop folders directly into your Google Drive, then click this button. The system will scan your Drive and add all new files to the database automatically.</p>
-                            <button onclick="triggerDriveSync(this)" class="w-full py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition">Start Deep Sync</button>
-                        </div>
-
-                        <form onsubmit="handleSecureUpload(event)" class="space-y-3 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">1. Manual Sync Resource</span>
-                            <select id="adm-level" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50"><option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option></select>
-                            <input type="text" id="adm-resource-title" required placeholder="Resource Title..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
-                            <input type="text" id="adm-search-tags" placeholder="Keywords (biology, math...)" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
-                            <input type="text" id="adm-drive-link" required placeholder="Drive Link..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
-                            <button type="submit" id="adm-upload-btn" class="w-full py-2.5 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition">Publish</button>
-                        </form>
 
                         <div class="space-y-4">
                             <form onsubmit="handleCalendarUpdate(event)" class="space-y-2 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
-                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">2. Target Date</span>
-                                <input type="date" id="set-exam-date" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                <button type="submit" class="w-full py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white text-sm font-medium rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition">Set Date</button>
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Event & Countdown Control</span>
+                                <select id="set-event-title" required class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none mb-2">
+                                    <option value="Until Resumption">Until Resumption</option>
+                                    <option value="Until Exams">Until Exams</option>
+                                    <option value="Until Vacation">Until Vacation</option>
+                                    <option value="Registration Ends In">Registration Deadline</option>
+                                    <option value="Event Starts In">Custom Event</option>
+                                </select>
+                                <input type="datetime-local" id="set-exam-date" required class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
+                                <button type="submit" class="w-full py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition mt-2">Activate Countdown</button>
                             </form>
                             <form onsubmit="handleBroadcastAnnouncement(event)" class="space-y-2 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
                                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">3. Broadcast Notice</span>
@@ -227,12 +220,6 @@
                                 <textarea id="ann-content" required rows="2" placeholder="Details..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none"></textarea>
                                 <button type="submit" class="w-full py-2.5 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition">Broadcast</button>
                             </form>
-                        </div>
-
-                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-2">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">4. Manage Files</span>
-                            <input type="text" id="admin-file-search" onkeyup="filterAdminFiles()" placeholder="Search to manage..." class="w-full px-4 py-2 border dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-geminiBase dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
-                            <div id="admin-file-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200 scroll-smooth"></div>
                         </div>
 
                         <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
@@ -706,13 +693,60 @@
             </div>
             <div class="p-6 overflow-y-auto space-y-5 flex-grow">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
+                    <div class="col-span-1 md:col-span-2">
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Hostel Name</label>
-                        <input type="text" id="add-hostel-name" required placeholder="e.g. SRC Hostel" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        <input type="text" id="add-hostel-name" required placeholder="e.g. Deo Students Hostel" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
                     <div>
-                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Est. Price (GHS/yr)</label>
-                        <input type="number" id="add-hostel-price" required placeholder="e.g. 2500" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Price per trimester (GHS)</label>
+                        <input type="number" id="add-hostel-price" required placeholder="e.g. 2800" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Price per Year (GHS)</label>
+                        <input type="number" id="add-hostel-price-year" required placeholder="e.g. 5200" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Room Type</label>
+                        <select id="add-hostel-room-type" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                            <option value="Single Room">Single Room</option>
+                            <option value="Double Room">Double Room</option>
+                            <option value="Triple Room">Triple Room</option>
+                            <option value="Four-in-One">Four-in-One</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Gender Orientation</label>
+                        <select id="add-hostel-gender" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                            <option value="Mixed">Mixed</option>
+                            <option value="Male Only">Male Only</option>
+                            <option value="Female Only">Female Only</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Distance to Campus</label>
+                        <input type="text" id="add-hostel-distance" placeholder="e.g. 3 min walk / 500m" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Availability Status</label>
+                        <select id="add-hostel-status" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                            <option value="Rooms Available">Rooms Available</option>
+                            <option value="Few Rooms Left">Few Rooms Left</option>
+                            <option value="Fully Booked">Fully Booked</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">Key Amenities</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-gray-700 dark:text-gray-300" id="hostel-amenities-check">
+                        <label class="flex items-center gap-2"><input type="checkbox" value="wifi"> Wi-Fi</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="water"> 24/7 Water</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="electricity"> Electricity</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="bathroom"> Private Bathroom</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="ac"> Air Conditioning</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="kitchen"> Kitchen</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="security"> 24/7 Security</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="parking"> Parking</label>
                     </div>
                 </div>
                 
@@ -893,15 +927,20 @@
                 <button onclick="closeAddMarketplaceModal()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-5 flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="col-span-1 md:col-span-2">
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Listing Title</label>
-                        <input type="text" id="add-mkt-title" required placeholder="e.g. HP ProBook 450 G8" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        <input type="text" id="add-mkt-title" required placeholder="e.g. Samsung 55-inch UHD 4K Smart TV" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
                     </div>
                     
                     <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Brand</label>
+                        <input type="text" id="add-mkt-brand" placeholder="e.g. Samsung, LG, Generic" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
+                    </div>
+
+                    <div>
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Listing Type</label>
-                        <select id="add-mkt-type" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
+                        <select id="add-mkt-type" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer focus:ring-2 focus:ring-blue-100">
                             <option value="Product">Selling a Product</option>
                             <option value="Service">Offering a Service</option>
                             <option value="Request">Looking For Help / Request</option>
@@ -910,36 +949,51 @@
 
                     <div>
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Category</label>
-                        <select id="add-mkt-category" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
-                            <option value="Books">Books</option><option value="Laptops">Laptops</option><option value="Phones">Phones</option><option value="Electronics">Electronics</option><option value="Graphic Design">Graphic Design</option><option value="Web Development">Web Development</option><option value="Statistics Services">Statistics Services</option><option value="Photography">Photography</option><option value="Video Editing">Video Editing</option><option value="Fashion">Fashion</option><option value="Tailoring">Tailoring</option><option value="Accommodation Services">Accommodation Services</option><option value="Printing">Printing</option><option value="Academic Services">Academic Services</option><option value="Repairs">Repairs</option><option value="Other">Other</option>
+                        <select id="add-mkt-category" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer focus:ring-2 focus:ring-blue-100">
+                            <option value="Electronics">Electronics & TV</option><option value="Laptops">Laptops</option><option value="Phones">Phones</option><option value="Books">Books</option><option value="Graphic Design">Graphic Design</option><option value="Web Development">Web Development</option><option value="Statistics Services">Statistics Services</option><option value="Photography">Photography</option><option value="Video Editing">Video Editing</option><option value="Fashion">Fashion</option><option value="Tailoring">Tailoring</option><option value="Accommodation Services">Accommodation Services</option><option value="Printing">Printing</option><option value="Academic Services">Academic Services</option><option value="Repairs">Repairs</option><option value="Other">Other</option>
                         </select>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Price (GHS)</label>
-                        <input type="number" id="add-mkt-price" required placeholder="e.g. 1500 (Type 0 for Negotiable)" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
                     </div>
 
                     <div>
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Condition</label>
-                        <select id="add-mkt-condition" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer">
+                        <select id="add-mkt-condition" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white cursor-pointer focus:ring-2 focus:ring-blue-100">
                             <option value="New">Brand New</option><option value="Used">Used</option><option value="Refurbished">Refurbished</option><option value="Not Applicable">Not Applicable</option>
                         </select>
                     </div>
 
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider text-blue-600 dark:text-blue-400">Current Price (GHS)</label>
+                        <input type="number" id="add-mkt-price" required placeholder="e.g. 1500" class="w-full p-3 bg-blue-50 dark:bg-blue-900/20 border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-300">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Old Price (Optional)</label>
+                        <input type="number" id="add-mkt-old-price" placeholder="For discounts e.g. 1800" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Stock Qty</label>
+                        <input type="number" id="add-mkt-stock" placeholder="e.g. 5" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
+                    </div>
+
+                    <div class="col-span-1 md:col-span-3">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Key Features (Comma separated)</label>
+                        <input type="text" id="add-mkt-features" placeholder="e.g. 55-inch UHD, Smart TV, HDMI x3, Voice Control" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
+                    </div>
+
+                    <div class="col-span-1 md:col-span-3">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Campus / Delivery Location</label>
+                        <input type="text" id="add-mkt-location" required placeholder="e.g. Nyankpala, Tamale, Navrongo..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
+                    </div>
+
+                    <div class="col-span-1 md:col-span-1">
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Phone Number</label>
+                        <input type="text" id="add-mkt-contact" required placeholder="e.g. 0551234567" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
+                    </div>
+
                     <div class="col-span-1 md:col-span-2">
-                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Campus Location</label>
-                        <input type="text" id="add-mkt-location" required placeholder="e.g. Nyankpala, Tamale, Navrongo..." class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Phone Number (Call)</label>
-                        <input type="text" id="add-mkt-contact" required placeholder="e.g. 0551234567" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
-                    </div>
-
-                    <div>
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">WhatsApp (Inc. Code)</label>
-                        <input type="text" id="add-mkt-whatsapp" required placeholder="e.g. 233551234567" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                        <input type="text" id="add-mkt-whatsapp" required placeholder="e.g. 233551234567" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white focus:ring-2 focus:ring-blue-100">
                     </div>
                 </div>
 
@@ -963,110 +1017,149 @@
     </div>
 
     <div id="view-marketplace-modal" class="hidden fixed inset-0 z-[165] bg-black/70 flex justify-center items-center p-0 md:p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden h-full md:h-auto border border-transparent dark:border-gray-800 md:max-h-[90vh]">
+        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-5xl w-full flex flex-col md:flex-row overflow-hidden h-full md:h-auto border border-transparent dark:border-gray-800 md:max-h-[90vh]">
             <button onclick="closeMarketplaceDetails()" class="absolute top-5 right-5 z-20 text-white bg-black/40 hover:bg-black/60 w-10 h-10 rounded-full flex items-center justify-center transition backdrop-blur-md md:hidden"><i class="fa-solid fa-xmark"></i></button>
             
-            <div class="w-full md:w-1/2 bg-gray-100 dark:bg-geminiBase flex items-center justify-center relative min-h-[300px] md:min-h-full">
-                <img id="view-mkt-img" src="" class="w-full h-full object-cover hidden">
+            <div class="w-full md:w-5/12 bg-gray-100 dark:bg-geminiBase flex items-center justify-center relative min-h-[300px] md:min-h-full">
+                <img id="view-mkt-img" src="" class="w-full h-full object-contain hidden">
                 <div id="view-mkt-no-img" class="w-full h-full flex flex-col items-center justify-center text-gray-400">
                     <i class="fa-solid fa-image text-5xl mb-3 opacity-50"></i>
                     <span class="text-sm font-medium opacity-80">No Image Provided</span>
                 </div>
             </div>
             
-            <div class="w-full md:w-1/2 flex flex-col flex-grow relative overflow-y-auto">
-                <button onclick="closeMarketplaceDetails()" class="absolute top-5 right-5 z-10 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full items-center justify-center transition hidden md:flex"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="w-full md:w-7/12 flex flex-col flex-grow relative overflow-y-auto bg-gray-50/50 dark:bg-[#131314]">
+                <button onclick="closeMarketplaceDetails()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-white dark:bg-geminiSurface w-8 h-8 rounded-full items-center justify-center transition hidden md:flex shadow-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
                 
-                <div class="p-6 md:p-8 flex-grow space-y-6">
-                    <div>
-                        <div class="flex items-center gap-2 mb-3">
-                            <span id="view-mkt-type" class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-wider">Type</span>
-                            <span id="view-mkt-category" class="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-medium px-2.5 py-1 rounded-full uppercase tracking-wider">Category</span>
+                <div class="p-5 md:p-7 flex-grow space-y-6">
+                    <div class="bg-white dark:bg-geminiSurface p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span id="view-mkt-type" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">Official Store</span>
+                            <span id="view-mkt-brand" class="text-blue-600 dark:text-blue-400 text-xs font-medium uppercase tracking-wider">Brand Name</span>
                         </div>
-                        <h2 id="view-mkt-title" class="text-2xl font-medium text-gray-900 dark:text-gray-100 leading-tight mb-3">Loading...</h2>
-                     <div class="text-3xl font-black text-gray-900 dark:text-blue-300" id="view-mkt-price">GHS --</div>
+                        <h2 id="view-mkt-title" class="text-xl md:text-2xl font-medium text-gray-900 dark:text-gray-100 leading-tight mb-2">Loading...</h2>
                         
-                        <div class="flex items-center gap-2 mt-2">
-                            <div id="view-mkt-stars-display" class="text-yellow-400 text-sm tracking-widest">
-                                <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+                        <div class="flex items-center gap-3 text-sm mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+                            <div class="flex items-center gap-1" id="view-mkt-stars-display">
+                                <i class="fa-regular fa-star text-yellow-400"></i>
                             </div>
-                            <span class="text-xs text-gray-500 font-medium" id="view-mkt-total-ratings">(0 Ratings)</span>
+                            <span class="text-blue-500 hover:underline cursor-pointer" id="view-mkt-total-ratings">(0 Verified Ratings)</span>
                         </div>
+
+                        <div class="mb-4">
+                            <div class="text-3xl font-black text-gray-900 dark:text-white mb-1 flex items-center gap-3">
+                                <span id="view-mkt-price">GHS --</span>
+                                <span id="view-mkt-discount-badge" class="hidden text-sm bg-orange-100 text-orange-600 px-2 py-1 rounded-md font-bold">-0%</span>
+                            </div>
+                            <div id="view-mkt-old-price-container" class="hidden text-gray-400 text-sm line-through decoration-1">GHS --</div>
+                        </div>
+
+                        <div id="view-mkt-stock-alert" class="text-xs font-bold text-orange-500 mb-4 bg-orange-50 dark:bg-orange-900/10 px-3 py-2 rounded-lg border border-orange-100 dark:border-orange-900/30">
+                            <i class="fa-solid fa-fire text-orange-500 mr-1"></i> Few units left! Order soon.
+                        </div>
+
+                        <div class="flex gap-3">
+                            <a id="btn-mkt-external" href="#" target="_blank" class="hidden flex-grow bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md justify-center items-center gap-2 text-center">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit External Store
+                            </a>
+                            <a id="btn-mkt-whatsapp" href="#" target="_blank" class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
+                                <i class="fa-solid fa-cart-shopping"></i> Message Seller to Buy
+                            </a>
+                            <a id="btn-mkt-call" href="#" class="w-12 shrink-0 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-white font-medium py-3 rounded-xl text-sm transition shadow-sm flex justify-center items-center text-center border border-gray-200 dark:border-gray-700">
+                                <i class="fa-solid fa-phone"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                            <h4 class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">Delivery & Returns</h4>
+                            <div class="flex items-start gap-3 mb-3">
+                                <i class="fa-solid fa-truck text-gray-400 mt-0.5"></i>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200">Campus Delivery</p>
+                                    <p id="view-mkt-location" class="text-[10px] text-gray-500 mt-0.5">Location</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-rotate-left text-gray-400 mt-0.5"></i>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-800 dark:text-gray-200">Return Policy</p>
+                                    <p class="text-[10px] text-gray-500 mt-0.5">Check with seller for return window.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                            <h4 class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">Seller Information</h4>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                    <i class="fa-solid fa-store"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 id="view-mkt-seller" class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate">Store Name</h4>
+                                    <p class="text-[10px] text-gray-500 mt-0.5">Verified Seller</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-geminiSurface p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                        <h4 class="text-sm font-bold text-gray-800 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-800 pb-2">Product Details</h4>
                         
-                        <div class="flex items-center gap-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <button id="btn-mkt-like" onclick="toggleMarketplaceLike()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 transition text-sm font-medium">
-                                <i class="fa-regular fa-thumbs-up" id="icon-mkt-like"></i> <span id="view-mkt-likes-count">0</span>
+                        <div id="view-mkt-features-container" class="mb-4 hidden">
+                            <h5 class="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">Key Features</h5>
+                            <ul id="view-mkt-features-list" class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-400 space-y-1"></ul>
+                        </div>
+
+                        <h5 class="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">Description</h5>
+                        <p id="view-mkt-desc" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed mb-4"></p>
+                        
+                        <h5 class="text-xs font-bold text-gray-600 dark:text-gray-300 mb-2">Specifications</h5>
+                        <div class="bg-gray-50 dark:bg-geminiBase rounded-xl p-3 text-xs text-gray-600 dark:text-gray-300 space-y-2 border border-gray-100 dark:border-gray-800">
+                            <div class="flex justify-between border-b border-gray-200 dark:border-gray-800 pb-1.5"><span class="font-medium">Condition:</span> <span id="view-mkt-condition" class="text-gray-800 dark:text-gray-100">--</span></div>
+                            <div class="flex justify-between border-b border-gray-200 dark:border-gray-800 pb-1.5"><span class="font-medium">Category:</span> <span id="view-mkt-category" class="text-gray-800 dark:text-gray-100">--</span></div>
+                            <div class="flex justify-between pt-0.5"><span class="font-medium">Date Listed:</span> <span id="view-mkt-date" class="text-gray-800 dark:text-gray-100">--</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <button id="btn-mkt-like" onclick="toggleMarketplaceLike()" class="flex items-center gap-1.5 text-gray-500 hover:text-blue-600 transition text-sm font-medium">
+                                <i class="fa-regular fa-heart text-lg" id="icon-mkt-like"></i> <span id="view-mkt-likes-count">0</span>
                             </button>
-                            <button id="btn-mkt-dislike" onclick="toggleMarketplaceDislike()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-600 transition text-sm font-medium">
-                                <i class="fa-regular fa-thumbs-down" id="icon-mkt-dislike"></i> <span id="view-mkt-dislikes-count">0</span>
-                            </button>
-                            <div class="flex items-center gap-1.5 ml-auto text-gray-400 text-sm">
-                                <i class="fa-regular fa-eye"></i> <span id="view-mkt-views-count">0</span>
+                            <span class="text-gray-300 dark:text-gray-700">|</span>
+                            <div class="flex items-center gap-1.5 text-gray-400 text-sm">
+                                <i class="fa-regular fa-eye"></i> <span id="view-mkt-views-count">0</span> Views
                             </div>
                         </div>
+                        <button class="text-blue-600 text-sm font-medium"><i class="fa-solid fa-share-nodes mr-1"></i> Share</button>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-4 flex items-center gap-4 border border-transparent dark:border-gray-800">
-                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl shrink-0">
-                            <i class="fa-regular fa-user"></i>
-                        </div>
-                        <div class="flex-grow min-w-0">
-                            <p class="text-[10px] text-gray-500 mb-0.5 uppercase tracking-wider font-medium">Provider</p>
-                            <h4 id="view-mkt-seller" class="font-medium text-gray-800 dark:text-gray-100 text-base truncate">Unknown</h4>
-                            <p id="view-mkt-location" class="text-xs text-gray-500 truncate mt-1"><i class="fa-solid fa-location-dot mr-1 opacity-70"></i> Location</p>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Description</h4>
-                        <p id="view-mkt-desc" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl"></p>
-                    </div>
-
-                    <div>
-                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Details</h4>
-                        <div class="bg-gray-50 dark:bg-geminiBase rounded-2xl p-4 text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                           <div class="flex justify-between border-b border-gray-200 dark:border-gray-800 pb-2"><span class="font-medium">Condition:</span> <span id="view-mkt-condition" class="text-gray-800 dark:text-gray-100">--</span></div>
-                            <div class="flex justify-between pt-1"><span class="font-medium">Posted:</span> <span id="view-mkt-date" class="text-gray-800 dark:text-gray-100">--</span></div>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider">Ratings & Public Comments</h4>
+                    <div class="bg-white dark:bg-geminiSurface p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                        <h4 class="text-sm font-bold text-gray-800 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-800 pb-2">Verified Customer Feedback</h4>
                         
                         <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl mb-4 w-full h-40 hidden" id="mkt-chart-container">
                             <canvas id="mkt-rating-chart"></canvas>
                         </div>
 
-                        <div id="view-mkt-comments-feed" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2">
-                            </div>
+                        <div id="view-mkt-comments-feed" class="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2 custom-scrollbar"></div>
 
-                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
+                        <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-xl border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center gap-1 mb-3 text-gray-300 text-xl" id="interactive-star-selector">
                                 <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(1)"></i>
                                 <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(2)"></i>
                                 <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(3)"></i>
                                 <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(4)"></i>
                                 <i class="fa-solid fa-star cursor-pointer hover:text-yellow-400 transition" onclick="window.setTempMktRating(5)"></i>
-                                <span class="text-xs text-gray-500 ml-3 font-medium" id="selected-star-text">Tap a star to rate</span>
+                                <span class="text-xs text-gray-500 ml-3 font-medium" id="selected-star-text">Rate this product</span>
                             </div>
                             <div class="flex gap-2">
-                                <input type="text" id="add-mkt-comment-text" placeholder="Write a public comment..." class="flex-grow px-3 py-2 bg-white dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white">
-                                <button onclick="window.submitMarketplaceReview()" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-xl text-sm font-medium transition hover:opacity-90">Post</button>
+                                <input type="text" id="add-mkt-comment-text" placeholder="Write a review..." class="flex-grow px-3 py-2 bg-white dark:bg-[#1A1A1C] rounded-lg text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white">
+                                <button onclick="window.submitMarketplaceReview()" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-5 py-2 rounded-lg text-sm font-medium transition hover:opacity-90">Post</button>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="p-6 border-t border-gray-100 dark:border-gray-800 flex gap-3">
-                    <a id="btn-mkt-whatsapp" href="#" target="_blank" class="flex-1 bg-[#25D366] hover:bg-[#20b858] text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center">
-                        <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp
-                    </a>
-                    <a id="btn-mkt-call" href="#" class="flex-1 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center hover:opacity-90">
-                        <i class="fa-solid fa-phone text-sm"></i> Call Seller
-                    </a>
-                    <a id="btn-mkt-external" href="#" target="_blank" class="hidden flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2 text-center">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i> Visit Store
-                    </a>
                 </div>
             </div>
         </div>
@@ -1209,7 +1302,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-       window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc; window.firebaseUpdateDoc = updateDoc; window.firebaseArrayUnion = arrayUnion; window.firebaseArrayRemove = arrayRemove;
+       window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseGetDoc = getDoc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc; window.firebaseUpdateDoc = updateDoc; window.firebaseArrayUnion = arrayUnion; window.firebaseArrayRemove = arrayRemove;
 
         let currentUserProfile = null; 
         let globalMaterialsCache = [];
@@ -1315,6 +1408,9 @@
             if(currentQuery) { window.executeSearchingAI(); } else { window.renderMaterialsGrid(combinedMaterials); }
             if(window.filterAdminFiles) window.filterAdminFiles();
             if(window.compileSmartNotices) window.compileSmartNotices();
+            
+            // Trigger Academic Knowledge Engine Monitor
+            if(window.runAutonomousIndexMonitor) window.runAutonomousIndexMonitor(items);
         });
 
         onSnapshot(collection(db, "announcements"), (snapshot) => {
@@ -1357,29 +1453,46 @@
 
             if(window.compileSmartNotices) window.compileSmartNotices();
             
-            // Dropdown the banner if there's a new global update
+            // DYNAMIC SMART NOTIFICATION LOGIC
             if (window.currentUserProfile && window.allAnnouncementsCache.length > 0) {
-                const latestNotice = window.allAnnouncementsCache.sort((a,b) => b.timestamp - a.timestamp)[0];
-                const tsKey = `uds_updates_seen_${window.currentUserProfile.email}`;
+                const sorted = [...window.allAnnouncementsCache].sort((a,b) => b.timestamp - a.timestamp);
+                const latestNotice = sorted[0];
+                const tsKey = `uds_notif_last_ts_${window.currentUserProfile.email}`;
                 const lastSeenTs = parseInt(localStorage.getItem(tsKey)) || 0;
                 
                 if (latestNotice && latestNotice.timestamp > lastSeenTs && !latestNotice.archived) {
+                    // 1. Show UI Banner
                     const banner = document.getElementById('smart-notification-banner');
                     const textElement = document.getElementById('smart-notification-text');
-                    textElement.innerHTML = `<span class="text-blue-500 font-bold">Admin Update:</span> ${latestNotice.title}`;
+                    textElement.innerHTML = `<span class="text-blue-500 font-bold">New:</span> ${latestNotice.title}`;
                     banner.classList.remove('-translate-y-[150%]', 'opacity-0');
                     banner.classList.add('translate-y-0', 'opacity-100');
+
+                    // 2. Trigger PWA System Notification (if data/app is on)
+                    if (Notification.permission === "granted") {
+                        new Notification("UDS Hub Update", { body: latestNotice.title, icon: "/logo-192.png" });
+                    } else if (Notification.permission !== "denied") {
+                        Notification.requestPermission();
+                    }
+
                     setTimeout(() => {
                         banner.classList.remove('translate-y-0', 'opacity-100');
                         banner.classList.add('-translate-y-[150%]', 'opacity-0');
-                    }, 6000);
+                        // Mark as seen so it doesn't pop up every refresh
+                        localStorage.setItem(tsKey, latestNotice.timestamp.toString());
+                    }, 8000);
                 }
             }
         });
 
         onSnapshot(doc(db, "system", "deadlines"), (snapshot) => {
             if(snapshot.exists()) {
-                const target = new Date(snapshot.data().targetDate).getTime();
+                const data = snapshot.data();
+                const target = new Date(data.targetDate).getTime();
+                
+                const titleElement = document.getElementById('widget-countdown-title');
+                if(titleElement) titleElement.innerText = data.eventTitle || "Countdown";
+
                 if(window.countdownClockThread) clearInterval(window.countdownClockThread);
                 window.countdownClockThread = setInterval(() => {
                     const diff = target - new Date().getTime();
@@ -1672,6 +1785,7 @@
                 const keywords = sortedWords.slice(0, 8);
 
                 return {
+                    fullText: text,
                     summary: topSentences.map(s => s.sentence).join(' '),
                     concepts: keywords,
                     wordCount: text.split(/\s+/).length
@@ -1761,6 +1875,128 @@
             }
         };
 
+        // --- ACADEMIC KNOWLEDGE ENGINE: BACKGROUND ARCHITECTURE ---
+        window.indexingQueue = [];
+        window.isBackgroundProcessorRunning = false;
+        window.globalDocumentIndexCache = [];
+
+        // Fetch Global Index silently for related searches
+        window.fetchGlobalIndexCache = async function() {
+            if(!window.firebaseGetDoc) return;
+            try {
+                const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const snapshot = await getDocs(window.firebaseCollection(window.firebaseDb, "document_index"));
+                window.globalDocumentIndexCache = [];
+                snapshot.forEach(doc => window.globalDocumentIndexCache.push({id: doc.id, ...doc.data()}));
+            } catch(e) { console.error("Index cache sync failed", e); }
+        };
+
+        window.runAutonomousIndexMonitor = async function(currentMaterials) {
+            if(!window.firebaseDb || !window.isAdmin) return; // Restrict heavy monitoring to admin sessions to save global reads
+            try {
+                const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const indexSnap = await getDocs(window.firebaseCollection(window.firebaseDb, "document_index"));
+                const indexedDocs = {};
+                indexSnap.forEach(doc => { indexedDocs[doc.id] = doc.data(); });
+                
+                // 1. Deletion Synchronization
+                for (const indexedId of Object.keys(indexedDocs)) {
+                    const existsInMaterials = currentMaterials.find(m => {
+                        const mIdMatch = m.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+                        return mIdMatch && mIdMatch[1] === indexedId;
+                    });
+                    if (!existsInMaterials) {
+                        await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "document_index", indexedId));
+                        console.log(`Knowledge Engine: Purged stale index for ${indexedId}`);
+                    }
+                }
+
+                // 2. Detection (New/Updated/Recovered) & Duplicate Protection
+                currentMaterials.forEach(material => {
+                    const mIdMatch = material.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+                    if (!mIdMatch) return;
+                    const fileId = mIdMatch[1];
+                    const existingIndex = indexedDocs[fileId];
+                    
+                    const needsIndexing = !existingIndex;
+                    const needsUpdate = existingIndex && material.timestamp > existingIndex.lastSourceUpdate;
+                    const needsRecovery = existingIndex && existingIndex.status === 'failed' && existingIndex.retryCount < 3;
+
+                    if (needsIndexing || needsUpdate || needsRecovery) {
+                        if(!window.indexingQueue.some(item => item.fileId === fileId)) {
+                            window.indexingQueue.push({ fileId, title: material.title, timestamp: material.timestamp, retry: existingIndex ? (existingIndex.retryCount || 0) : 0 });
+                        }
+                    }
+                });
+
+                if(!window.isBackgroundProcessorRunning && window.indexingQueue.length > 0) {
+                    window.processBackgroundIndexingQueue();
+                }
+            } catch(e) { console.error("Monitor Error", e); }
+        };
+
+        window.processBackgroundIndexingQueue = async function() {
+            if (window.indexingQueue.length === 0) {
+                window.isBackgroundProcessorRunning = false;
+                window.fetchGlobalIndexCache(); // Refresh graph when idle
+                return;
+            }
+            
+            window.isBackgroundProcessorRunning = true;
+            const currentItem = window.indexingQueue.shift();
+            
+            try {
+                // Non-blocking background extraction
+                const data = await window.extractTextAndSummarize(currentItem.fileId, currentItem.title.toLowerCase());
+                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", currentItem.fileId), {
+                    documentId: currentItem.fileId,
+                    title: currentItem.title,
+                    fullText: data.fullText || data.summary,
+                    summary: data.summary,
+                    concepts: data.concepts,
+                    wordCount: data.wordCount,
+                    timestamp: new Date().getTime(),
+                    lastSourceUpdate: currentItem.timestamp,
+                    status: 'indexed',
+                    retryCount: 0
+                });
+            } catch(e) {
+                // Failed Extraction Recovery State
+                console.warn(`Extraction failed for ${currentItem.fileId}. Flagged for recovery.`);
+                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", currentItem.fileId), {
+                    documentId: currentItem.fileId,
+                    title: currentItem.title,
+                    status: 'failed',
+                    retryCount: currentItem.retry + 1,
+                    lastSourceUpdate: currentItem.timestamp
+                }, { merge: true });
+            }
+
+            // Yield to browser to prevent UI freeze, process next after 5 seconds
+            setTimeout(window.processBackgroundIndexingQueue, 5000);
+        };
+
+        window.findRelatedDocuments = function(targetConcepts, excludeId) {
+            if(!window.globalDocumentIndexCache || window.globalDocumentIndexCache.length === 0) return [];
+            
+            const scoredDocs = window.globalDocumentIndexCache
+                .filter(doc => doc.id !== excludeId && doc.status === 'indexed')
+                .map(doc => {
+                    let score = 0;
+                    (doc.concepts || []).forEach(c => {
+                        if (targetConcepts.includes(c)) score++;
+                    });
+                    return { ...doc, matchScore: score };
+                })
+                .filter(doc => doc.matchScore > 0)
+                .sort((a, b) => b.matchScore - a.matchScore);
+                
+            return scoredDocs.slice(0, 3); // Return top 3 related documents
+        };
+
+        // Initialize Global Cache
+        setTimeout(() => window.fetchGlobalIndexCache(), 2000);
+
         window.generatePageSummary = async function() {
             const docTitle = document.getElementById('doc-reader-header-title').innerText;
             const iframe = document.getElementById('doc-reader-iframe');
@@ -1783,9 +2019,36 @@
                 // Retrieve from active memory session if already processed
                 let data = window.documentAnalysisCache[fileId];
 
+                // Check Firebase Central Database for existing extraction
+                if (!data && window.firebaseGetDoc) {
+                    try {
+                        const docRef = window.firebaseDoc(window.firebaseDb, "document_index", fileId);
+                        const docSnap = await window.firebaseGetDoc(docRef);
+                        if (docSnap.exists()) {
+                            data = docSnap.data();
+                            window.documentAnalysisCache[fileId] = data;
+                        }
+                    } catch(e) { console.error("Firebase fetch error", e); }
+                }
+
+                // If not in DB, extract text from contents and store in Database
                 if (!data) {
                     data = await window.extractTextAndSummarize(fileId, fileType);
                     window.documentAnalysisCache[fileId] = data; // Store in memory
+                    
+                    try {
+                        if (window.firebaseSetDoc) {
+                            await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), {
+                                documentId: fileId,
+                                title: docTitle,
+                                fullText: data.fullText || data.summary,
+                                summary: data.summary,
+                                concepts: data.concepts,
+                                wordCount: data.wordCount,
+                                timestamp: new Date().getTime()
+                            });
+                        }
+                    } catch(e) { console.error("Failed to index document in DB", e); }
                 }
                 
                 document.getElementById('summary-yield-text').innerText = data.summary;
@@ -1830,9 +2093,31 @@
                     if (!window.documentAnalysisCache[fileId]) {
                         const docTitle = document.getElementById('doc-reader-header-title').innerText;
                         try {
-                            window.documentAnalysisCache[fileId] = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
+                            let dbData = null;
+                            if (window.firebaseGetDoc) {
+                                const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId));
+                                if (docSnap.exists()) dbData = docSnap.data();
+                            }
+                            
+                            if (dbData) {
+                                window.documentAnalysisCache[fileId] = dbData;
+                            } else {
+                                const extracted = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
+                                window.documentAnalysisCache[fileId] = extracted;
+                                if (window.firebaseSetDoc) {
+                                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), {
+                                        documentId: fileId,
+                                        title: docTitle,
+                                        fullText: extracted.fullText || extracted.summary,
+                                        summary: extracted.summary,
+                                        concepts: extracted.concepts,
+                                        wordCount: extracted.wordCount,
+                                        timestamp: new Date().getTime()
+                                    });
+                                }
+                            }
                         } catch (e) {
-                            console.error("Silent context extraction failed:", e);
+                            console.error("Silent context extraction/DB index failed:", e);
                         }
                     }
                 }
@@ -1921,8 +2206,42 @@
             const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
             if (fileIdMatch) {
                 fileId = fileIdMatch[1];
-                if (window.documentAnalysisCache[fileId] && window.documentAnalysisCache[fileId].summary) {
-                    documentContext = `Document Title: ${docTitle}\nExtracted Keywords: ${window.documentAnalysisCache[fileId].concepts.join(", ")}\nExtracted Document Text: ${window.documentAnalysisCache[fileId].summary}`;
+                if (window.documentAnalysisCache[fileId] && (window.documentAnalysisCache[fileId].summary || window.documentAnalysisCache[fileId].fullText)) {
+                    const cacheData = window.documentAnalysisCache[fileId];
+                    const textToFeed = cacheData.fullText ? cacheData.fullText : cacheData.summary;
+                    
+                    // SELF-LEARNING KNOWLEDGE GRAPH: Update local document concepts with current query words to strengthen future search relationships
+                    const queryWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 4);
+                    if(queryWords.length > 0 && window.firebaseArrayUnion) {
+                        try { window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), { concepts: window.firebaseArrayUnion(...queryWords.slice(0, 3)) }); } catch(e){}
+                    }
+
+                    // COMPLETE LIBRARY SEARCH: Fetch related documents from background engine
+                    const relatedDocs = window.findRelatedDocuments(cacheData.concepts || [], fileId);
+                    let relatedDocsContext = "";
+                    if(relatedDocs.length > 0) {
+                        relatedDocsContext = "\n[RELATED DOCUMENTS FROM LIBRARY]\n" + relatedDocs.map((doc, idx) => `Doc ${idx+1}: ${doc.title}\nRelevance Keywords: ${doc.concepts.join(', ')}\nSummary: ${doc.summary}`).join('\n\n');
+                    }
+                    
+                    documentContext = `[CURRENT DOCUMENT]
+Title: ${docTitle}
+Keywords: ${cacheData.concepts ? cacheData.concepts.join(", ") : "N/A"}
+Content: ${textToFeed}
+${relatedDocsContext}
+
+[STRICT SEARCH PROTOCOL]
+You are the UDS Academic Knowledge Engine. You must follow this EXACT search order:
+1. Current Document (Provided above).
+2. Related Documents (Provided above).
+3. General AI Knowledge (Only if the above fail).
+
+[ACADEMIC SOURCE RANKING]
+Resolve conflicts by prioritizing: Current Document > Official Slides > Books > Past Questions > General AI.
+
+[CITATION & CONFIDENCE RULES]
+1. CITATIONS: You MUST cite your source. Use format: [Source: Document Title, Section/Context]. Do NOT invent citations.
+2. CONFIDENCE SCORING: Begin your answer with a confidence score (e.g., [Confidence: High/Medium/Low]).
+3. UNCERTAINTY: If your confidence is Low based on the provided documents, state clearly: "The provided documents do not contain strong evidence for this."`;
                 }
             }
 
@@ -2134,7 +2453,7 @@
         window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
         window.deleteFileFromDatabase = async function(fileId) { if(confirm("Permanently delete?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "materials", fileId)); window.showToast("Deleted", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
         window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-medium truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
-        window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate }); window.showToast("Date set!", "success"); } catch(err) {} };
+        window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; const eventTitle = document.getElementById('set-event-title').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate: targetDate, eventTitle: eventTitle }); window.showToast("Countdown event set!", "success"); } catch(err) {} };
         
         window.handleBroadcastAnnouncement = async function(e) { 
             e.preventDefault(); 
@@ -2186,9 +2505,15 @@
             document.getElementById('add-hostel-modal').classList.add('hidden');
             document.getElementById('add-hostel-name').value = '';
             document.getElementById('add-hostel-price').value = '';
+            document.getElementById('add-hostel-price-year').value = '';
+            document.getElementById('add-hostel-distance').value = '';
             document.getElementById('add-hostel-desc').value = '';
             
+            const amenityInputs = document.querySelectorAll('#hostel-amenities-check input[type="checkbox"]');
+            amenityInputs.forEach(cb => cb.checked = false);
+
             window.uploadedHostelImages = [];
+            window.editingHostelId = null; // Reset edit state
             const previewContainer = document.getElementById('hostel-upload-preview');
             if (previewContainer) {
                 previewContainer.innerHTML = '';
@@ -2199,28 +2524,32 @@
         window.saveHostelListing = async function() {
             const name = document.getElementById('add-hostel-name').value.trim();
             const price = document.getElementById('add-hostel-price').value.trim();
+            const priceYear = document.getElementById('add-hostel-price-year').value.trim();
+            const distance = document.getElementById('add-hostel-distance').value.trim();
+            const roomType = document.getElementById('add-hostel-room-type').value;
+            const gender = document.getElementById('add-hostel-gender').value;
+            const status = document.getElementById('add-hostel-status').value;
             const desc = document.getElementById('add-hostel-desc').value.trim();
+
+            const amenityInputs = document.querySelectorAll('#hostel-amenities-check input:checked');
+            const amenities = Array.from(amenityInputs).map(cb => cb.value);
             
             if(!name || !price) { window.showToast("Name and Price are required", "error"); return; }
             
             const latlng = markerInstance ? markerInstance.getLatLng() : { lat: 0, lng: 0 };
             
             try {
-                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "accommodations"), {
-                    name: name,
-                    price: Number(price),
-                    imageUrls: window.uploadedHostelImages || [],
-                    description: desc,
-                    lat: latlng.lat,
-                    lng: latlng.lng,
-                    contributorId: window.currentUserProfile.email,
-                    contributorName: window.currentUserProfile.name,
-                    timestamp: new Date().getTime(),
-                    verified: false,
-                    reviews: []
-                });
-                
-                window.showToast("Accommodation Listing Added!", "success");
+                if (window.editingHostelId) {
+                    await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "accommodations", window.editingHostelId), {
+                        name, price: Number(price), priceYear: Number(priceYear), distance, roomType, gender, availability: status, amenities, imageUrls: window.uploadedHostelImages || [], description: desc, lat: latlng.lat, lng: latlng.lng
+                    });
+                    window.showToast("Hostel Updated Successfully!", "success");
+                } else {
+                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "accommodations"), {
+                        name, price: Number(price), priceYear: Number(priceYear), distance, roomType, gender, availability: status, amenities, imageUrls: window.uploadedHostelImages || [], description: desc, lat: latlng.lat, lng: latlng.lng, contributorId: window.currentUserProfile.email, contributorName: window.currentUserProfile.name, timestamp: new Date().getTime(), verified: false, views: 0, reviews: []
+                    });
+                    window.showToast("Accommodation Listing Added!", "success");
+                }
                 window.closeAddHostelModal();
             } catch(e) { window.showToast("Failed to save listing.", "error"); }
         };
@@ -2230,54 +2559,92 @@
             let data = window.accommodationsCache || [];
             
             if(filterQuery) {
-                data = data.filter(h => h.name.toLowerCase().includes(filterQuery.toLowerCase()) || (h.description && h.description.toLowerCase().includes(filterQuery.toLowerCase())));
+                data = data.filter(h => h.name.toLowerCase().includes(filterQuery.toLowerCase()));
             }
 
             if(data.length === 0) {
-                box.className = "w-full";
-                box.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-20 text-center text-gray-500 bg-gray-50 dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 w-full col-span-2">
-                        <i class="fa-solid fa-house-circle-xmark text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">No accommodation listings found.</p>
-                        <p class="text-xs mt-2 text-gray-400">Be the first student to contribute information.</p>
-                    </div>`;
+                box.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">No hostels found matching your criteria.</p>`;
                 return;
             }
 
-            box.className = "grid grid-cols-1 md:grid-cols-2 gap-5 mb-8 w-full px-2";
+            box.className = "grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 w-full px-2";
             box.innerHTML = '';
             
-          data.forEach(hostel => {
-                // Calculate Star Ratings for the preview card
-                let totalStars = 0;
-                let validRatingsCount = 0;
-                if (hostel.reviews) {
-                    hostel.reviews.forEach(r => {
-                        if (r.rating > 0) { totalStars += r.rating; validRatingsCount++; }
-                    });
-                }
+            data.forEach(hostel => {
+                let totalStars = 0; let validRatingsCount = 0;
+                if (hostel.reviews) hostel.reviews.forEach(r => { if (r.rating > 0) { totalStars += r.rating; validRatingsCount++; } });
                 const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
-                const starHtml = validRatingsCount > 0 
-                    ? `<i class="fa-solid fa-star text-yellow-400 mr-1"></i>${avgRating} (${validRatingsCount})` 
-                    : `<i class="fa-regular fa-star text-gray-400 mr-1"></i>New`;
 
-                const targetImg = (hostel.imageUrls && hostel.imageUrls.length > 0) ? hostel.imageUrls[0] : hostel.photoUrl;
-                const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
-                const imgStr = targetImg ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-40 object-cover" onerror="this.src=''; this.className='hidden'">` : `<div class="w-full h-40 bg-gray-100 dark:bg-geminiBase flex items-center justify-center text-gray-400"><i class="fa-solid fa-image text-2xl opacity-50"></i></div>`;
+                const targetImg = (hostel.imageUrls && hostel.imageUrls.length > 0) ? hostel.imageUrls[0] : '';
+                const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_600,f_webp,q_auto,c_fill/') : 'https://images.unsplash.com/photo-1555854817-5b2260d19dca?auto=format&fit=crop&w=600&q=80';
                 
-                const verifStr = hostel.verified ? `<i class="fa-solid fa-circle-check text-blue-500 ml-1.5" title="Verified"></i>` : '';
-                
+                const amenitiesIcons = {
+                    wifi: 'fa-wifi', water: 'fa-droplet', electricity: 'fa-bolt', 
+                    bathroom: 'fa-shower', ac: 'fa-snowflake', kitchen: 'fa-utensils',
+                    security: 'fa-shield-halved', parking: 'fa-car'
+                };
+
+                let amenityHtml = (hostel.amenities || []).slice(0, 6).map(a => `<i class="fa-solid ${amenitiesIcons[a] || 'fa-check'} text-gray-400" title="${a}"></i>`).join(' ');
+
+                let statusColor = "text-green-600 bg-green-50";
+                if(hostel.availability === 'Few Rooms Left') statusColor = "text-orange-600 bg-orange-50";
+                if(hostel.availability === 'Fully Booked') statusColor = "text-red-600 bg-red-50";
+
                 box.innerHTML += `
-                    <div class="bg-white dark:bg-geminiSurface rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group cursor-pointer" onclick="openHostelDetails('${hostel.id}')">
-                        ${imgStr}
-                        <div class="p-5 flex flex-col h-[calc(100%-10rem)]">
-                            <h4 class="font-medium text-gray-800 dark:text-gray-100 text-lg truncate flex items-center">${hostel.name} ${verifStr}</h4>
-                            <p class="text-xs text-gray-500 mt-1 mb-4 line-clamp-2 leading-relaxed flex-grow">${hostel.description || 'No description provided'}</p>
-                            <div class="flex justify-between items-center pt-3 border-t border-gray-50 dark:border-gray-800/50">
-                                <span class="font-bold text-gray-900 dark:text-white text-sm">GHS ${hostel.price} <span class="text-[10px] text-gray-400 font-normal">/ yr</span></span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[10px] text-gray-600 dark:text-gray-300 font-medium">${starHtml}</span>
+                    <div class="bg-white dark:bg-deepNavy rounded-[2rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 group flex flex-col h-full relative" onclick="openHostelDetails('${hostel.id}')">
+                        <!-- Header Image Section -->
+                        <div class="relative h-64 overflow-hidden shrink-0">
+                            <img src="${optimizedThumb}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                ${hostel.verified ? '<span class="bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Verified</span>' : ''}
+                                ${avgRating >= 4.5 ? '<span class="bg-yellow-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1"><i class="fa-solid fa-medal"></i> Student Favorite</span>' : ''}
+                            </div>
+                            <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md w-10 h-10 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-white/40 transition">
+                                <i class="fa-regular fa-heart text-lg"></i>
+                            </div>
+                            <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-lg flex items-center gap-2">
+                                <i class="fa-solid fa-star text-yellow-400"></i> ${avgRating} (${validRatingsCount} Reviews)
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="p-6 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-gray-900 dark:text-white text-xl truncate pr-4">${hostel.name}</h4>
+                                <span class="${statusColor} text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">${hostel.availability || 'Available'}</span>
+                            </div>
+
+                            <p class="text-xs text-gray-500 flex items-center gap-2 mb-4">
+                                <i class="fa-solid fa-location-dot text-blue-500"></i> 
+                                ${hostel.distance ? `📍 ${hostel.distance}` : 'Near UDS Campus'}
+                            </p>
+
+                            <div class="grid grid-cols-2 gap-3 mb-6">
+                                <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl border border-gray-100 dark:border-gray-800">
+                                    <span class="block text-[9px] text-gray-400 uppercase font-bold">Room Configuration</span>
+                                    <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">🛏️ ${hostel.roomType || 'Standard'}</span>
                                 </div>
+                                <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl border border-gray-100 dark:border-gray-800">
+                                    <span class="block text-[9px] text-gray-400 uppercase font-bold">Residents</span>
+                                    <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">🚻 ${hostel.gender || 'Mixed'}</span>
+                                </div>
+                            </div>
+
+                            <!-- Amenities -->
+                            <div class="flex gap-4 text-lg mb-6 border-b border-gray-50 dark:border-gray-800 pb-4">
+                                ${amenityHtml}
+                            </div>
+
+                            <!-- Pricing -->
+                            <div class="mt-auto flex justify-between items-end">
+                                <div>
+                                    <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Pricing Guide</span>
+                                    <div class="flex flex-col">
+                                        <span class="text-xl font-black text-gray-900 dark:text-white leading-none">GH₵ ${hostel.price.toLocaleString()} <span class="text-[10px] font-normal text-gray-400">/ Sem</span></span>
+                                        ${hostel.priceYear ? `<span class="text-[11px] text-blue-500 font-medium">GH₵ ${hostel.priceYear.toLocaleString()} / Year</span>` : ''}
+                                    </div>
+                                </div>
+                                <button class="bg-navy dark:bg-academicGold text-white dark:text-navy px-6 py-3 rounded-2xl text-xs font-bold hover:opacity-90 transition shadow-lg shadow-blue-500/10">View Details</button>
                             </div>
                         </div>
                     </div>
@@ -2297,7 +2664,16 @@
             window.selectedHostelId = id;
 
             document.getElementById('view-hostel-title').innerText = hostel.name;
-            document.getElementById('view-hostel-price').innerText = `GHS ${hostel.price} / year`;
+            
+            // AUTHOR CONTROL CHECK
+            const isOwner = window.currentUserProfile && window.currentUserProfile.email === hostel.contributorId;
+            let priceHtml = `GHS ${hostel.price} / trimester`;
+            if (hostel.priceYear) priceHtml += `<br><span class="text-xs opacity-70">GHS ${hostel.priceYear} / Year</span>`;
+            
+            if (isOwner) {
+                priceHtml += `<button onclick="event.stopPropagation(); window.editMyHostel('${hostel.id}')" class="ml-4 bg-blue-500 text-white text-[10px] px-2 py-1 rounded-lg hover:bg-blue-600 transition shadow-sm cursor-pointer relative z-50">Edit My Listing</button>`;
+            }
+            document.getElementById('view-hostel-price').innerHTML = priceHtml;
             document.getElementById('view-hostel-desc').innerText = hostel.description || 'No description provided.';
             
             const verificationBadge = document.getElementById('view-hostel-verification');
@@ -2700,12 +3076,17 @@
             document.getElementById('add-marketplace-modal').classList.add('hidden');
             document.getElementById('add-mkt-title').value = '';
             document.getElementById('add-mkt-price').value = '';
+            document.getElementById('add-mkt-old-price').value = '';
+            document.getElementById('add-mkt-stock').value = '';
+            document.getElementById('add-mkt-features').value = '';
+            document.getElementById('add-mkt-brand').value = '';
             document.getElementById('add-mkt-location').value = '';
             document.getElementById('add-mkt-contact').value = '';
             document.getElementById('add-mkt-whatsapp').value = '';
             document.getElementById('add-mkt-desc').value = '';
             
             window.uploadedMktImages = [];
+            window.editingMarketplaceId = null; // Reset edit state
             const previewContainer = document.getElementById('mkt-upload-preview');
             if (previewContainer) {
                 previewContainer.innerHTML = '';
@@ -2715,9 +3096,13 @@
 
         window.saveMarketplaceListing = async function(event) {
             const title = document.getElementById('add-mkt-title').value.trim();
+            const brand = document.getElementById('add-mkt-brand').value.trim() || 'Generic';
             const type = document.getElementById('add-mkt-type').value;
             const category = document.getElementById('add-mkt-category').value;
             const price = document.getElementById('add-mkt-price').value.trim();
+            const oldPrice = document.getElementById('add-mkt-old-price').value.trim();
+            const stock = document.getElementById('add-mkt-stock').value.trim() || 1;
+            const features = document.getElementById('add-mkt-features').value.trim();
             const condition = document.getElementById('add-mkt-condition').value;
             const location = document.getElementById('add-mkt-location').value.trim();
             const contact = document.getElementById('add-mkt-contact').value.trim();
@@ -2730,34 +3115,24 @@
 
             const btn = event.target;
             const originalText = btn.innerText;
-            btn.innerText = "Publishing...";
+            btn.innerText = window.editingMarketplaceId ? "Updating..." : "Publishing...";
             btn.disabled = true;
 
             try {
-                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "marketplace"), {
-                    title: title,
-                    type: type,
-                    category: category,
-                    price: Number(price) || 0,
-                    condition: condition,
-                    location: location,
-                    contact: contact,
-                    whatsapp: whatsapp,
-                    imageUrls: window.uploadedMktImages || [],
-                    description: desc,
-                    sellerId: window.currentUserProfile.email,
-                  sellerName: window.currentUserProfile.name,
-                    timestamp: new Date().getTime(),
-                    views: 0,
-                    likes: [],
-                    dislikes: [],
-                    viewedBy: []
-                });
-                
-                window.showToast("Listing Published Successfully!", "success");
+                if (window.editingMarketplaceId) {
+                    await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "marketplace", window.editingMarketplaceId), {
+                        title, brand, type, category, price: Number(price) || 0, oldPrice: oldPrice ? Number(oldPrice) : null, stock: Number(stock), features, condition, location, contact, whatsapp, imageUrls: window.uploadedMktImages || [], description: desc
+                    });
+                    window.showToast("Listing Updated Successfully!", "success");
+                } else {
+                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "marketplace"), {
+                        title, brand, type, category, price: Number(price) || 0, oldPrice: oldPrice ? Number(oldPrice) : null, stock: Number(stock), features, condition, location, contact, whatsapp, imageUrls: window.uploadedMktImages || [], description: desc, sellerId: window.currentUserProfile.email, sellerName: window.currentUserProfile.name, timestamp: new Date().getTime(), views: 0, likes: [], dislikes: [], viewedBy: []
+                    });
+                    window.showToast("Listing Published Successfully!", "success");
+                }
                 window.closeAddMarketplaceModal();
             } catch(e) { 
-                window.showToast("Failed to publish listing.", "error"); 
+                window.showToast("Failed to save listing.", "error"); 
             } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
@@ -2804,42 +3179,71 @@
                 const targetImg = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl;
                 const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
                 const imgHtml = targetImg 
-                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-3" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-geminiBase"><i class="fa-solid fa-image text-2xl text-gray-400 opacity-50"></i></div>` 
+                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-geminiBase"><i class="fa-solid fa-image text-2xl text-gray-400 opacity-50"></i></div>` 
                     : `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-geminiBase"><i class="fa-solid fa-image text-2xl text-gray-400 opacity-50"></i></div>`;
                 
-                let typeColor = 'bg-black/60';
+                let typeColor = 'bg-black/70';
                 let displayType = item.type;
-                if(item.type === 'Service') typeColor = 'bg-blue-600/80';
-                if(item.type === 'Request') typeColor = 'bg-orange-500/80';
+                if(item.type === 'Service') typeColor = 'bg-blue-600/90';
+                if(item.type === 'Request') typeColor = 'bg-orange-500/90';
 
                 let storeBadgeHtml = `<span class="text-[10px] text-gray-500 truncate pr-2 font-medium"><i class="fa-solid fa-store mr-1.5 opacity-70"></i>${item.sellerName.split(' ')[0]}</span>`;
 
                 if(item.listingType === 'external') {
-                    typeColor = 'bg-purple-600/80';
+                    typeColor = 'bg-purple-600/90';
                     displayType = 'External Store';
                     storeBadgeHtml = `<span class="text-[10px] text-purple-600 dark:text-purple-400 truncate pr-2 font-medium bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md"><i class="fa-solid fa-arrow-up-right-from-square mr-1.5 opacity-70"></i>${item.storeName}</span>`;
                 }
 
-                const timeString = new Date(item.timestamp).toLocaleDateString();
-                const priceText = item.price === 0 ? 'Negotiable' : `GHS ${item.price}`;
+                const priceText = item.price === 0 ? 'Negotiable' : `GHS ${item.price.toLocaleString()}`;
+                
+                // Advanced Card Calculations
+                let discountHtml = '';
+                let oldPriceHtml = '';
+                if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
+                    const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
+                    discountHtml = `<span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">-${discount}%</span>`;
+                    oldPriceHtml = `<span class="line-through text-gray-400 text-[10px] ml-2 font-normal">GHS ${item.oldPrice.toLocaleString()}</span>`;
+                }
+
+                let totalStars = 0;
+                let validRatingsCount = 0;
+                if (item.reviews) {
+                    item.reviews.forEach(r => { if (r.rating > 0) { totalStars += r.rating; validRatingsCount++; } });
+                }
+                const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
+                const starHtml = validRatingsCount > 0 
+                    ? `<i class="fa-solid fa-star text-yellow-400 text-[10px] mr-1"></i><span class="text-[11px] font-bold text-gray-700 dark:text-gray-300">${avgRating}</span> <span class="text-[10px] text-gray-400 ml-1">(${validRatingsCount})</span>` 
+                    : `<span class="text-[10px] text-gray-400 font-medium"><i class="fa-regular fa-star mr-1"></i>New</span>`;
+
+                const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
+                const isLiked = userEmail && (item.likes || []).includes(userEmail);
+                const heartClass = isLiked ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-400 group-hover:text-red-500";
 
                 box.innerHTML += `
-                    <div class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-3xl border border-white/50 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col group cursor-pointer" onclick="openMarketplaceDetails('${item.id}')">
-                        <div class="h-32 md:h-44 w-full relative shrink-0 overflow-hidden">
+                    <div class="bg-white dark:bg-gray-900/80 rounded-2xl border border-gray-200 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer relative" onclick="openMarketplaceDetails('${item.id}')">
+                        <div class="h-36 md:h-44 w-full relative shrink-0 overflow-hidden bg-gray-50 dark:bg-geminiBase">
                             ${imgHtml}
-                            <span class="absolute top-3 right-3 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded-md backdrop-blur-md uppercase font-medium tracking-wider">${displayType}</span>
+                            ${discountHtml}
+                            <span class="absolute top-2 right-2 ${typeColor} text-white text-[9px] px-2 py-0.5 rounded backdrop-blur-md uppercase font-medium tracking-wider z-10">${displayType}</span>
+                            <button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="absolute bottom-2 right-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110 z-20">
+                                <i class="${heartClass} text-sm"></i>
+                            </button>
                         </div>
-                        <div class="p-4 flex-grow flex flex-col min-w-0">
-                            <h4 class="font-medium text-gray-800 dark:text-gray-100 text-sm mb-1 line-clamp-2 leading-snug">${item.title}</h4>
-                            <p class="text-[10px] text-gray-400 mb-3 truncate uppercase tracking-wider">${item.category || 'Product'}</p>
+                        <div class="p-3 md:p-4 flex-grow flex flex-col min-w-0">
+                            <h4 class="font-medium text-gray-800 dark:text-gray-100 text-[13px] md:text-sm mb-1.5 line-clamp-2 leading-snug">${item.title}</h4>
+                            <div class="flex items-center gap-2 mb-2">
+                                ${starHtml}
+                                ${validRatingsCount >= 3 ? '<span class="text-[9px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Hot</span>' : ''}
+                            </div>
                             <div class="mt-auto">
-                                <span class="font-bold text-gray-900 dark:text-white text-base">${priceText}</span>
-                               <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-50 dark:border-gray-800/50">
+                                <div class="flex items-baseline">
+                                    <span class="font-bold text-gray-900 dark:text-white text-sm md:text-base">${priceText}</span>
+                                    ${oldPriceHtml}
+                                </div>
+                                <div class="flex justify-between items-center mt-3">
                                     ${storeBadgeHtml}
-                                    <div class="flex items-center gap-2 text-[10px] text-gray-400 font-medium">
-                                        <span><i class="fa-solid fa-thumbs-up opacity-70 mr-0.5"></i> ${item.likes ? item.likes.length : 0}</span>
-                                        <span><i class="fa-solid fa-eye opacity-70 mr-0.5"></i> ${item.viewedBy ? item.viewedBy.length : (item.views || 0)}</span>
-                                    </div>
+                                    <span class="text-[9px] bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1"><i class="fa-solid fa-truck-fast"></i> Delivery</span>
                                 </div>
                             </div>
                         </div>
@@ -2857,13 +3261,59 @@
             if(!item) return;
 
             document.getElementById('view-mkt-title').innerText = item.title;
-            document.getElementById('view-mkt-price').innerText = item.price === 0 ? 'Negotiable' : `GHS ${item.price}`;
-            document.getElementById('view-mkt-type').innerText = item.type;
+            const isOwner = window.currentUserProfile && window.currentUserProfile.email === item.sellerId;
+            if (isOwner) {
+                document.getElementById('view-mkt-title').innerHTML += `<button onclick="event.stopPropagation(); window.editMyMarketplace('${item.id}')" class="ml-3 bg-blue-600 hover:bg-blue-700 transition text-white text-[10px] px-2 py-1 rounded-lg font-bold shadow-sm cursor-pointer relative z-50">EDIT ITEM</button>`;
+            }
+            document.getElementById('view-mkt-brand').innerText = item.brand || item.type;
+            
+            // Jumia Price Engine logic
+            document.getElementById('view-mkt-price').innerText = item.price === 0 ? 'Negotiable' : `GHS ${item.price.toLocaleString()}`;
+            
+            const oldPriceContainer = document.getElementById('view-mkt-old-price-container');
+            const discountBadge = document.getElementById('view-mkt-discount-badge');
+            
+            if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
+                const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
+                oldPriceContainer.innerText = `GHS ${item.oldPrice.toLocaleString()}`;
+                oldPriceContainer.classList.remove('hidden');
+                discountBadge.innerText = `-${discount}%`;
+                discountBadge.classList.remove('hidden');
+            } else {
+                oldPriceContainer.classList.add('hidden');
+                discountBadge.classList.add('hidden');
+            }
+
+            // Stock Logic
+            const stockAlert = document.getElementById('view-mkt-stock-alert');
+            const stockQty = item.stock !== undefined ? Number(item.stock) : 1;
+            if (stockQty <= 0) {
+                stockAlert.className = "text-xs font-bold text-red-500 mb-4 bg-red-50 dark:bg-red-900/10 px-3 py-2 rounded-lg border border-red-100 dark:border-red-900/30";
+                stockAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Out of Stock';
+            } else if (stockQty < 5) {
+                stockAlert.className = "text-xs font-bold text-orange-500 mb-4 bg-orange-50 dark:bg-orange-900/10 px-3 py-2 rounded-lg border border-orange-100 dark:border-orange-900/30";
+                stockAlert.innerHTML = `<i class="fa-solid fa-fire text-orange-500 mr-1"></i> Few units left! Only ${stockQty} remaining.`;
+            } else {
+                stockAlert.className = "text-xs font-bold text-green-600 mb-4 bg-green-50 dark:bg-green-900/10 px-3 py-2 rounded-lg border border-green-100 dark:border-green-900/30";
+                stockAlert.innerHTML = '<i class="fa-solid fa-check text-green-600 mr-1"></i> In Stock & Ready to Ship';
+            }
+
+            // Features Logic
+            const featuresContainer = document.getElementById('view-mkt-features-container');
+            const featuresList = document.getElementById('view-mkt-features-list');
+            if (item.features && item.features.trim() !== '') {
+                featuresContainer.classList.remove('hidden');
+                const featureArray = item.features.split(',');
+                featuresList.innerHTML = featureArray.map(f => `<li>${f.trim()}</li>`).join('');
+            } else {
+                featuresContainer.classList.add('hidden');
+            }
+
             document.getElementById('view-mkt-category').innerText = item.category;
             document.getElementById('view-mkt-seller').innerText = item.sellerName;
-            document.getElementById('view-mkt-location').innerHTML = `<i class="fa-solid fa-location-dot mr-1.5 opacity-70"></i> ${item.location}`;
+            document.getElementById('view-mkt-location').innerHTML = `${item.location}`;
             document.getElementById('view-mkt-desc').innerText = item.description || 'No description provided.';
-           document.getElementById('view-mkt-condition').innerText = item.condition || 'N/A';
+            document.getElementById('view-mkt-condition').innerText = item.condition || 'N/A';
             document.getElementById('view-mkt-date').innerText = new Date(item.timestamp).toLocaleDateString();
 
             // NEW: View count, Likes, Dislikes connection
@@ -2873,12 +3323,10 @@
             const viewedByArr = item.viewedBy || [];
             
             document.getElementById('view-mkt-likes-count').innerText = likesArr.length;
-            document.getElementById('view-mkt-dislikes-count').innerText = dislikesArr.length;
             document.getElementById('view-mkt-views-count').innerText = viewedByArr.length > 0 ? viewedByArr.length : (item.views || 0);
 
             const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
             const likeIcon = document.getElementById('icon-mkt-like');
-            const dislikeIcon = document.getElementById('icon-mkt-dislike');
 
             if (userEmail && likesArr.includes(userEmail)) {
                 likeIcon.classList.replace('fa-regular', 'fa-solid');
@@ -2886,14 +3334,6 @@
             } else {
                 likeIcon.classList.replace('fa-solid', 'fa-regular');
                 likeIcon.classList.remove('text-blue-600');
-            }
-
-            if (userEmail && dislikesArr.includes(userEmail)) {
-                dislikeIcon.classList.replace('fa-regular', 'fa-solid');
-                dislikeIcon.classList.add('text-red-600');
-            } else {
-                dislikeIcon.classList.replace('fa-solid', 'fa-regular');
-                dislikeIcon.classList.remove('text-red-600');
             }
 
           if (userEmail) { window.recordMarketplaceView(id, userEmail, viewedByArr); }
@@ -4107,7 +4547,12 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
 
     window.addEventListener('load', () => {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error:', err));
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                // Background Sync / Notification Permission
+                if ("Notification" in window) {
+                    Notification.requestPermission();
+                }
+            }).catch(err => console.error('SW Error:', err));
         }
         
         // If already installed or explicitly dismissed by the user, obliterate the banner
@@ -4171,6 +4616,78 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         localStorage.setItem('pwaDismissed', 'true');
         hideBanner();
     });
+    window.editMyHostel = async function(id) {
+            const hostel = window.accommodationsCache.find(h => h.id === id);
+            if (!hostel) return;
+            
+            // Pre-fill Modal Data
+            document.getElementById('add-hostel-name').value = hostel.name || '';
+            document.getElementById('add-hostel-price').value = hostel.price || '';
+            document.getElementById('add-hostel-price-year').value = hostel.priceYear || '';
+            document.getElementById('add-hostel-distance').value = hostel.distance || '';
+            document.getElementById('add-hostel-room-type').value = hostel.roomType || 'Single Room';
+            document.getElementById('add-hostel-gender').value = hostel.gender || 'Mixed';
+            document.getElementById('add-hostel-status').value = hostel.availability || 'Rooms Available';
+            document.getElementById('add-hostel-desc').value = hostel.description || '';
+            
+            const amenityInputs = document.querySelectorAll('#hostel-amenities-check input[type="checkbox"]');
+            amenityInputs.forEach(cb => cb.checked = (hostel.amenities || []).includes(cb.value));
+
+            window.editingHostelId = id;
+            window.uploadedHostelImages = hostel.imageUrls || [];
+            
+            const previewContainer = document.getElementById('hostel-upload-preview');
+            if (previewContainer && window.uploadedHostelImages.length > 0) {
+                previewContainer.classList.remove('hidden');
+                previewContainer.innerHTML = window.uploadedHostelImages.map((url) => `<div class="relative w-16 h-16 flex-shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm"><img src="${url.replace('/upload/', '/upload/w_100,f_webp,q_auto/')}" class="w-full h-full object-cover"></div>`).join('');
+            }
+            
+            window.closeViewHostelModal();
+            document.getElementById('add-hostel-modal').classList.remove('hidden');
+            
+            // Align map properly for edit
+            setTimeout(() => {
+                if(window.mapInstance) {
+                    window.mapInstance.invalidateSize();
+                    if(hostel.lat && hostel.lng) {
+                        window.mapInstance.setView([hostel.lat, hostel.lng], 15);
+                        if(window.markerInstance) window.markerInstance.setLatLng([hostel.lat, hostel.lng]);
+                    }
+                }
+            }, 300);
+        };
+
+        window.editMyMarketplace = async function(id) {
+            const item = window.marketplaceCache.find(i => i.id === id);
+            if (!item) return;
+            
+            // Pre-fill Modal Data
+            document.getElementById('add-mkt-title').value = item.title || '';
+            document.getElementById('add-mkt-brand').value = item.brand || '';
+            document.getElementById('add-mkt-type').value = item.type || 'Product';
+            document.getElementById('add-mkt-category').value = item.category || 'Other';
+            document.getElementById('add-mkt-condition').value = item.condition || 'New';
+            document.getElementById('add-mkt-price').value = item.price || '';
+            document.getElementById('add-mkt-old-price').value = item.oldPrice || '';
+            document.getElementById('add-mkt-stock').value = item.stock || '1';
+            document.getElementById('add-mkt-features').value = item.features || '';
+            document.getElementById('add-mkt-location').value = item.location || '';
+            document.getElementById('add-mkt-contact').value = item.contact || '';
+            document.getElementById('add-mkt-whatsapp').value = item.whatsapp || '';
+            document.getElementById('add-mkt-desc').value = item.description || '';
+            
+            window.editingMarketplaceId = id;
+            window.uploadedMktImages = item.imageUrls || [];
+            
+            const previewContainer = document.getElementById('mkt-upload-preview');
+            if (previewContainer && window.uploadedMktImages.length > 0) {
+                previewContainer.classList.remove('hidden');
+                previewContainer.innerHTML = window.uploadedMktImages.map((url) => `<div class="relative w-16 h-16 flex-shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm"><img src="${url.replace('/upload/', '/upload/w_100,f_webp,q_auto/')}" class="w-full h-full object-cover"></div>`).join('');
+            }
+            
+            window.closeMarketplaceDetails();
+            document.getElementById('add-marketplace-modal').classList.remove('hidden');
+        };
 </script>
 </body>
 </html>
