@@ -259,6 +259,14 @@
                             </div>
                             <div id="admin-notice-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
+
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-flag mr-1"></i> 9. User Reports & Investigations</span>
+                                <span class="text-[10px] text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">Admin Override</span>
+                            </div>
+                            <div id="admin-report-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
+                        </div>
                     </div>
                 </section>
 
@@ -734,19 +742,45 @@
                             <option value="Fully Booked">Fully Booked</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Manager / Contact Name</label>
+                        <input type="text" id="add-hostel-manager" placeholder="e.g. John Doe" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Contact Number (WhatsApp)</label>
+                        <input type="text" id="add-hostel-contact" required placeholder="e.g. 024XXXXXXX" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Feeding / Meals</label>
+                        <select id="add-hostel-feeding" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                            <option value="Self-Catering">Self-Catering</option>
+                            <option value="Meals Available">Meals Available</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-2 uppercase tracking-wider">Available From</label>
+                        <input type="month" id="add-hostel-available-date" class="w-full p-3 bg-gray-50 dark:bg-geminiBase border-none rounded-xl text-sm outline-none dark:text-white">
+                    </div>
                 </div>
 
                 <div class="space-y-3">
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">Key Amenities</label>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-gray-700 dark:text-gray-300" id="hostel-amenities-check">
-                        <label class="flex items-center gap-2"><input type="checkbox" value="wifi"> Wi-Fi</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="water"> 24/7 Water</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="electricity"> Electricity</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="bathroom"> Private Bathroom</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="ac"> Air Conditioning</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="kitchen"> Kitchen</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="security"> 24/7 Security</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" value="parking"> Parking</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="wifi"> 📶 Wi-Fi</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="water"> 💧 24/7 Water</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="electricity"> ⚡ Electricity</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="generator"> 🔌 Backup Gen.</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="bathroom"> 🚿 Private Bath</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="ac"> ❄️ AC</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="kitchen"> 🍳 Kitchen</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="security"> 🔒 24/7 Security</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="parking"> 🚗 Parking</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="shuttle"> 🚌 Shuttle Service</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="roommate"> 🛏️ Roommate Needed</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="virtual_tour"> 🎥 Virtual Tour</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="chop_bar"> 🍛 Nearby Chop Bar</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="pharmacy"> 💊 Nearby Pharmacy</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="atm"> 🏧 Nearby ATM</label>
                     </div>
                 </div>
                 
@@ -784,20 +818,50 @@
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 
-                <button onclick="closeViewHostelModal()" class="absolute top-5 right-5 text-white bg-black/40 hover:bg-black/60 w-8 h-8 rounded-full flex items-center justify-center transition backdrop-blur-md z-20"><i class="fa-solid fa-xmark"></i></button>
+                <div class="absolute top-5 right-5 flex gap-2 z-20">
+                    <button id="view-hostel-wishlist-btn" class="text-white bg-black/40 hover:bg-red-500/80 w-8 h-8 rounded-full flex items-center justify-center transition backdrop-blur-md"><i class="fa-solid fa-heart"></i></button>
+                    <button onclick="closeViewHostelModal()" class="text-white bg-black/40 hover:bg-black/60 w-8 h-8 rounded-full flex items-center justify-center transition backdrop-blur-md"><i class="fa-solid fa-xmark"></i></button>
+                </div>
                 
                 <div class="absolute bottom-5 left-6 right-6 z-10">
+                    <div class="flex gap-2 mb-2 flex-wrap">
+                        <span id="view-hostel-badge-verified" class="hidden bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">🛡️ Verified by UDS Hub</span>
+                        <span id="view-hostel-badge-popular" class="hidden bg-yellow-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">🏅 Student Favorite</span>
+                        <span id="view-hostel-badge-roomalert" class="hidden bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">🔥 Last Room Alert</span>
+                        <span id="view-hostel-badge-viewing" class="hidden bg-purple-500 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shadow-sm">👀 Students Viewing</span>
+                    </div>
                     <h3 id="view-hostel-title" class="text-2xl md:text-3xl font-medium text-white tracking-tight mb-1">Loading...</h3>
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
                         <span id="view-hostel-price" class="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-lg text-sm font-medium">GHS -- / year</span>
+                        <span id="view-hostel-room-type-badge" class="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-lg text-sm font-medium"><i class="fa-solid fa-bed mr-1"></i> <span id="view-hostel-room-text">Room Type</span></span>
                         <span id="view-hostel-verification" class="text-xs px-2 py-1 rounded-lg font-medium backdrop-blur-md">Unverified</span>
                     </div>
                 </div>
             </div>
             
             <div class="p-6 overflow-y-auto space-y-8 flex-grow">
+                
+                <div class="flex gap-3 border-b border-gray-100 dark:border-gray-800 pb-6">
+                    <a id="btn-hostel-whatsapp" href="#" target="_blank" class="flex-grow bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Contact Manager
+                    </a>
+                    <button id="btn-hostel-reserve" class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
+                        <i class="fa-solid fa-calendar-check"></i> Reserve Room
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-gray-100 dark:border-gray-700">
+                    <div><span class="text-gray-500 dark:text-gray-400 text-[10px] uppercase tracking-wider block">Managed By</span><span id="view-hostel-manager-name" class="font-medium text-gray-800 dark:text-gray-200">--</span></div>
+                    <div><span class="text-gray-500 dark:text-gray-400 text-[10px] uppercase tracking-wider block">Available From</span><span id="view-hostel-available-date" class="font-medium text-gray-800 dark:text-gray-200">Available Now</span></div>
+                    <div><span class="text-gray-500 dark:text-gray-400 text-[10px] uppercase tracking-wider block">Feeding</span><span id="view-hostel-feeding" class="font-medium text-gray-800 dark:text-gray-200">Self-Catering</span></div>
+                    <div><span class="text-gray-500 dark:text-gray-400 text-[10px] uppercase tracking-wider block">Distance</span><span id="view-hostel-distance" class="font-medium text-gray-800 dark:text-gray-200">--</span></div>
+                </div>
+
                 <div>
-                    <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">About & Amenities</h4>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">About & Amenities</h4>
+                        <button id="btn-report-hostel" onclick="window.reportHostelListing()" class="text-xs text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1" title="Report suspicious listing"><i class="fa-regular fa-flag"></i> Report</button>
+                    </div>
                     <p id="view-hostel-desc" class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl"></p>
                 </div>
 
@@ -1058,7 +1122,7 @@
                             <i class="fa-solid fa-fire text-orange-500 mr-1"></i> Few units left! Order soon.
                         </div>
 
-                        <div class="flex gap-3">
+                        <div class="flex gap-3 mb-5">
                             <a id="btn-mkt-external" href="#" target="_blank" class="hidden flex-grow bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md justify-center items-center gap-2 text-center">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit External Store
                             </a>
@@ -1068,6 +1132,21 @@
                             <a id="btn-mkt-call" href="#" class="w-12 shrink-0 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-white font-medium py-3 rounded-xl text-sm transition shadow-sm flex justify-center items-center text-center border border-gray-200 dark:border-gray-700">
                                 <i class="fa-solid fa-phone"></i>
                             </a>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <div id="mkt-badge-protection" class="flex flex-col items-center text-center gap-1 transition-opacity duration-300">
+                                <div class="w-8 h-8 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 flex items-center justify-center text-sm"><i class="fa-solid fa-shield-halved"></i></div>
+                                <span class="text-[9px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Buyer Protection</span>
+                            </div>
+                            <div id="mkt-badge-trusted" class="flex flex-col items-center text-center gap-1 transition-opacity duration-300 opacity-40 grayscale">
+                                <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-handshake"></i></div>
+                                <span class="text-[9px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Trusted Seller</span>
+                            </div>
+                            <div id="mkt-badge-quality" class="flex flex-col items-center text-center gap-1 transition-opacity duration-300 opacity-40 grayscale">
+                                <div class="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-600 flex items-center justify-center text-sm"><i class="fa-solid fa-medal"></i></div>
+                                <span class="text-[9px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Quality Assured</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1092,16 +1171,24 @@
 
                         <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
                             <h4 class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">Seller Information</h4>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                                    <i class="fa-solid fa-store"></i>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                        <i class="fa-solid fa-store"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 id="view-mkt-seller" class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate">Store Name</h4>
+                                        <p class="text-[10px] text-gray-500 mt-0.5"><i class="fa-solid fa-certificate text-green-500 mr-1"></i>Verified Seller</p>
+                                    </div>
                                 </div>
-                                <div class="min-w-0">
-                                    <h4 id="view-mkt-seller" class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate">Store Name</h4>
-                                    <p class="text-[10px] text-gray-500 mt-0.5">Verified Seller</p>
-                                </div>
+                                <button id="btn-report-listing" onclick="window.reportMarketplaceListing()" class="text-xs text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1" title="Report suspicious listing"><i class="fa-regular fa-flag"></i> Report</button>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-900/30 p-4 rounded-2xl flex items-start gap-3">
+                        <i class="fa-solid fa-shield-cat text-yellow-600 mt-0.5"></i>
+                        <p class="text-xs text-yellow-800 dark:text-yellow-500 leading-relaxed font-medium"><strong>Safety Tip:</strong> Never pay in advance. Always meet the seller in a public, safe location on campus to inspect the item before handing over money.</p>
                     </div>
 
                     <div class="bg-white dark:bg-geminiSurface p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
@@ -1133,7 +1220,9 @@
                                 <i class="fa-regular fa-eye"></i> <span id="view-mkt-views-count">0</span> Views
                             </div>
                         </div>
-                        <button class="text-blue-600 text-sm font-medium"><i class="fa-solid fa-share-nodes mr-1"></i> Share</button>
+                        <button onclick="if(navigator.share) { navigator.share({title: document.getElementById('view-mkt-title').innerText, text: 'Check out this item on UDS Hub Marketplace!', url: window.location.href}).catch(console.error); } else { window.showToast('Link copied to clipboard!', 'success'); navigator.clipboard.writeText(window.location.href); }" class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-lg transition text-sm font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-share-nodes"></i> Share
+                        </button>
                     </div>
 
                     <div class="bg-white dark:bg-geminiSurface p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
@@ -1311,6 +1400,7 @@
         window.announcementsCache = [];
         window.allAnnouncementsCache = []; 
         window.marketplaceCache = []; 
+        window.reportsCache = [];
 
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
 
@@ -1396,6 +1486,14 @@
             if(window.adminRenderMarketplace) window.adminRenderMarketplace();
             if(window.renderMarketplaceLeaderboard) window.renderMarketplaceLeaderboard();
             if(window.compileSmartNotices) window.compileSmartNotices();
+        });
+
+        // Reports Firestore Listener
+        onSnapshot(collection(db, "reports"), (snapshot) => {
+            const items = [];
+            snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
+            window.reportsCache = items;
+            if(window.renderAdminReports) window.renderAdminReports();
         });
 
         onSnapshot(collection(db, "materials"), (snapshot) => {
@@ -1603,6 +1701,7 @@
                 window.renderAdminAccommodations(); 
                 if(window.adminRenderMarketplace) window.adminRenderMarketplace(); 
                 if(window.renderAdminNotices) window.renderAdminNotices(); 
+                if(window.renderAdminReports) window.renderAdminReports();
             }
         };
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
@@ -2868,6 +2967,55 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
             window.selectedHostelId = null;
         };
 
+        window.reportHostelListing = async function() {
+            if(!window.currentUserProfile) { 
+                window.showToast("Please sign in to report a listing.", "error"); 
+                return; 
+            }
+            
+            const id = window.selectedHostelId;
+            if(!id) return;
+            
+            const item = window.accommodationsCache.find(i => i.id === id);
+            if(!item) return;
+            
+            const reason = prompt("Why are you reporting this accommodation? (e.g., Scam, Fake images, Wrong info)");
+            if(!reason) return; 
+            
+            const btn = document.getElementById('btn-report-hostel');
+            if(btn) {
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "reports"), {
+                    collection: "accommodations",
+                    itemId: id,
+                    itemTitle: item.name,
+                    sellerId: item.contributorId,
+                    sellerName: item.contributorName,
+                    reporterId: window.currentUserProfile.email,
+                    reporterName: window.currentUserProfile.name,
+                    reason: reason,
+                    status: "pending",
+                    timestamp: new Date().getTime()
+                });
+                
+                if(btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Reported';
+                window.showToast("Report submitted to Administrators securely.", "success");
+            } catch (error) {
+                console.error("Report error:", error);
+                if(btn) {
+                    btn.innerHTML = '<i class="fa-regular fa-flag"></i> Report';
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                window.showToast("Failed to send report. Check connection.", "error");
+            }
+        };
+
        window.currentTempHostelRating = 0;
         window.hostelChartInstance = null;
 
@@ -3342,6 +3490,31 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
             } else {
                 featuresContainer.classList.add('hidden');
             }
+            
+            // Dynamic Trust Badges Logic
+            const badgeTrusted = document.getElementById('mkt-badge-trusted');
+            const badgeQuality = document.getElementById('mkt-badge-quality');
+            const badgeProtection = document.getElementById('mkt-badge-protection');
+            
+            // 1. Trusted Seller: Active if the item is explicitly verified by admins
+            if (item.verified) { badgeTrusted.classList.remove('opacity-40', 'grayscale'); } 
+            else { badgeTrusted.classList.add('opacity-40', 'grayscale'); }
+            
+            // 2. Quality Assured: Active for Brand New items or explicitly flagged
+            if (item.qualityAssured || item.condition === 'New' || item.condition === 'Brand New') { badgeQuality.classList.remove('opacity-40', 'grayscale'); } 
+            else { badgeQuality.classList.add('opacity-40', 'grayscale'); }
+            
+            // 3. Buyer Protection: Off for external Jumia/Amazon links, On for internal student listings
+            if (item.listingType === 'external') { badgeProtection.classList.add('opacity-40', 'grayscale'); } 
+            else { badgeProtection.classList.remove('opacity-40', 'grayscale'); }
+            
+            // Reset Report Button state for new view
+            const reportBtn = document.getElementById('btn-report-listing');
+            if(reportBtn) {
+                reportBtn.innerHTML = '<i class="fa-regular fa-flag"></i> Report';
+                reportBtn.disabled = false;
+                reportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
 
             document.getElementById('view-mkt-category').innerText = item.category;
             document.getElementById('view-mkt-seller').innerText = item.sellerName;
@@ -3544,6 +3717,56 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
 
         window.closeMarketplaceDetails = function() {
             document.getElementById('view-marketplace-modal').classList.add('hidden');
+        };
+        
+        window.reportMarketplaceListing = async function() {
+            if(!window.currentUserProfile) { 
+                window.showToast("Please sign in to report a listing.", "error"); 
+                return; 
+            }
+            
+            const id = window.currentMarketplaceItemId;
+            if(!id) return;
+            
+            const item = window.marketplaceCache.find(i => i.id === id);
+            if(!item) return;
+            
+            const reason = prompt("Why are you reporting this listing? (e.g., Scam, Fake product, Spam, Wrong Category)");
+            if(!reason) return; // User cancelled the prompt
+            
+            const btn = document.getElementById('btn-report-listing');
+            if(btn) {
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            try {
+                // Securely send the report data directly to your Firebase Database
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "reports"), {
+                    collection: "marketplace",
+                    itemId: id,
+                    itemTitle: item.title,
+                    sellerId: item.sellerId,
+                    sellerName: item.sellerName,
+                    reporterId: window.currentUserProfile.email,
+                    reporterName: window.currentUserProfile.name,
+                    reason: reason,
+                    status: "pending",
+                    timestamp: new Date().getTime()
+                });
+                
+                if(btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Reported';
+                window.showToast("Report submitted to Administrators securely.", "success");
+            } catch (error) {
+                console.error("Report error:", error);
+                if(btn) {
+                    btn.innerHTML = '<i class="fa-regular fa-flag"></i> Report';
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                window.showToast("Failed to send report. Check connection.", "error");
+            }
         };
 
         window.renderMarketplaceLeaderboard = function() {
@@ -3933,6 +4156,58 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 });
                 window.showToast(!isArchived ? "Notice Archived" : "Notice Restored", "success");
             } catch(e) { window.showToast("Action failed.", "error"); }
+        };
+
+        window.renderAdminReports = function() {
+            if(!window.isAdmin) return;
+            const container = document.getElementById('admin-report-list');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(!window.reportsCache || window.reportsCache.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-500 italic">No reports pending investigation.</p>';
+                return;
+            }
+
+            // Sort newest first
+            const sorted = [...window.reportsCache].sort((a,b) => b.timestamp - a.timestamp);
+
+            sorted.forEach(item => {
+                const statusColor = item.status === 'resolved' ? 'text-green-500 bg-green-50 dark:bg-green-900/20' : 'text-red-500 bg-red-50 dark:bg-red-900/20';
+                
+                container.innerHTML += `
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3 mb-3">
+                        <div class="flex flex-col min-w-0 pr-2 flex-grow">
+                            <span class="font-medium truncate text-gray-800 dark:text-gray-200">Target: ${item.itemTitle} <span class="text-[9px] uppercase ml-1 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">${item.collection}</span></span>
+                            <span class="text-xs text-red-600 dark:text-red-400 mt-1">Reason: ${item.reason}</span>
+                            <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider mt-0.5">Reported by: ${item.reporterName} | Status: <span class="${statusColor} font-bold px-1 rounded">${item.status}</span></span>
+                        </div>
+                        <div class="flex flex-col gap-1 shrink-0">
+                            ${item.status === 'pending' ? `<button onclick="adminResolveReport('${item.id}')" class="text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg text-xs font-medium transition">Mark Resolved</button>` : ''}
+                            <button onclick="adminDeleteReport('${item.id}')" class="text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg text-xs font-medium transition">Delete Record</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.adminResolveReport = async function(id) {
+            if(!window.isAdmin) return;
+            try {
+                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "reports", id), {
+                    status: 'resolved'
+                });
+                window.showToast("Report marked as resolved.", "success");
+            } catch(e) { window.showToast("Failed to update status.", "error"); }
+        };
+
+        window.adminDeleteReport = async function(id) {
+            if(!window.isAdmin) return;
+            if(confirm("Delete this report record?")) {
+                try {
+                    await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "reports", id));
+                    window.showToast("Report deleted.", "success");
+                } catch(e) { window.showToast("Failed to delete.", "error"); }
+            }
         };
 
         window.openEditAnnouncementModal = function(id) {
