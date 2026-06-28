@@ -602,6 +602,11 @@
                 <button onclick="toggleAiTutorPanel()" id="ai-tutor-open-btn" class="absolute top-4 right-4 z-30 bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-robot text-xl"></i>
                 </button>
+
+                <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="absolute top-[76px] right-4 z-30 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
+                    <i class="fa-solid fa-comments text-xl"></i>
+                    <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden animate-bounce shadow">0</span>
+                </button>
             </div>
 
             <div id="ai-tutor-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
@@ -642,6 +647,33 @@
                 <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
                     <input type="text" id="ai-tutor-input" placeholder="Ask about this document..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') submitAiTutorQuestion()">
                     <button onclick="submitAiTutorQuestion()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="student-chat-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
+                <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-geminiBase shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Class Discussion</h3>
+                            <p class="text-[10px] text-blue-500 font-medium">Learn with peers</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleStudentChatPanel()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div id="student-chat-feed" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface">
+                    </div>
+                
+                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
+                    <input type="text" id="student-chat-input" placeholder="Share your thoughts..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendStudentChat()">
+                    <button onclick="sendStudentChat()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -841,12 +873,14 @@
             
             <div class="p-6 overflow-y-auto space-y-8 flex-grow">
                 
-                <div class="flex gap-3 border-b border-gray-100 dark:border-gray-800 pb-6">
-                    <a id="btn-hostel-whatsapp" href="#" target="_blank" class="flex-grow bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
-                        <i class="fa-brands fa-whatsapp text-lg"></i> Contact Manager
-                    </a>
-                    <button id="btn-hostel-reserve" class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
-                        <i class="fa-solid fa-calendar-check"></i> Reserve Room
+                <div class="flex flex-wrap gap-3 border-b border-gray-100 dark:border-gray-800 pb-6">
+                    <div class="flex w-full gap-3">
+                        <a id="btn-hostel-whatsapp" href="#" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Contact Manager
+                        </a>
+                    </div>
+                    <button onclick="document.getElementById('view-hostel-reviews').scrollIntoView({behavior: 'smooth', block: 'center'})" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex justify-center items-center gap-2 text-center">
+                        <i class="fa-solid fa-comments"></i> View & Write Comments
                     </button>
                 </div>
 
@@ -1402,6 +1436,46 @@
         window.marketplaceCache = []; 
         window.reportsCache = [];
 
+        // MASTER SYSTEM NOTIFICATION ENGINE
+        window.triggerAppNotification = function(title, body) {
+            // 1. Show UI Banner
+            const banner = document.getElementById('smart-notification-banner');
+            const textElement = document.getElementById('smart-notification-text');
+            if (banner && textElement) {
+                textElement.innerHTML = `<span class="text-blue-500 font-bold">${title}:</span> ${body}`;
+                banner.classList.remove('-translate-y-[150%]', 'opacity-0');
+                banner.classList.add('translate-y-0', 'opacity-100');
+                setTimeout(() => {
+                    banner.classList.remove('translate-y-0', 'opacity-100');
+                    banner.classList.add('-translate-y-[150%]', 'opacity-0');
+                }, 8000);
+            }
+            
+            // 2. Trigger OS/PWA Push Notification
+            if ("Notification" in window && Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: '/logo-192.png',
+                        vibrate: [200, 100, 200],
+                        badge: '/logo-192.png'
+                    });
+                }).catch(() => {
+                    new Notification(title, { body: body, icon: "/logo-192.png" });
+                });
+            } else if ("Notification" in window && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+            
+            // 3. Update Bell Count dynamically
+            const countBadge = document.getElementById('nav-smart-notice-count');
+            if(countBadge) {
+                let currentCount = parseInt(countBadge.innerText) || 0;
+                countBadge.innerText = currentCount + 1;
+                countBadge.classList.remove('hidden');
+            }
+        };
+
         try { const cachedMat = localStorage.getItem('uds_materials_cache'); if (cachedMat) { globalMaterialsCache = JSON.parse(cachedMat); setTimeout(() => window.renderMaterialsGrid(globalMaterialsCache), 100); } } catch(e) {}
 
         onAuthStateChanged(auth, async (user) => {
@@ -1466,6 +1540,19 @@
             snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
             window.accommodationsCache = items;
             
+            // Check specifically for newly added accommodations
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added" && window.currentUserProfile) {
+                    const data = change.doc.data();
+                    const tsKey = `uds_notif_acc_${change.doc.id}`;
+                    // Only notify if created within the last 5 minutes (prevents spam on load)
+                    if (data.timestamp > (Date.now() - 300000) && !localStorage.getItem(tsKey)) {
+                        localStorage.setItem(tsKey, 'true');
+                        window.triggerAppNotification("New Hostel Alert", `${data.name} was just listed!`);
+                    }
+                }
+            });
+
             if(!document.getElementById('section-accommodation').classList.contains('hidden')){
                 window.renderAccommodations();
             }
@@ -1480,6 +1567,19 @@
             snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
             window.marketplaceCache = items;
             
+            // Check specifically for newly added marketplace items
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added" && window.currentUserProfile) {
+                    const data = change.doc.data();
+                    const tsKey = `uds_notif_mkt_${change.doc.id}`;
+                    // Only notify if created within the last 5 minutes (prevents spam on load)
+                    if (data.timestamp > (Date.now() - 300000) && !localStorage.getItem(tsKey)) {
+                        localStorage.setItem(tsKey, 'true');
+                        window.triggerAppNotification("Marketplace Update", `New listing: ${data.title}`);
+                    }
+                }
+            });
+
             if(!document.getElementById('section-marketplace').classList.contains('hidden')){
                 window.renderMarketplace();
             }
@@ -1552,35 +1652,17 @@
             if(window.compileSmartNotices) window.compileSmartNotices();
             
             // DYNAMIC SMART NOTIFICATION LOGIC
-            if (window.currentUserProfile && window.allAnnouncementsCache.length > 0) {
-                const sorted = [...window.allAnnouncementsCache].sort((a,b) => b.timestamp - a.timestamp);
-                const latestNotice = sorted[0];
-                const tsKey = `uds_notif_last_ts_${window.currentUserProfile.email}`;
-                const lastSeenTs = parseInt(localStorage.getItem(tsKey)) || 0;
-                
-                if (latestNotice && latestNotice.timestamp > lastSeenTs && !latestNotice.archived) {
-                    // 1. Show UI Banner
-                    const banner = document.getElementById('smart-notification-banner');
-                    const textElement = document.getElementById('smart-notification-text');
-                    textElement.innerHTML = `<span class="text-blue-500 font-bold">New:</span> ${latestNotice.title}`;
-                    banner.classList.remove('-translate-y-[150%]', 'opacity-0');
-                    banner.classList.add('translate-y-0', 'opacity-100');
-
-                    // 2. Trigger PWA System Notification (if data/app is on)
-                    if (Notification.permission === "granted") {
-                        new Notification("UDS Hub Update", { body: latestNotice.title, icon: "/logo-192.png" });
-                    } else if (Notification.permission !== "denied") {
-                        Notification.requestPermission();
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added" && window.currentUserProfile) {
+                    const data = change.doc.data();
+                    const tsKey = `uds_notif_ann_${change.doc.id}`;
+                    // Notify if created in the last 5 minutes, isn't archived, and hasn't been notified yet
+                    if (data.timestamp > (Date.now() - 300000) && !data.archived && !localStorage.getItem(tsKey)) {
+                        localStorage.setItem(tsKey, 'true');
+                        window.triggerAppNotification("Campus Notice", data.title);
                     }
-
-                    setTimeout(() => {
-                        banner.classList.remove('translate-y-0', 'opacity-100');
-                        banner.classList.add('-translate-y-[150%]', 'opacity-0');
-                        // Mark as seen so it doesn't pop up every refresh
-                        localStorage.setItem(tsKey, latestNotice.timestamp.toString());
-                    }, 8000);
                 }
-            }
+            });
         });
 
         onSnapshot(doc(db, "system", "deadlines"), (snapshot) => {
@@ -1746,6 +1828,10 @@
             iframe.src = finalUrl; 
             modal.classList.remove('hidden'); 
             document.body.style.overflow = 'hidden';
+
+            if (fileIdMatch && fileIdMatch[1]) {
+                window.loadDocumentChat(fileIdMatch[1]);
+            }
         };
         
        window.terminateDocViewer = function() { 
@@ -2166,10 +2252,16 @@
             }
         };
 
-        window.toggleAiTutorPanel = async function() {
+       window.toggleAiTutorPanel = async function() {
             const panel = document.getElementById('ai-tutor-panel');
+            const chatPanel = document.getElementById('student-chat-panel');
             const container = document.getElementById('doc-iframe-container');
             const openBtn = document.getElementById('ai-tutor-open-btn');
+            
+            // Close Student Chat if open to prevent overlap
+            if(chatPanel && !chatPanel.classList.contains('w-0')) {
+                window.toggleStudentChatPanel();
+            }
             
             if (panel.classList.contains('w-0')) {
                 // Open Panel
@@ -2227,6 +2319,116 @@
                 container.classList.remove('hidden', 'md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
                 
                 setTimeout(() => { openBtn.classList.remove('hidden'); }, 300);
+            }
+        };
+
+       window.currentDocChatUnsubscribe = null;
+        
+        window.toggleStudentChatPanel = function() {
+            const chatPanel = document.getElementById('student-chat-panel');
+            const aiPanel = document.getElementById('ai-tutor-panel');
+            const container = document.getElementById('doc-iframe-container');
+            const chatBtn = document.getElementById('student-chat-open-btn');
+            
+            if(aiPanel && !aiPanel.classList.contains('w-0')) {
+                window.toggleAiTutorPanel(); 
+            }
+            
+            if (chatPanel.classList.contains('w-0')) {
+                chatPanel.classList.remove('w-0');
+                chatPanel.classList.add('w-full', 'md:w-[350px]', 'lg:w-[380px]');
+                chatBtn.classList.add('hidden');
+                document.getElementById('chat-notice-badge').classList.add('hidden'); 
+                
+                if (window.innerWidth >= 768) {
+                    container.classList.add('md:w-[calc(100%-350px)]', 'lg:w-[calc(100%-380px)]');
+                } else {
+                    container.classList.add('hidden'); 
+                }
+                
+                const feed = document.getElementById('student-chat-feed');
+                if(feed) feed.scrollTop = feed.scrollHeight;
+            } else {
+                chatPanel.classList.remove('w-full', 'md:w-[350px]', 'lg:w-[380px]');
+                chatPanel.classList.add('w-0');
+                container.classList.remove('hidden', 'md:w-[calc(100%-350px)]', 'lg:w-[calc(100%-380px)]');
+                setTimeout(() => { chatBtn.classList.remove('hidden'); }, 300);
+            }
+        };
+
+        window.loadDocumentChat = async function(fileId) {
+            const feed = document.getElementById('student-chat-feed');
+            const badge = document.getElementById('chat-notice-badge');
+            
+            if(window.currentDocChatUnsubscribe) window.currentDocChatUnsubscribe();
+            
+            if(feed) feed.innerHTML = '<p class="text-xs text-gray-400 text-center mt-4"><i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to class...</p>';
+            
+            try {
+                // Dynamically import to bypass scoping issues outside the main module
+                const { onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const chatRef = window.firebaseCollection(window.firebaseDb, "document_chats");
+                
+                window.currentDocChatUnsubscribe = onSnapshot(chatRef, (snapshot) => {
+                    const msgs = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if(data.documentId === fileId) msgs.push({id: doc.id, ...data});
+                    });
+                    
+                    msgs.sort((a,b) => a.timestamp - b.timestamp);
+                    
+                    if(msgs.length > 0) {
+                        if(badge) {
+                            badge.classList.remove('hidden');
+                            badge.innerText = msgs.length > 9 ? '9+' : msgs.length;
+                        }
+                        if(feed) {
+                            feed.innerHTML = '';
+                            msgs.forEach(m => {
+                                const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
+                                feed.innerHTML += `
+                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4">
+                                        <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
+                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed">${m.text}</div>
+                                    </div>
+                                `;
+                            });
+                            feed.scrollTop = feed.scrollHeight;
+                        }
+                    } else {
+                        if(badge) badge.classList.add('hidden');
+                        if(feed) feed.innerHTML = '<p class="text-xs text-gray-400 text-center mt-10">No discussions yet. Start the conversation!</p>';
+                    }
+                });
+            } catch(e) {
+                console.error("Chat setup failed", e);
+            }
+        };
+
+        window.sendStudentChat = async function() {
+            if(!window.currentUserProfile) { window.showToast("Sign in to join the discussion", "error"); return; }
+            const input = document.getElementById('student-chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const iframe = document.getElementById('doc-reader-iframe');
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if(!fileIdMatch) return;
+            const fileId = fileIdMatch[1];
+            
+            input.value = '';
+            
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "document_chats"), {
+                    documentId: fileId,
+                    userId: window.currentUserProfile.email,
+                    userName: window.currentUserProfile.name,
+                    text: text,
+                    timestamp: Date.now()
+                });
+            } catch(e) { 
+                window.showToast("Failed to send message", "error"); 
             }
         };
 
