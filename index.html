@@ -697,18 +697,18 @@
             <div id="whatsapp-options-menu" class="hidden fixed z-[999] bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-2 border border-gray-100 dark:border-gray-700 min-w-[180px] scale-95 opacity-0 transition-all duration-150 pointer-events-none">
                 <!-- Premium Emoji Reactions Tray Panel -->
                 <div class="flex items-center gap-2.5 pb-2 mb-2 border-b border-gray-100 dark:border-gray-700 justify-between px-1.5">
-                    <button onclick="applyWhatsappReaction('👍')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">👍</button>
-                    <button onclick="applyWhatsappReaction('❤️')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">❤️</button>
-                    <button onclick="applyWhatsappReaction('😂')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😂</button>
-                    <button onclick="applyWhatsappReaction('😮')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😮</button>
-                    <button onclick="applyWhatsappReaction('😢')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😢</button>
-                    <button onclick="applyWhatsappReaction('🙏')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">🙏</button>
+                    <button onclick="applyWhatsappReaction('👍')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">👍</button>
+                    <button onclick="applyWhatsappReaction('❤️')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">❤️</button>
+                    <button onclick="applyWhatsappReaction('😂')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">😂</button>
+                    <button onclick="applyWhatsappReaction('😮')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">😮</button>
+                    <button onclick="applyWhatsappReaction('😢')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">😢</button>
+                    <button onclick="applyWhatsappReaction('🙏')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">🙏</button>
                 </div>
                 <!-- WhatsApp Core Action Handlers -->
-                <button onclick="activateWhatsappEditSequence()" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/60 rounded-xl flex items-center gap-2.5 text-gray-700 dark:text-gray-200 font-medium transition">
+                <button id="wa-edit-btn" onclick="activateWhatsappEditSequence()" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/60 rounded-xl flex items-center gap-2.5 text-gray-700 dark:text-gray-200 font-medium transition">
                     <i class="fa-solid fa-pen text-blue-500 w-4 text-center text-xs"></i> Edit Message
                 </button>
-                <button onclick="executeWhatsappDeleteForEveryone()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl flex items-center gap-2.5 font-semibold transition">
+                <button id="wa-delete-btn" onclick="executeWhatsappDeleteForEveryone()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl flex items-center gap-2.5 font-semibold transition">
                     <i class="fa-solid fa-trash-can w-4 text-center text-xs"></i> Delete for Everyone
                 </button>
             </div>
@@ -737,17 +737,18 @@
                             feed.addEventListener('touchstart', (e) => {
                                 const msgContainer = e.target.closest('[data-message-id]') || e.target.closest('.message-bubble') || e.target.closest('.chat-msg');
                                 if (msgContainer) {
+                                    if (longPressTimerContext) clearTimeout(longPressTimerContext);
                                     longPressTimerContext = setTimeout(() => {
                                         const touch = e.touches[0];
                                         summonWhatsappTray(msgContainer, touch.clientX, touch.clientY);
-                                    }, 600);
+                                    }, 500); // Polished to 500ms response time
                                 }
                             }, { passive: true });
 
                             feed.addEventListener('touchend', () => {
                                 if (longPressTimerContext) clearTimeout(longPressTimerContext);
                             });
-                        } );
+                        });
 
                         document.addEventListener('click', (e) => {
                             const menu = document.getElementById('whatsapp-options-menu');
@@ -759,6 +760,19 @@
                         activeTargetMessageElement = element;
                         const menu = document.getElementById('whatsapp-options-menu');
                         if (!menu) return;
+
+                        // Ownership & State Checks
+                        const isMyMessage = element.classList.contains('items-end');
+                        const isDeleted = element.innerHTML.includes('This message was deleted');
+                        
+                        const editBtn = document.getElementById('wa-edit-btn');
+                        const deleteBtn = document.getElementById('wa-delete-btn');
+
+                        // Only show Edit/Delete if it's the user's own message AND it hasn't been deleted yet
+                        if (editBtn && deleteBtn) {
+                            editBtn.style.display = (isMyMessage && !isDeleted) ? 'flex' : 'none';
+                            deleteBtn.style.display = (isMyMessage && !isDeleted) ? 'flex' : 'none';
+                        }
 
                         menu.classList.remove('hidden');
                         setTimeout(() => {
@@ -792,47 +806,40 @@
                         menu.style.pointerEvents = 'none';
                     };
 
-                    window.applyWhatsappReaction = function(emoji) {
+                    window.applyWhatsappReaction = async function(emoji) {
                         if (!activeTargetMessageElement) return;
-                        
-                        // Look for an existing reaction bubble wrapper or build one natively
-                        let reactionBadgeWrapper = activeTargetMessageElement.querySelector('.whatsapp-reaction-badge');
-                        if (!reactionBadgeWrapper) {
-                            reactionBadgeWrapper = document.createElement('div');
-                            reactionBadgeWrapper.className = "whatsapp-reaction-badge absolute -bottom-2 right-3 bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 scale-90 select-none animate-in zoom-in-50";
-                            activeTargetMessageElement.style.position = 'relative';
-                            activeTargetMessageElement.appendChild(reactionBadgeWrapper);
-                        }
-                        reactionBadgeWrapper.innerHTML = `<span>${emoji}</span>`;
+                        let msgId = activeTargetMessageElement.getAttribute('data-message-id');
                         dismissWhatsappTray();
+                        if (msgId && window.firebaseUpdateDoc) {
+                            try {
+                                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_chats", msgId), { reaction: emoji });
+                            } catch (e) { console.error("Failed to react", e); }
+                        }
                     };
 
                     window.activateWhatsappEditMessageMode = function(instanceIndex) {
                         if (!activeTargetMessageElement) return;
                         dismissWhatsappTray();
 
-                        // Intercept structural contents cleanly
                         let messageTextNode = activeTargetMessageElement.querySelector('.msg-text') || activeTargetMessageElement.querySelector('p') || activeTargetMessageElement;
                         let targetContent = messageTextNode.innerText || messageTextNode.textContent;
+                        
+                        if (targetContent.includes('This message was deleted')) return;
 
-                        // Skip logic if message is marked deleted
-                        if (targetContent.includes('🚫 This message was deleted')) return;
-
-                        currentEditingStateMessageId = activeTargetMessageElement.getAttribute('data-message-id') || 'temp-edit-id';
-                        activeTargetMessageElement.setAttribute('data-message-id', currentEditingStateMessageId);
+                        let cleanText = targetContent.replace(/\s*\(edited\)\s*$/, '');
+                        currentEditingStateMessageId = activeTargetMessageElement.getAttribute('data-message-id');
 
                         const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
                         const banner = document.getElementById(`whatsapp-edit-banner-${instanceIndex}`);
 
-                        if (inputField && banner) {
-                            inputField.value = targetContent;
+                        if (inputField && banner && currentEditingStateMessageId) {
+                            inputField.value = cleanText;
                             banner.classList.remove('hidden');
                             inputField.focus();
                         }
                     };
 
                     window.activateWhatsappEditSequence = function() {
-                        // Dynamically determine window scope execution index state
                         activateWhatsappEditMessageMode(1);
                         activateWhatsappEditMessageMode(2);
                     };
@@ -845,16 +852,18 @@
                         currentEditingStateMessageId = null;
                     };
 
-                    window.handleWhatsappSendIntercept = function(instanceIndex) {
+                    window.handleWhatsappSendIntercept = async function(instanceIndex) {
                         const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
                         if (!inputField || !inputField.value.trim()) return;
 
                         if (currentEditingStateMessageId) {
-                            // Locate targeted operational bubble instance context
-                            const targetBubble = document.querySelector(`[data-message-id="${currentEditingStateMessageId}"]`);
-                            if (targetBubble) {
-                                let labelTarget = targetBubble.querySelector('.msg-text') || targetBubble.querySelector('p') || targetBubble;
-                                labelTarget.innerHTML = `${inputField.value.trim()} <span class="text-[9px] opacity-40 italic ml-1.5">(edited)</span>`;
+                            if (window.firebaseUpdateDoc) {
+                                try {
+                                    await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_chats", currentEditingStateMessageId), {
+                                        text: inputField.value.trim(),
+                                        isEdited: true
+                                    });
+                                } catch (e) { console.error("Failed to edit", e); }
                             }
                             cancelWhatsappEditMode(instanceIndex);
                         } else {
@@ -864,23 +873,24 @@
                         }
                     };
 
-                    window.executeWhatsappDeleteForEveryone = function() {
+                    window.executeWhatsappDeleteForEveryone = async function() {
                         if (!activeTargetMessageElement) return;
-                        let textBlock = activeTargetMessageElement.querySelector('.msg-text') || activeTargetMessageElement.querySelector('p') || activeTargetMessageElement;
-                        
-                        if (textBlock) {
-                            textBlock.innerHTML = `<span class="italic text-gray-400 dark:text-gray-500 flex items-center gap-1 text-xs select-none"><i class="fa-solid fa-ban text-[10px]"></i> This message was deleted</span>`;
-                        }
-                        
-                        // Clear active structural reaction components if present
-                        const reactionBubble = activeTargetMessageElement.querySelector('.whatsapp-reaction-badge');
-                        if (reactionBubble) reactionBubble.remove();
-
+                        let msgId = activeTargetMessageElement.getAttribute('data-message-id');
                         dismissWhatsappTray();
+                        
+                        if (msgId && window.firebaseUpdateDoc) {
+                            try {
+                                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_chats", msgId), { 
+                                    isDeleted: true,
+                                    text: "",
+                                    reaction: null 
+                                });
+                            } catch (e) { console.error("Failed to delete", e); }
+                        }
                     };
 
                     document.addEventListener('DOMContentLoaded', initializeWhatsappEngine);
-                    setTimeout(initializeWhatsappEngine, 800); // Fail-safe bootstrap anchor activation
+                    setTimeout(initializeWhatsappEngine, 800);
                 })();
             </script>
         </div>
@@ -2496,6 +2506,22 @@
             }
         };
 
+        // --- NEW: Session Cache & Delete Engine ---
+        window.aiSessionChats = window.aiSessionChats || {};
+        window.saveAiChatState = function() {
+            const iframe = document.getElementById('doc-reader-iframe');
+            if(!iframe) return;
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if (fileIdMatch) {
+                window.aiSessionChats[fileIdMatch[1]] = document.getElementById('ai-tutor-chat-feed').innerHTML;
+            }
+        };
+        window.deleteAiChatMessage = function(element) {
+            const block = element.closest('.ai-msg-block');
+            if(block) block.remove();
+            window.saveAiChatState(); // Resave after deleting
+        };
+
         window.toggleAiTutorPanel = async function() {
             const panel = document.getElementById('ai-tutor-panel');
             const chatPanel = document.getElementById('student-chat-panel');
@@ -2524,6 +2550,22 @@
                 const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
                 if (fileIdMatch) {
                     const fileId = fileIdMatch[1];
+                    
+                    // --- ISOLATE AI CHAT TO CURRENT DOCUMENT ---
+                    const chatFeed = document.getElementById('ai-tutor-chat-feed');
+                    if (window.aiSessionChats[fileId]) {
+                        chatFeed.innerHTML = window.aiSessionChats[fileId];
+                    } else {
+                        chatFeed.innerHTML = `
+                            <div class="flex items-start gap-3 ai-msg-block">
+                                <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
+                               <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    Hello! I am your AI Tutor. I have read this document. Ask me to explain concepts, summarize details, or generate a quiz!
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
                     if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
                     if (!window.documentAnalysisCache[fileId]) {
                         const docTitle = document.getElementById('doc-reader-header-title').innerText;
@@ -2631,10 +2673,23 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
+                                let contentHtml = '';
+                                if (m.isDeleted) {
+                                    contentHtml = `<span class="italic text-gray-400 dark:text-gray-500 flex items-center gap-1 text-xs select-none"><i class="fa-solid fa-ban text-[10px]"></i> This message was deleted</span>`;
+                                } else {
+                                    contentHtml = `${m.text} ${m.isEdited ? '<span class="text-[9px] opacity-40 italic ml-1.5">(edited)</span>' : ''}`;
+                                }
+                                
+                                let reactionHtml = '';
+                                if (m.reaction && !m.isDeleted) {
+                                    reactionHtml = `<div class="whatsapp-reaction-badge absolute -bottom-2 right-3 bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 scale-90 select-none z-10"><span>${m.reaction}</span></div>`;
+                                }
+
                                 feed.innerHTML += `
-                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4">
+                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 chat-msg" data-message-id="${m.id}" style="position: relative;">
                                         <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed">${m.text}</div>
+                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed msg-text">${contentHtml}</div>
+                                        ${reactionHtml}
                                     </div>
                                 `;
                             });
@@ -2799,8 +2854,29 @@
         window.openDocument = function(title, url) {
             originalDocViewer(title, url);
             const fileIdMatch = url.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (fileIdMatch) window.loadDocumentChat(fileIdMatch[1]);
-        };
+            if (fileIdMatch) {
+                const fileId = fileIdMatch[1];
+                window.loadDocumentChat(fileId);
+                
+                // Instantly swap the AI Context if the AI panel was left open
+                const aiPanel = document.getElementById('ai-tutor-panel');
+                const chatFeed = document.getElementById('ai-tutor-chat-feed');
+                if (aiPanel && chatFeed && !aiPanel.classList.contains('w-0')) {
+                    if (window.aiSessionChats && window.aiSessionChats[fileId]) {
+                        chatFeed.innerHTML = window.aiSessionChats[fileId];
+                    } else {
+                        chatFeed.innerHTML = `
+                            <div class="flex items-start gap-3 ai-msg-block">
+                                <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
+                               <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    Hello! I am your AI Tutor. I have read this document. Ask me to explain concepts, summarize details, or generate a quiz!
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        }; 
 
        window.communityDiscussionsCache = {};
 
@@ -2951,9 +3027,12 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
             }
 
             feed.innerHTML += `
-                <div class="flex items-start gap-3 justify-end mt-4">
-                    <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
-                        ${question}
+                <div class="flex items-start gap-3 justify-end mt-4 ai-msg-block">
+                    <div class="flex flex-col items-end gap-1 max-w-[85%]">
+                        <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm w-full">
+                            ${question}
+                        </div>
+                        <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
                     </div>
                 </div>
             `;
@@ -2983,15 +3062,19 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
                 if (bestMatch) {
                     loader.classList.add('hidden');
                     feed.innerHTML += `
-                        <div class="flex items-start gap-3 mt-4">
+                        <div class="flex items-start gap-3 mt-4 ai-msg-block">
                             <div class="w-8 h-8 shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-users text-xs"></i></div>
-                            <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
-                                <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
-                                ${bestMatch.answer.replace(/\n/g, '<br>')}
+                            <div class="flex flex-col items-start gap-1 max-w-[85%]">
+                                <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 leading-relaxed shadow-sm">
+                                    <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
+                                    ${bestMatch.answer.replace(/\n/g, '<br>')}
+                                </div>
+                                <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
                             </div>
                         </div>
                     `;
                     feed.scrollTop = feed.scrollHeight;
+                    if(window.saveAiChatState) window.saveAiChatState();
                     return; 
                 }
             }
@@ -3008,10 +3091,13 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
                 const aiResponseText = data.response || data.reply || "No response received.";
                 
                 feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4">
+                    <div class="flex items-start gap-3 mt-4 ai-msg-block">
                         <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
-                            ${aiResponseText.replace(/\n/g, '<br>')}
+                        <div class="flex flex-col items-start gap-1 max-w-[85%]">
+                            <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed shadow-sm">
+                                ${aiResponseText.replace(/\n/g, '<br>')}
+                            </div>
+                            <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
                         </div>
                     </div>
                 `;
@@ -3029,16 +3115,20 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
 
             } catch(error) {
                 feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4">
+                    <div class="flex items-start gap-3 mt-4 ai-msg-block">
                         <div class="w-8 h-8 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-                        <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 max-w-[85%] text-xs font-medium">
-                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
+                        <div class="flex flex-col items-start gap-1 max-w-[85%]">
+                            <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 text-xs font-medium">
+                                Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
+                            </div>
+                            <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
                         </div>
                     </div>
                 `;
             } finally {
                 loader.classList.add('hidden');
                 feed.scrollTop = feed.scrollHeight;
+                if(window.saveAiChatState) window.saveAiChatState();
             }
         };
         
