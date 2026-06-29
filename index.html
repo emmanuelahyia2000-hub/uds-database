@@ -554,42 +554,9 @@
                     <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-            <div class="flex items-center gap-1 md:gap-2 bg-gray-50 dark:bg-[#131314] p-1 md:px-2 rounded-full border border-gray-200 dark:border-gray-700">
-                <button onclick="ttsReadDocument()" id="tts-play-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition shrink-0" title="Read Aloud">
-                    <i class="fa-solid fa-volume-high"></i>
-                </button>
-                <button onclick="ttsPauseDocument()" id="tts-pause-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition hidden shrink-0" title="Pause">
-                    <i class="fa-solid fa-pause"></i>
-                </button>
-                <button onclick="ttsResumeDocument()" id="tts-resume-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 transition hidden shrink-0" title="Resume">
-                    <i class="fa-solid fa-play"></i>
-                </button>
-                <button onclick="ttsStopDocument()" id="tts-stop-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition hidden shrink-0" title="Stop">
-                    <i class="fa-solid fa-stop"></i>
-                </button>
-                
-                <span class="w-[1px] h-5 bg-gray-300 dark:bg-gray-600 mx-0.5 shrink-0"></span>
-                
-                <div class="flex items-center shrink-0 pr-1">
-                    <select id="tts-speed-control" onchange="changeTtsSpeed(this.value)" class="bg-transparent text-xs font-bold text-gray-800 dark:text-gray-100 outline-none cursor-pointer px-1 py-1 text-center" title="Reader Speed">
-                        <option value="0.5">0.5x</option>
-                        <option value="0.75">0.75x</option>
-                        <option value="1.0" selected>1.0x</option>
-                        <option value="1.25">1.25x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="1.75">1.75x</option>
-                        <option value="2.0">2.0x</option>
-                    </select>
-                </div>
-            </div>
             <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
-                <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-full transition-all font-medium text-sm border border-blue-200 dark:border-blue-800">
-                    <i class="fa-solid fa-users text-lg md:mr-2"></i> <span class="hidden md:inline">Discuss</span>
-                    <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden shadow">0</span>
-                </button>
-
-                <button onclick="generatePageSummary()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-800/50 text-purple-700 dark:text-purple-400 rounded-full transition-all font-medium text-sm border border-purple-200 dark:border-purple-800">
-                    <i class="fa-solid fa-wand-magic-sparkles text-lg md:mr-2"></i> <span class="hidden md:inline">Summarize</span>
+                <button onclick="toggleFloatingGroupChat()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-full transition-all font-medium text-sm border border-blue-200 dark:border-blue-800">
+                    <i class="fa-solid fa-user-group text-base md:mr-2"></i> <span class="hidden md:inline">Study Group</span>
                 </button>
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
@@ -604,14 +571,45 @@
                 </div>
                <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out bg-white" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
                 
-                <button onclick="toggleAiTutorPanel()" id="ai-tutor-open-btn" class="absolute top-4 right-4 z-30 bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition flex items-center justify-center">
-                    <i class="fa-solid fa-robot text-xl"></i>
-                </button>
+                <div id="floating-group-chat-window" class="hidden absolute bg-white dark:bg-geminiSurface rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col z-50 overflow-hidden" style="width: 320px; height: 450px; top: 20px; right: 20px; min-width: 280px; min-height: 350px; resize: both;">
+                    
+                    <div id="group-chat-drag-handle" class="px-4 py-3 bg-gray-50 dark:bg-geminiBase border-b border-gray-100 dark:border-gray-800 flex justify-between items-center cursor-move select-none shrink-0 hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center gap-2 pointer-events-none">
+                            <i class="fa-solid fa-user-shield text-blue-500 text-xs"></i>
+                            <span id="group-chat-window-title" class="font-bold text-xs text-gray-700 dark:text-gray-300 truncate max-w-[180px]">Private Circle</span>
+                        </div>
+                        <div class="flex items-center gap-1 cursor-default">
+                            <button onclick="toggleGroupAdminPanel()" id="group-admin-toggle-btn" class="hidden text-gray-400 hover:text-blue-500 p-1.5 rounded-lg transition" title="Add Members"><i class="fa-solid fa-user-plus text-xs"></i></button>
+                            <button onclick="toggleFloatingGroupChat()" class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg transition"><i class="fa-solid fa-minus text-xs"></i></button>
+                        </div>
+                    </div>
 
-                <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="absolute top-[76px] right-4 z-30 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
-                    <i class="fa-solid fa-comments text-xl"></i>
-                    <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden animate-bounce shadow">0</span>
-                </button>
+                    <div id="group-chat-setup-view" class="flex-grow flex flex-col items-center justify-center p-6 text-center bg-gray-50/50 dark:bg-geminiSurface">
+                        <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full flex items-center justify-center mb-3">
+                            <i class="fa-solid fa-lock text-lg"></i>
+                        </div>
+                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-1">Invisible Study Circle</h4>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">This workspace is unlisted. Create a private group to securely collaborate with select friends.</p>
+                        <button onclick="createNewSecurePrivateGroup()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow transition-all">Start Private Circle</button>
+                    </div>
+
+                    <div id="group-chat-active-view" class="hidden flex-grow flex flex-col overflow-hidden bg-gray-50/30 dark:bg-geminiSurface/40">
+                        <div id="group-admin-panel" class="hidden p-3 bg-blue-50/50 dark:bg-blue-950/20 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                            <label class="block text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Add Peer by Username</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="group-invite-username" placeholder="Exact portal username..." class="flex-grow px-2.5 py-1.5 bg-white dark:bg-geminiBase rounded-lg text-xs border border-gray-200 dark:border-gray-700 outline-none dark:text-white">
+                                <button onclick="addPeerToPrivateGroup()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">Invite</button>
+                            </div>
+                        </div>
+
+                        <div id="group-chat-message-stream" class="flex-grow p-4 overflow-y-auto space-y-3"></div>
+
+                        <div class="p-2 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
+                            <input type="text" id="group-chat-input" placeholder="Type private message..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-lg text-xs border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendPrivateCircleMessage()">
+                            <button onclick="sendPrivateCircleMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg text-xs font-medium transition flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="ai-tutor-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
                 <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-geminiBase shrink-0">
@@ -2092,8 +2090,251 @@
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
-            if(window.speechSynthesis) window.speechSynthesis.cancel();
-            if(window.resetTtsUi) window.resetTtsUi();
+            // Disconnect active private listeners safely
+            if(window.activeGroupChatUnsubscribe) {
+                window.activeGroupChatUnsubscribe();
+                window.activeGroupChatUnsubscribe = null;
+            }
+        };
+
+        // --- SECURE INVISIBLE PRIVATE STUDY GROUP ENGINE ---
+        window.activeGroupChatUnsubscribe = null;
+        window.currentLoadedPrivateGroup = null;
+
+        // Initialize Draggable Panel Core Functionality
+        (function initDraggableEngine() {
+            setTimeout(() => {
+                const win = document.getElementById('floating-group-chat-window');
+                const handle = document.getElementById('group-chat-drag-handle');
+                if (!win || !handle) return;
+
+                let x = 0, y = 0, mouseX = 0, mouseY = 0;
+                
+                handle.onmousedown = (e) => {
+                    if (e.target.closest('button') || e.target.closest('input')) return;
+                    e.preventDefault();
+                    mouseX = e.clientX; mouseY = e.clientY;
+                    
+                    document.onmouseup = () => {
+                        document.onmouseup = null; document.onmousemove = null;
+                    };
+                    document.onmousemove = (ev) => {
+                        ev.preventDefault();
+                        x = mouseX - ev.clientX; y = mouseY - ev.clientY;
+                        mouseX = ev.clientX; mouseY = ev.clientY;
+                        
+                        // Prevent dragging completely off-screen
+                        let newTop = win.offsetTop - y;
+                        let newLeft = win.offsetLeft - x;
+                        if(newTop < 0) newTop = 0;
+                        if(newTop > window.innerHeight - 50) newTop = window.innerHeight - 50;
+                        
+                        win.style.top = newTop + "px";
+                        win.style.left = newLeft + "px";
+                        win.style.right = "auto"; 
+                        win.style.bottom = "auto";
+                    };
+                };
+
+                // Touch support for mobile layouts
+                handle.ontouchstart = (e) => {
+                    if (e.target.closest('button') || e.target.closest('input')) return;
+                    mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
+                    
+                    document.ontouchend = () => {
+                        document.ontouchend = null; document.ontouchmove = null;
+                    };
+                    document.ontouchmove = (ev) => {
+                        x = mouseX - ev.touches[0].clientX; y = mouseY - ev.touches[0].clientY;
+                        mouseX = ev.touches[0].clientX; mouseY = ev.touches[0].clientY;
+                        win.style.top = (win.offsetTop - y) + "px";
+                        win.style.left = (win.offsetLeft - x) + "px";
+                        win.style.right = "auto"; win.style.bottom = "auto";
+                    };
+                };
+            }, 1200);
+        })();
+
+        window.toggleFloatingGroupChat = function() {
+            const win = document.getElementById('floating-group-chat-window');
+            if(!win) return;
+            if(win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                // Auto track active document ID
+                const iframe = document.getElementById('doc-reader-iframe');
+                const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+                if (fileIdMatch) window.searchPrivateCircleContext(fileIdMatch[1]);
+            } else {
+                win.classList.add('hidden');
+            }
+        };
+
+        window.toggleGroupAdminPanel = function() {
+            const panel = document.getElementById('group-admin-panel');
+            if(panel) panel.classList.toggle('hidden');
+        };
+
+        // Query database for groups where student is explicitly listed inside the safe members array
+        window.searchPrivateCircleContext = async function(fileId) {
+            if(!window.currentUserProfile) return;
+            
+            const setupView = document.getElementById('group-chat-setup-view');
+            const activeView = document.getElementById('group-chat-active-view');
+            const stream = document.getElementById('group-chat-message-stream');
+            const adminBtn = document.getElementById('group-admin-toggle-btn');
+            
+            setupView.classList.remove('hidden');
+            activeView.classList.add('hidden');
+            adminBtn.classList.add('hidden');
+            stream.innerHTML = '<div class="w-full text-center text-gray-400 mt-10"><i class="fa-solid fa-circle-notch fa-spin text-xl"></i></div>';
+
+            if(window.activeGroupChatUnsubscribe) window.activeGroupChatUnsubscribe();
+
+            // Deriving local portal login identity
+            const myUsername = window.currentUserProfile.email.split('@')[0];
+
+            try {
+                const { onSnapshot, query, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const groupsRef = window.firebaseCollection(window.firebaseDb, "secure_study_groups");
+                
+                // Fetch context matching current document scope
+                const q = query(groupsRef, where("documentId", "==", fileId));
+                
+                window.activeGroupChatUnsubscribe = onSnapshot(q, (snapshot) => {
+                    let foundGroup = null;
+                    
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        // Verification check: Only show group if user is administrator or inside added array
+                        if (data.createdBy === window.currentUserProfile.email || (data.members && data.members.includes(myUsername))) {
+                            foundGroup = { id: doc.id, ...data };
+                        }
+                    });
+
+                    if(foundGroup) {
+                        window.currentLoadedPrivateGroup = foundGroup;
+                        document.getElementById('group-chat-window-title').innerText = foundGroup.title;
+                        setupView.classList.add('hidden');
+                        activeView.classList.remove('hidden');
+                        
+                        // Give invitation permissions only to the creator (admin)
+                        if(foundGroup.createdBy === window.currentUserProfile.email) {
+                            adminBtn.classList.remove('hidden');
+                        }
+                        
+                        window.connectToPrivateMessageStream(foundGroup.id);
+                    } else {
+                        window.currentLoadedPrivateGroup = null;
+                        document.getElementById('group-chat-window-title').innerText = "Private Circle";
+                        setupView.classList.remove('hidden');
+                        activeView.classList.add('hidden');
+                    }
+                });
+            } catch(e) { console.error("Error setting up private workspace context", e); }
+        };
+
+        window.createNewSecurePrivateGroup = async function() {
+            if(!window.currentUserProfile) { window.showToast("Please sign in to configure private sessions", "error"); return; }
+            const iframe = document.getElementById('doc-reader-iframe');
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if(!fileIdMatch) return;
+            const fileId = fileIdMatch[1];
+
+            const myUsername = window.currentUserProfile.email.split('@')[0];
+            const groupTitle = myUsername.toUpperCase() + "'s Circle";
+
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "secure_study_groups"), {
+                    documentId: fileId,
+                    title: groupTitle,
+                    createdBy: window.currentUserProfile.email,
+                    adminName: window.currentUserProfile.name,
+                    members: [myUsername],
+                    timestamp: Date.now()
+                });
+                window.showToast("Secure circle initiated successfully", "success");
+            } catch(e) { window.showToast("Failed to initialize group context", "error"); }
+        };
+
+        // Strict validation: Adds members exclusively by matching their official login platform username
+        window.addPeerToPrivateGroup = async function() {
+            if(!window.currentLoadedPrivateGroup) return;
+            const input = document.getElementById('group-invite-username');
+            const targetUsername = input.value.trim().toLowerCase();
+            
+            if(!targetUsername) { window.showToast("Please enter a portal username", "error"); return; }
+            if(targetUsername.includes('@') || targetUsername.includes('+') || !/^[a-zA-Z0-9._-]+$/.test(targetUsername)) {
+                window.showToast("Invalid format. Use portal username only (No emails/numbers)", "error");
+                return;
+            }
+
+            try {
+                const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const groupDocRef = doc(window.firebaseDb, "secure_study_groups", window.currentLoadedPrivateGroup.id);
+                
+                await updateDoc(groupDocRef, {
+                    members: arrayUnion(targetUsername)
+                });
+                
+                window.showToast(`User '${targetUsername}' added securely to circle`, "success");
+                input.value = '';
+                document.getElementById('group-admin-panel').classList.add('hidden');
+            } catch(e) { window.showToast("Failed to authorize peer username", "error"); }
+        };
+
+        window.connectToPrivateMessageStream = async function(groupId) {
+            const stream = document.getElementById('group-chat-message-stream');
+            if(!stream) return;
+            
+            try {
+                const { onSnapshot, query, where, collection } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                const msgRef = collection(window.firebaseDb, "secure_group_messages");
+                const q = query(msgRef, where("groupId", "==", groupId));
+                
+                // Real-time listener for current session messages
+                onSnapshot(q, (snapshot) => {
+                    const msgs = [];
+                    snapshot.forEach(doc => { msgs.push(doc.data()); });
+                    msgs.sort((a,b) => a.timestamp - b.timestamp);
+                    
+                    stream.innerHTML = '';
+                    if(msgs.length === 0) {
+                        stream.innerHTML = '<p class="text-[11px] text-gray-400 text-center py-6">Secure private channel live. Send a message to start.</p>';
+                        return;
+                    }
+
+                    msgs.forEach(m => {
+                        const isMe = m.userId === window.currentUserProfile.email;
+                        stream.innerHTML += `
+                            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                                <span class="text-[9px] font-bold text-gray-500 mb-0.5 px-1">${m.userName}</span>
+                                <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-geminiBase text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-tl-none'} px-3 py-2 rounded-xl text-[13px] max-w-[85%] break-words shadow-sm leading-relaxed">
+                                    ${m.text}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    stream.scrollTop = stream.scrollHeight;
+                });
+            } catch(e) { console.error("Message stream connection fault", e); }
+        };
+
+        window.sendPrivateCircleMessage = async function() {
+            if(!window.currentLoadedPrivateGroup || !window.currentUserProfile) return;
+            const input = document.getElementById('group-chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            input.value = '';
+            try {
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "secure_group_messages"), {
+                    groupId: window.currentLoadedPrivateGroup.id,
+                    userId: window.currentUserProfile.email,
+                    userName: window.currentUserProfile.name,
+                    text: text,
+                    timestamp: Date.now()
+                });
+            } catch(e) { window.showToast("Message transmission failed", "error"); }
         };
 
        // --- UDS LEARNING ASSISTANT: PHASE 2 (TTS SPEED & PAGE ANALYSIS) ---
