@@ -555,9 +555,11 @@
                 </div>
             </div>
             <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
-                <button onclick="toggleFloatingGroupChat()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-full transition-all font-medium text-sm border border-blue-200 dark:border-blue-800">
-                    <i class="fa-solid fa-user-group text-base md:mr-2"></i> <span class="hidden md:inline">Study Group</span>
+                <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-full transition-all font-medium text-sm border border-blue-200 dark:border-blue-800">
+                    <i class="fa-solid fa-users text-lg md:mr-2"></i> <span class="hidden md:inline">Discuss</span>
+                    <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden shadow">0</span>
                 </button>
+
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
@@ -571,45 +573,14 @@
                 </div>
                <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out bg-white" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
                 
-                <div id="floating-group-chat-window" class="hidden absolute bg-white dark:bg-geminiSurface rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col z-50 overflow-hidden" style="width: 320px; height: 450px; top: 20px; right: 20px; min-width: 280px; min-height: 350px; resize: both;">
-                    
-                    <div id="group-chat-drag-handle" class="px-4 py-3 bg-gray-50 dark:bg-geminiBase border-b border-gray-100 dark:border-gray-800 flex justify-between items-center cursor-move select-none shrink-0 hover:bg-gray-100 transition-colors">
-                        <div class="flex items-center gap-2 pointer-events-none">
-                            <i class="fa-solid fa-user-shield text-blue-500 text-xs"></i>
-                            <span id="group-chat-window-title" class="font-bold text-xs text-gray-700 dark:text-gray-300 truncate max-w-[180px]">Private Circle</span>
-                        </div>
-                        <div class="flex items-center gap-1 cursor-default">
-                            <button onclick="toggleGroupAdminPanel()" id="group-admin-toggle-btn" class="hidden text-gray-400 hover:text-blue-500 p-1.5 rounded-lg transition" title="Add Members"><i class="fa-solid fa-user-plus text-xs"></i></button>
-                            <button onclick="toggleFloatingGroupChat()" class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg transition"><i class="fa-solid fa-minus text-xs"></i></button>
-                        </div>
-                    </div>
+                <button onclick="toggleAiTutorPanel()" id="ai-tutor-open-btn" class="absolute top-4 right-4 z-30 bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition flex items-center justify-center">
+                    <i class="fa-solid fa-robot text-xl"></i>
+                </button>
 
-                    <div id="group-chat-setup-view" class="flex-grow flex flex-col items-center justify-center p-6 text-center bg-gray-50/50 dark:bg-geminiSurface">
-                        <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full flex items-center justify-center mb-3">
-                            <i class="fa-solid fa-lock text-lg"></i>
-                        </div>
-                        <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-1">Invisible Study Circle</h4>
-                        <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">This workspace is unlisted. Create a private group to securely collaborate with select friends.</p>
-                        <button onclick="createNewSecurePrivateGroup()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow transition-all">Start Private Circle</button>
-                    </div>
-
-                    <div id="group-chat-active-view" class="hidden flex-grow flex flex-col overflow-hidden bg-gray-50/30 dark:bg-geminiSurface/40">
-                        <div id="group-admin-panel" class="hidden p-3 bg-blue-50/50 dark:bg-blue-950/20 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                            <label class="block text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Add Peer by Username</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="group-invite-username" placeholder="Exact portal username..." class="flex-grow px-2.5 py-1.5 bg-white dark:bg-geminiBase rounded-lg text-xs border border-gray-200 dark:border-gray-700 outline-none dark:text-white">
-                                <button onclick="addPeerToPrivateGroup()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">Invite</button>
-                            </div>
-                        </div>
-
-                        <div id="group-chat-message-stream" class="flex-grow p-4 overflow-y-auto space-y-3"></div>
-
-                        <div class="p-2 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
-                            <input type="text" id="group-chat-input" placeholder="Type private message..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-lg text-xs border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendPrivateCircleMessage()">
-                            <button onclick="sendPrivateCircleMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg text-xs font-medium transition flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                </div>
+                <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="absolute top-[76px] right-4 z-30 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
+                    <i class="fa-solid fa-comments text-xl"></i>
+                    <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden animate-bounce shadow">0</span>
+                </button>
             </div>
             <div id="ai-tutor-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
                 <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-geminiBase shrink-0">
@@ -695,18 +666,18 @@
             <div id="whatsapp-options-menu" class="hidden fixed z-[999] bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-2 border border-gray-100 dark:border-gray-700 min-w-[180px] scale-95 opacity-0 transition-all duration-150 pointer-events-none">
                 <!-- Premium Emoji Reactions Tray Panel -->
                 <div class="flex items-center gap-2.5 pb-2 mb-2 border-b border-gray-100 dark:border-gray-700 justify-between px-1.5">
-                    <button onclick="applyWhatsappReaction('👍')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">👍</button>
-                    <button onclick="applyWhatsappReaction('❤️')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">❤️</button>
-                    <button onclick="applyWhatsappReaction('😂')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">😂</button>
-                    <button onclick="applyWhatsappReaction('😮')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">😮</button>
-                    <button onclick="applyWhatsappReaction('😢')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">😢</button>
-                    <button onclick="applyWhatsappReaction('🙏')" class="hover:scale-125 active:scale-95 transition text-base filter drop-shadow-sm">🙏</button>
+                    <button onclick="applyWhatsappReaction('👍')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">👍</button>
+                    <button onclick="applyWhatsappReaction('❤️')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">❤️</button>
+                    <button onclick="applyWhatsappReaction('😂')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😂</button>
+                    <button onclick="applyWhatsappReaction('😮')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😮</button>
+                    <button onclick="applyWhatsappReaction('😢')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😢</button>
+                    <button onclick="applyWhatsappReaction('🙏')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">🙏</button>
                 </div>
                 <!-- WhatsApp Core Action Handlers -->
-                <button id="wa-edit-btn" onclick="activateWhatsappEditSequence()" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/60 rounded-xl flex items-center gap-2.5 text-gray-700 dark:text-gray-200 font-medium transition">
+                <button onclick="activateWhatsappEditSequence()" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/60 rounded-xl flex items-center gap-2.5 text-gray-700 dark:text-gray-200 font-medium transition">
                     <i class="fa-solid fa-pen text-blue-500 w-4 text-center text-xs"></i> Edit Message
                 </button>
-                <button id="wa-delete-btn" onclick="executeWhatsappDeleteForEveryone()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl flex items-center gap-2.5 font-semibold transition">
+                <button onclick="executeWhatsappDeleteForEveryone()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl flex items-center gap-2.5 font-semibold transition">
                     <i class="fa-solid fa-trash-can w-4 text-center text-xs"></i> Delete for Everyone
                 </button>
             </div>
@@ -715,7 +686,6 @@
                 (function() {
                     let activeTargetMessageElement = null;
                     let currentEditingStateMessageId = null;
-                    let longPressTimerContext = null;
 
                     function initializeWhatsappEngine() {
                         const targets = ['student-chat-feed'];
@@ -723,115 +693,119 @@
                             const feed = document.getElementById(id);
                             if (!feed) return;
 
-                            // Event delegation capturing desktop right click context or long-press mobile holding inputs
-                            feed.addEventListener('contextmenu', (e) => {
-                                const msgContainer = e.target.closest('[data-message-id]') || e.target.closest('.message-bubble') || e.target.closest('.chat-msg');
-                                if (msgContainer) {
-                                    e.preventDefault();
-                                    summonWhatsappTray(msgContainer, e.clientX, e.clientY);
-                                }
+                            // Watch for new incoming messages and attach inline actions automatically
+                            const observer = new MutationObserver(() => {
+                                attachInlineActionsToMessages(feed);
                             });
+                            observer.observe(feed, { childList: true, subtree: true });
 
-                            feed.addEventListener('touchstart', (e) => {
-                                const msgContainer = e.target.closest('[data-message-id]') || e.target.closest('.message-bubble') || e.target.closest('.chat-msg');
-                                if (msgContainer) {
-                                    if (longPressTimerContext) clearTimeout(longPressTimerContext);
-                                    longPressTimerContext = setTimeout(() => {
-                                        const touch = e.touches[0];
-                                        summonWhatsappTray(msgContainer, touch.clientX, touch.clientY);
-                                    }, 500); // Polished to 500ms response time
-                                }
-                            }, { passive: true });
-
-                            feed.addEventListener('touchend', () => {
-                                if (longPressTimerContext) clearTimeout(longPressTimerContext);
-                            });
-                        });
-
-                        document.addEventListener('click', (e) => {
-                            const menu = document.getElementById('whatsapp-options-menu');
-                            if (menu && !menu.contains(e.target)) dismissWhatsappTray();
+                            // Run initial pass
+                            attachInlineActionsToMessages(feed);
                         });
                     }
 
-                    function summonWhatsappTray(element, clientX, clientY) {
-                        activeTargetMessageElement = element;
-                        const menu = document.getElementById('whatsapp-options-menu');
-                        if (!menu) return;
+                    function attachInlineActionsToMessages(feed) {
+                        const messages = feed.querySelectorAll('[data-message-id], .message-bubble, .chat-msg');
+                        messages.forEach(msg => {
+                            if (msg.querySelector('.whatsapp-inline-actions')) return;
 
-                        // Ownership & State Checks
-                        const isMyMessage = element.classList.contains('items-end');
-                        const isDeleted = element.innerHTML.includes('This message was deleted');
-                        
-                        const editBtn = document.getElementById('wa-edit-btn');
-                        const deleteBtn = document.getElementById('wa-delete-btn');
+                            if (window.getComputedStyle(msg).position === 'static') {
+                                msg.style.position = 'relative';
+                            }
 
-                        // Only show Edit/Delete if it's the user's own message AND it hasn't been deleted yet
-                        if (editBtn && deleteBtn) {
-                            editBtn.style.display = (isMyMessage && !isDeleted) ? 'flex' : 'none';
-                            deleteBtn.style.display = (isMyMessage && !isDeleted) ? 'flex' : 'none';
-                        }
-
-                        menu.classList.remove('hidden');
-                        setTimeout(() => {
-                            menu.style.opacity = '1';
-                            menu.style.transform = 'scale(1)';
-                            menu.style.pointerEvents = 'auto';
-                        }, 10);
-
-                        // Position calculation with protection against screen edge clipping
-                        const menuWidth = 190;
-                        const menuHeight = 110;
-                        let targetLeft = clientX;
-                        let targetTop = clientY;
-
-                        if (clientX + menuWidth > window.innerWidth) targetLeft = window.innerWidth - menuWidth - 16;
-                        if (clientY + menuHeight > window.innerHeight) targetTop = window.innerHeight - menuHeight - 16;
-
-                        menu.style.left = `${targetLeft}px`;
-                        menu.style.top = `${targetTop}px`;
-                        
-                        if (window.navigator && window.navigator.vibrate) {
-                            window.navigator.vibrate(40);
-                        }
+                            const actionsDiv = document.createElement('div');
+                            actionsDiv.className = "whatsapp-inline-actions flex items-center gap-2 mt-1.5 text-[11px] font-medium text-gray-400 dark:text-gray-500 select-none justify-end opacity-40 hover:opacity-100 transition-opacity duration-200";
+                            
+                            actionsDiv.innerHTML = `
+                                <div class="relative group/emoji inline-block">
+                                    <button class="hover:text-blue-500 transition flex items-center gap-0.5"><i class="fa-regular fa-face-smile"></i> React</button>
+                                    <div class="absolute bottom-full right-0 mb-1 hidden group-hover/emoji:flex items-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-full shadow-xl z-[60] animate-in zoom-in-75">
+                                        <span onclick="window.triggerInlineReaction(this, '👍')" class="cursor-pointer hover:scale-135 transition filter drop-shadow-sm px-0.5">👍</span>
+                                        <span onclick="window.triggerInlineReaction(this, '❤️')" class="cursor-pointer hover:scale-135 transition filter drop-shadow-sm px-0.5">❤️</span>
+                                        <span onclick="window.triggerInlineReaction(this, '😂')" class="cursor-pointer hover:scale-135 transition filter drop-shadow-sm px-0.5">😂</span>
+                                        <span onclick="window.triggerInlineReaction(this, '😮')" class="cursor-pointer hover:scale-135 transition filter drop-shadow-sm px-0.5">😮</span>
+                                        <span onclick="window.triggerInlineReaction(this, '😢')" class="cursor-pointer hover:scale-135 transition filter drop-shadow-sm px-0.5">😢</span>
+                                        <span onclick="window.triggerInlineReaction(this, '🙏')" class="cursor-pointer hover:scale-135 transition filter drop-shadow-sm px-0.5">🙏</span>
+                                    </div>
+                                </div>
+                                <span class="opacity-30">•</span>
+                                <button onclick="window.triggerInlineReply(this)" class="hover:text-blue-500 transition flex items-center gap-0.5"><i class="fa-solid fa-reply"></i> Reply</button>
+                                <span class="opacity-30">•</span>
+                                <button onclick="window.triggerInlineEdit(this)" class="hover:text-amber-500 transition flex items-center gap-0.5"><i class="fa-solid fa-pen"></i> Edit</button>
+                                <span class="opacity-30">•</span>
+                                <button onclick="window.triggerInlineDelete(this)" class="text-red-400 hover:text-red-600 transition flex items-center gap-0.5"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                            `;
+                            
+                            msg.appendChild(actionsDiv);
+                        });
                     }
 
-                    window.dismissWhatsappTray = function() {
-                        const menu = document.getElementById('whatsapp-options-menu');
-                        if (!menu) return;
-                        menu.style.opacity = '0';
-                        menu.style.transform = 'scale(0.95)';
-                        menu.style.pointerEvents = 'none';
+                    function getCleanMessageText(msgContainer) {
+                        let clone = msgContainer.cloneNode(true);
+                        let inlineMenu = clone.querySelector('.whatsapp-inline-actions');
+                        if (inlineMenu) inlineMenu.remove();
+                        let badgeMenu = clone.querySelector('.whatsapp-reaction-badge');
+                        if (badgeMenu) badgeMenu.remove();
+                        return clone.innerText.replace(/\(edited\)/g, '').trim();
+                    }
+
+                    window.triggerInlineReaction = function(element, emoji) {
+                        const msgContainer = element.closest('[data-message-id], .message-bubble, .chat-msg');
+                        if (!msgContainer) return;
+                        
+                        let reactionBadgeWrapper = msgContainer.querySelector('.whatsapp-reaction-badge');
+                        if (!reactionBadgeWrapper) {
+                            reactionBadgeWrapper = document.createElement('div');
+                            reactionBadgeWrapper.className = "whatsapp-reaction-badge absolute -bottom-2 right-2 bg-white dark:bg-gray-700 shadow-sm border border-gray-100 dark:border-gray-600 rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 scale-90 select-none z-10 animate-in zoom-in-50";
+                            msgContainer.appendChild(reactionBadgeWrapper);
+                        }
+                        reactionBadgeWrapper.innerHTML = `<span>${emoji}</span>`;
                     };
 
-                    window.applyWhatsappReaction = async function(emoji) {
-                        if (!activeTargetMessageElement) return;
-                        let msgId = activeTargetMessageElement.getAttribute('data-message-id');
-                        dismissWhatsappTray();
-                        if (msgId && window.firebaseUpdateDoc) {
-                            try {
-                                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_chats", msgId), { reaction: emoji });
-                            } catch (e) { console.error("Failed to react", e); }
+                    window.triggerInlineReply = function(element) {
+                        const msgContainer = element.closest('[data-message-id], .message-bubble, .chat-msg');
+                        if (!msgContainer) return;
+                        
+                        const textContent = getCleanMessageText(msgContainer);
+                        if (textContent.includes('This message was deleted')) return;
+
+                        const inputField = document.getElementById('student-chat-input');
+                        if (inputField) {
+                            inputField.value = `| Replying to: "${textContent.substring(0, 35)}..." \n> `;
+                            inputField.focus();
                         }
+                    };
+
+                    window.triggerInlineEdit = function(element) {
+                        const msgContainer = element.closest('[data-message-id], .message-bubble, .chat-msg');
+                        if (!msgContainer) return;
+
+                        activeTargetMessageElement = msgContainer;
+                        window.activateWhatsappEditSequence();
+                    };
+
+                    window.triggerInlineDelete = function(element) {
+                        const msgContainer = element.closest('[data-message-id], .message-bubble, .chat-msg');
+                        if (!msgContainer) return;
+
+                        activeTargetMessageElement = msgContainer;
+                        window.executeWhatsappDeleteForEveryone();
                     };
 
                     window.activateWhatsappEditMessageMode = function(instanceIndex) {
                         if (!activeTargetMessageElement) return;
-                        dismissWhatsappTray();
 
-                        let messageTextNode = activeTargetMessageElement.querySelector('.msg-text') || activeTargetMessageElement.querySelector('p') || activeTargetMessageElement;
-                        let targetContent = messageTextNode.innerText || messageTextNode.textContent;
-                        
+                        let targetContent = getCleanMessageText(activeTargetMessageElement);
                         if (targetContent.includes('This message was deleted')) return;
 
-                        let cleanText = targetContent.replace(/\s*\(edited\)\s*$/, '');
-                        currentEditingStateMessageId = activeTargetMessageElement.getAttribute('data-message-id');
+                        currentEditingStateMessageId = activeTargetMessageElement.getAttribute('data-message-id') || 'temp-edit-id';
+                        activeTargetMessageElement.setAttribute('data-message-id', currentEditingStateMessageId);
 
                         const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
                         const banner = document.getElementById(`whatsapp-edit-banner-${instanceIndex}`);
 
-                        if (inputField && banner && currentEditingStateMessageId) {
-                            inputField.value = cleanText;
+                        if (inputField && banner) {
+                            inputField.value = targetContent;
                             banner.classList.remove('hidden');
                             inputField.focus();
                         }
@@ -850,18 +824,19 @@
                         currentEditingStateMessageId = null;
                     };
 
-                    window.handleWhatsappSendIntercept = async function(instanceIndex) {
+                    window.handleWhatsappSendIntercept = function(instanceIndex) {
                         const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
                         if (!inputField || !inputField.value.trim()) return;
 
                         if (currentEditingStateMessageId) {
-                            if (window.firebaseUpdateDoc) {
-                                try {
-                                    await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_chats", currentEditingStateMessageId), {
-                                        text: inputField.value.trim(),
-                                        isEdited: true
-                                    });
-                                } catch (e) { console.error("Failed to edit", e); }
+                            const targetBubble = document.querySelector(`[data-message-id="${currentEditingStateMessageId}"]`);
+                            if (targetBubble) {
+                                let labelTarget = targetBubble.querySelector('.msg-text') || targetBubble.querySelector('p') || targetBubble.firstChild;
+                                if (labelTarget && labelTarget.nodeType === Node.TEXT_NODE) {
+                                    labelTarget.textContent = inputField.value.trim() + " ";
+                                } else if (labelTarget) {
+                                    labelTarget.innerHTML = `${inputField.value.trim()} <span class="text-[9px] opacity-40 italic ml-1.5">(edited)</span>`;
+                                }
                             }
                             cancelWhatsappEditMode(instanceIndex);
                         } else {
@@ -871,20 +846,21 @@
                         }
                     };
 
-                    window.executeWhatsappDeleteForEveryone = async function() {
+                    window.executeWhatsappDeleteForEveryone = function() {
                         if (!activeTargetMessageElement) return;
-                        let msgId = activeTargetMessageElement.getAttribute('data-message-id');
-                        dismissWhatsappTray();
+                        let textBlock = activeTargetMessageElement.querySelector('.msg-text') || activeTargetMessageElement.querySelector('p');
                         
-                        if (msgId && window.firebaseUpdateDoc) {
-                            try {
-                                await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_chats", msgId), { 
-                                    isDeleted: true,
-                                    text: "",
-                                    reaction: null 
-                                });
-                            } catch (e) { console.error("Failed to delete", e); }
+                        const actionsMenu = activeTargetMessageElement.querySelector('.whatsapp-inline-actions');
+                        
+                        if (textBlock) {
+                            textBlock.innerHTML = `<span class="italic text-gray-400 dark:text-gray-500 flex items-center gap-1 text-xs select-none"><i class="fa-solid fa-ban text-[10px]"></i> This message was deleted</span>`;
+                        } else {
+                            activeTargetMessageElement.innerHTML = `<span class="italic text-gray-400 dark:text-gray-500 flex items-center gap-1 text-xs select-none"><i class="fa-solid fa-ban text-[10px]"></i> This message was deleted</span>`;
+                            if (actionsMenu) activeTargetMessageElement.appendChild(actionsMenu);
                         }
+                        
+                        const reactionBubble = activeTargetMessageElement.querySelector('.whatsapp-reaction-badge');
+                        if (reactionBubble) reactionBubble.remove();
                     };
 
                     document.addEventListener('DOMContentLoaded', initializeWhatsappEngine);
@@ -1573,98 +1549,6 @@
                 </div>
             </div>
 
-            <div class="overflow-y-auto pr-2 space-y-6 flex-grow">
-                <div>
-                    <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center"><i class="fa-solid fa-align-left mr-2 text-purple-500"></i>Page Summary</h3>
-                    <div id="summary-yield-text" class="bg-purple-50/50 dark:bg-purple-900/10 p-4 rounded-2xl text-sm text-gray-700 dark:text-gray-300 leading-relaxed border border-purple-100/50 dark:border-purple-800/30">
-                        Loading summary...
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center"><i class="fa-solid fa-key mr-2 text-orange-500"></i>Key Concepts</h3>
-                    <ul id="summary-concepts-list" class="space-y-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
-                        <li>Loading concepts...</li>
-                    </ul>
-                </div>
-
-                <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                        <i class="fa-solid fa-stopwatch"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Estimated Reading Time</h4>
-                        <p id="summary-reading-time" class="text-sm font-medium text-blue-900 dark:text-blue-200">-- minutes</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="alumni-profile-modal" class="hidden fixed inset-0 z-[400] bg-black/60 flex justify-center items-center p-0 md:p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col h-full md:h-auto md:max-h-[90vh] border border-transparent dark:border-gray-800 relative overflow-hidden">
-            <button onclick="closeAlumniProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition z-20"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="overflow-y-auto flex-grow p-6 md:p-8">
-                <div class="flex flex-col md:flex-row gap-6 border-b border-gray-100 dark:border-gray-800 pb-6 mb-6">
-                    <img id="ap-photo" src="" class="w-32 h-32 rounded-full object-cover shadow-md border-4 border-white dark:border-gray-700 shrink-0 mx-auto md:mx-0">
-                    <div class="text-center md:text-left flex-grow">
-                        <h2 id="ap-name" class="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-1">Loading...</h2>
-                        <p id="ap-position" class="text-blue-600 dark:text-blue-400 font-medium mb-3">Position at Company</p>
-                        <div class="flex flex-wrap justify-center md:justify-start gap-2 text-xs">
-                            <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-full"><i class="fa-solid fa-location-dot mr-1"></i> <span id="ap-campus">Campus</span></span>
-                            <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-full"><i class="fa-solid fa-graduation-cap mr-1"></i> Class of <span id="ap-year">Year</span></span>
-                            <span id="ap-slots" class="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full font-bold">Slots</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-timeline mr-2 text-blue-500"></i> Career Journey</h4>
-                        <ul id="ap-timeline" class="space-y-4 border-l-2 border-blue-100 dark:border-blue-900/30 pl-4 ml-2"></ul>
-                    </div>
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-quote-left mr-2 text-purple-500"></i> Professional Advice</h4>
-                            <p id="ap-advice" class="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl italic leading-relaxed"></p>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-trophy mr-2 text-yellow-500"></i> Key Achievements</h4>
-                            <ul id="ap-achievements" class="space-y-2 text-sm text-gray-700 dark:text-gray-300 list-disc pl-4"></ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4 md:p-6 bg-gray-50 dark:bg-geminiBase border-t border-gray-100 dark:border-gray-800 shrink-0">
-                <button id="ap-action-btn" onclick="openQuestionGate()" class="w-full bg-gray-900 dark:bg-blue-300 dark:text-navy text-white font-medium py-3.5 rounded-xl text-sm transition shadow-sm hover:opacity-90 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane"></i> Ask Professional Question
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="question-gate-modal" class="hidden fixed inset-0 z-[450] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 relative border border-gray-100 dark:border-gray-800">
-            <button onclick="closeQuestionGate()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="fa-solid fa-lock text-lg"></i>
-                </div>
-                <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100">Mentorship Gate</h3>
-                <p class="text-xs text-gray-500 mt-1">Submit a thoughtful, professional question to begin the conversation.</p>
-            </div>
-
-            <form onsubmit="submitProfessionalQuestion(event)" class="space-y-4">
-                <textarea id="qgate-text" required rows="4" placeholder="E.g. Dear [Name], I am seeking advice on how to transition from academic research into the corporate sector..." class="w-full p-4 bg-gray-50 dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none dark:text-white resize-none focus:ring-2 focus:ring-blue-100"></textarea>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-sm">
-                    Submit to Alumni
-                </button>
-            </form>
-        </div>
-    </div>
-
     <div id="toast-deck" class="fixed bottom-6 left-6 z-[500] space-y-3 pointer-events-none"></div>
 
     <script type="module">
@@ -2090,333 +1974,8 @@
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
-            // Disconnect active private listeners safely
-            if(window.activeGroupChatUnsubscribe) {
-                window.activeGroupChatUnsubscribe();
-                window.activeGroupChatUnsubscribe = null;
-            }
-        };
-
-        // --- SECURE INVISIBLE PRIVATE STUDY GROUP ENGINE ---
-        window.activeGroupChatUnsubscribe = null;
-        window.currentLoadedPrivateGroup = null;
-
-        // Initialize Draggable Panel Core Functionality
-        (function initDraggableEngine() {
-            setTimeout(() => {
-                const win = document.getElementById('floating-group-chat-window');
-                const handle = document.getElementById('group-chat-drag-handle');
-                if (!win || !handle) return;
-
-                let x = 0, y = 0, mouseX = 0, mouseY = 0;
-                
-                handle.onmousedown = (e) => {
-                    if (e.target.closest('button') || e.target.closest('input')) return;
-                    e.preventDefault();
-                    mouseX = e.clientX; mouseY = e.clientY;
-                    
-                    document.onmouseup = () => {
-                        document.onmouseup = null; document.onmousemove = null;
-                    };
-                    document.onmousemove = (ev) => {
-                        ev.preventDefault();
-                        x = mouseX - ev.clientX; y = mouseY - ev.clientY;
-                        mouseX = ev.clientX; mouseY = ev.clientY;
-                        
-                        // Prevent dragging completely off-screen
-                        let newTop = win.offsetTop - y;
-                        let newLeft = win.offsetLeft - x;
-                        if(newTop < 0) newTop = 0;
-                        if(newTop > window.innerHeight - 50) newTop = window.innerHeight - 50;
-                        
-                        win.style.top = newTop + "px";
-                        win.style.left = newLeft + "px";
-                        win.style.right = "auto"; 
-                        win.style.bottom = "auto";
-                    };
-                };
-
-                // Touch support for mobile layouts
-                handle.ontouchstart = (e) => {
-                    if (e.target.closest('button') || e.target.closest('input')) return;
-                    mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
-                    
-                    document.ontouchend = () => {
-                        document.ontouchend = null; document.ontouchmove = null;
-                    };
-                    document.ontouchmove = (ev) => {
-                        x = mouseX - ev.touches[0].clientX; y = mouseY - ev.touches[0].clientY;
-                        mouseX = ev.touches[0].clientX; mouseY = ev.touches[0].clientY;
-                        win.style.top = (win.offsetTop - y) + "px";
-                        win.style.left = (win.offsetLeft - x) + "px";
-                        win.style.right = "auto"; win.style.bottom = "auto";
-                    };
-                };
-            }, 1200);
-        })();
-
-        window.toggleFloatingGroupChat = function() {
-            const win = document.getElementById('floating-group-chat-window');
-            if(!win) return;
-            if(win.classList.contains('hidden')) {
-                win.classList.remove('hidden');
-                // Auto track active document ID
-                const iframe = document.getElementById('doc-reader-iframe');
-                const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-                if (fileIdMatch) window.searchPrivateCircleContext(fileIdMatch[1]);
-            } else {
-                win.classList.add('hidden');
-            }
-        };
-
-        window.toggleGroupAdminPanel = function() {
-            const panel = document.getElementById('group-admin-panel');
-            if(panel) panel.classList.toggle('hidden');
-        };
-
-        // Query database for groups where student is explicitly listed inside the safe members array
-        window.searchPrivateCircleContext = async function(fileId) {
-            if(!window.currentUserProfile) return;
-            
-            const setupView = document.getElementById('group-chat-setup-view');
-            const activeView = document.getElementById('group-chat-active-view');
-            const stream = document.getElementById('group-chat-message-stream');
-            const adminBtn = document.getElementById('group-admin-toggle-btn');
-            
-            setupView.classList.remove('hidden');
-            activeView.classList.add('hidden');
-            adminBtn.classList.add('hidden');
-            stream.innerHTML = '<div class="w-full text-center text-gray-400 mt-10"><i class="fa-solid fa-circle-notch fa-spin text-xl"></i></div>';
-
-            if(window.activeGroupChatUnsubscribe) window.activeGroupChatUnsubscribe();
-
-            // Deriving local portal login identity
-            const myUsername = window.currentUserProfile.email.split('@')[0];
-
-            try {
-                const { onSnapshot, query, where } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const groupsRef = window.firebaseCollection(window.firebaseDb, "secure_study_groups");
-                
-                // Fetch context matching current document scope
-                const q = query(groupsRef, where("documentId", "==", fileId));
-                
-                window.activeGroupChatUnsubscribe = onSnapshot(q, (snapshot) => {
-                    let foundGroup = null;
-                    
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        // Verification check: Only show group if user is administrator or inside added array
-                        if (data.createdBy === window.currentUserProfile.email || (data.members && data.members.includes(myUsername))) {
-                            foundGroup = { id: doc.id, ...data };
-                        }
-                    });
-
-                    if(foundGroup) {
-                        window.currentLoadedPrivateGroup = foundGroup;
-                        document.getElementById('group-chat-window-title').innerText = foundGroup.title;
-                        setupView.classList.add('hidden');
-                        activeView.classList.remove('hidden');
-                        
-                        // Give invitation permissions only to the creator (admin)
-                        if(foundGroup.createdBy === window.currentUserProfile.email) {
-                            adminBtn.classList.remove('hidden');
-                        }
-                        
-                        window.connectToPrivateMessageStream(foundGroup.id);
-                    } else {
-                        window.currentLoadedPrivateGroup = null;
-                        document.getElementById('group-chat-window-title').innerText = "Private Circle";
-                        setupView.classList.remove('hidden');
-                        activeView.classList.add('hidden');
-                    }
-                });
-            } catch(e) { console.error("Error setting up private workspace context", e); }
-        };
-
-        window.createNewSecurePrivateGroup = async function() {
-            if(!window.currentUserProfile) { window.showToast("Please sign in to configure private sessions", "error"); return; }
-            const iframe = document.getElementById('doc-reader-iframe');
-            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if(!fileIdMatch) return;
-            const fileId = fileIdMatch[1];
-
-            const myUsername = window.currentUserProfile.email.split('@')[0];
-            const groupTitle = myUsername.toUpperCase() + "'s Circle";
-
-            try {
-                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "secure_study_groups"), {
-                    documentId: fileId,
-                    title: groupTitle,
-                    createdBy: window.currentUserProfile.email,
-                    adminName: window.currentUserProfile.name,
-                    members: [myUsername],
-                    timestamp: Date.now()
-                });
-                window.showToast("Secure circle initiated successfully", "success");
-            } catch(e) { window.showToast("Failed to initialize group context", "error"); }
-        };
-
-        // Strict validation: Adds members exclusively by matching their official login platform username
-        window.addPeerToPrivateGroup = async function() {
-            if(!window.currentLoadedPrivateGroup) return;
-            const input = document.getElementById('group-invite-username');
-            const targetUsername = input.value.trim().toLowerCase();
-            
-            if(!targetUsername) { window.showToast("Please enter a portal username", "error"); return; }
-            if(targetUsername.includes('@') || targetUsername.includes('+') || !/^[a-zA-Z0-9._-]+$/.test(targetUsername)) {
-                window.showToast("Invalid format. Use portal username only (No emails/numbers)", "error");
-                return;
-            }
-
-            try {
-                const { doc, updateDoc, arrayUnion } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const groupDocRef = doc(window.firebaseDb, "secure_study_groups", window.currentLoadedPrivateGroup.id);
-                
-                await updateDoc(groupDocRef, {
-                    members: arrayUnion(targetUsername)
-                });
-                
-                window.showToast(`User '${targetUsername}' added securely to circle`, "success");
-                input.value = '';
-                document.getElementById('group-admin-panel').classList.add('hidden');
-            } catch(e) { window.showToast("Failed to authorize peer username", "error"); }
-        };
-
-        window.connectToPrivateMessageStream = async function(groupId) {
-            const stream = document.getElementById('group-chat-message-stream');
-            if(!stream) return;
-            
-            try {
-                const { onSnapshot, query, where, collection } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const msgRef = collection(window.firebaseDb, "secure_group_messages");
-                const q = query(msgRef, where("groupId", "==", groupId));
-                
-                // Real-time listener for current session messages
-                onSnapshot(q, (snapshot) => {
-                    const msgs = [];
-                    snapshot.forEach(doc => { msgs.push(doc.data()); });
-                    msgs.sort((a,b) => a.timestamp - b.timestamp);
-                    
-                    stream.innerHTML = '';
-                    if(msgs.length === 0) {
-                        stream.innerHTML = '<p class="text-[11px] text-gray-400 text-center py-6">Secure private channel live. Send a message to start.</p>';
-                        return;
-                    }
-
-                    msgs.forEach(m => {
-                        const isMe = m.userId === window.currentUserProfile.email;
-                        stream.innerHTML += `
-                            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-                                <span class="text-[9px] font-bold text-gray-500 mb-0.5 px-1">${m.userName}</span>
-                                <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-geminiBase text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-800 rounded-tl-none'} px-3 py-2 rounded-xl text-[13px] max-w-[85%] break-words shadow-sm leading-relaxed">
-                                    ${m.text}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    stream.scrollTop = stream.scrollHeight;
-                });
-            } catch(e) { console.error("Message stream connection fault", e); }
-        };
-
-        window.sendPrivateCircleMessage = async function() {
-            if(!window.currentLoadedPrivateGroup || !window.currentUserProfile) return;
-            const input = document.getElementById('group-chat-input');
-            const text = input.value.trim();
-            if(!text) return;
-
-            input.value = '';
-            try {
-                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "secure_group_messages"), {
-                    groupId: window.currentLoadedPrivateGroup.id,
-                    userId: window.currentUserProfile.email,
-                    userName: window.currentUserProfile.name,
-                    text: text,
-                    timestamp: Date.now()
-                });
-            } catch(e) { window.showToast("Message transmission failed", "error"); }
-        };
-
-       // --- UDS LEARNING ASSISTANT: PHASE 2 (TTS SPEED & PAGE ANALYSIS) ---
-        let currentTtsUtterance = null;
-        window.currentTtsSpeed = 1.0;
-        window.currentReadingText = "";
-        
-        window.resetTtsUi = function() {
-            document.getElementById('tts-play-btn').classList.remove('hidden');
-            document.getElementById('tts-pause-btn').classList.add('hidden');
-            document.getElementById('tts-resume-btn').classList.add('hidden');
-            document.getElementById('tts-stop-btn').classList.add('hidden');
-        };
-
-        window.changeTtsSpeed = function(newSpeed) {
-            window.currentTtsSpeed = parseFloat(newSpeed);
-            if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-                if (currentTtsUtterance) {
-                    currentTtsUtterance = new SpeechSynthesisUtterance(window.currentReadingText);
-                    currentTtsUtterance.rate = window.currentTtsSpeed;
-                    currentTtsUtterance.pitch = 1.0;
-                    currentTtsUtterance.onend = function() { window.resetTtsUi(); };
-                    currentTtsUtterance.onerror = function() { window.resetTtsUi(); };
-                    window.speechSynthesis.speak(currentTtsUtterance);
-                    
-                    document.getElementById('tts-play-btn').classList.add('hidden');
-                    document.getElementById('tts-pause-btn').classList.remove('hidden');
-                    document.getElementById('tts-resume-btn').classList.add('hidden');
-                    document.getElementById('tts-stop-btn').classList.remove('hidden');
-                }
-            }
-        };
-
-        window.ttsReadDocument = function() {
-            if (!('speechSynthesis' in window)) {
-                window.showToast("Your browser does not support text-to-speech.", "error");
-                return;
-            }
-
-            const docTitle = document.getElementById('doc-reader-header-title').innerText;
-            window.currentReadingText = "Learning Assistant activated. Document titled: " + docTitle + ". This is a simulated local extraction of the visible page. Important topics covered include academic methodologies, structural analysis, and standard operating procedures. The reading will proceed at your selected speed.";
-
-            window.speechSynthesis.cancel(); 
-            
-            currentTtsUtterance = new SpeechSynthesisUtterance(window.currentReadingText);
-            currentTtsUtterance.rate = window.currentTtsSpeed; 
-            currentTtsUtterance.pitch = 1.0;
-
-            currentTtsUtterance.onend = function() { window.resetTtsUi(); };
-            currentTtsUtterance.onerror = function() { window.resetTtsUi(); };
-
-            window.speechSynthesis.speak(currentTtsUtterance);
-
-            document.getElementById('tts-play-btn').classList.add('hidden');
-            document.getElementById('tts-pause-btn').classList.remove('hidden');
-            document.getElementById('tts-resume-btn').classList.add('hidden');
-            document.getElementById('tts-stop-btn').classList.remove('hidden');
-            
-            const speedSelect = document.getElementById('tts-speed-control');
-            if(speedSelect) speedSelect.value = window.currentTtsSpeed.toString();
-        };
-
-        window.ttsPauseDocument = function() {
-            if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-                window.speechSynthesis.pause();
-                document.getElementById('tts-pause-btn').classList.add('hidden');
-                document.getElementById('tts-resume-btn').classList.remove('hidden');
-            }
-        };
-
-        window.ttsResumeDocument = function() {
-            if (window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
-                document.getElementById('tts-resume-btn').classList.add('hidden');
-                document.getElementById('tts-pause-btn').classList.remove('hidden');
-            }
-        };
-
-        window.ttsStopDocument = function() {
-            window.speechSynthesis.cancel();
-            window.resetTtsUi();
+            if(window.speechSynthesis) window.speechSynthesis.cancel();
+            if(window.resetTtsUi) window.resetTtsUi();
         };
 
        window.documentAnalysisCache = window.documentAnalysisCache || {};
@@ -2677,92 +2236,6 @@
         // Initialize Global Cache
         setTimeout(() => window.fetchGlobalIndexCache(), 2000);
 
-        window.generatePageSummary = async function() {
-            const docTitle = document.getElementById('doc-reader-header-title').innerText;
-            const iframe = document.getElementById('doc-reader-iframe');
-            
-            document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Reading entire document into local memory...</div>';
-            document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-spinner fa-spin text-orange-500 mr-2 text-[10px]"></i>Building local knowledge model...</li>';
-            document.getElementById('summary-reading-time').innerText = 'Calculating...';
-            document.getElementById('ai-summary-modal').classList.remove('hidden');
-
-            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (!fileIdMatch) {
-                document.getElementById('summary-yield-text').innerText = "Unable to locate secure document ID for extraction.";
-                return;
-            }
-            
-            const fileId = fileIdMatch[1];
-            const fileType = docTitle.toLowerCase();
-
-            try {
-                // Retrieve from active memory session if already processed
-                let data = window.documentAnalysisCache[fileId];
-
-                // Check Firebase Central Database for existing extraction
-                if (!data && window.firebaseGetDoc) {
-                    try {
-                        const docRef = window.firebaseDoc(window.firebaseDb, "document_index", fileId);
-                        const docSnap = await window.firebaseGetDoc(docRef);
-                        if (docSnap.exists()) {
-                            data = docSnap.data();
-                            window.documentAnalysisCache[fileId] = data;
-                        }
-                    } catch(e) { console.error("Firebase fetch error", e); }
-                }
-
-                // If not in DB, extract text from contents and store in Database
-                if (!data) {
-                    data = await window.extractTextAndSummarize(fileId, fileType);
-                    window.documentAnalysisCache[fileId] = data; // Store in memory
-                    
-                    try {
-                        if (window.firebaseSetDoc) {
-                            await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), {
-                                documentId: fileId,
-                                title: docTitle,
-                                fullText: data.fullText || data.summary,
-                                summary: data.summary,
-                                concepts: data.concepts,
-                                wordCount: data.wordCount,
-                                timestamp: new Date().getTime()
-                            });
-                        }
-                    } catch(e) { console.error("Failed to index document in DB", e); }
-                }
-                
-                document.getElementById('summary-yield-text').innerText = data.summary;
-                
-                if (data.concepts && data.concepts.length > 0) {
-                    document.getElementById('summary-concepts-list').innerHTML = data.concepts.map(c => `<li class="capitalize"><i class="fa-solid fa-circle-check text-green-500 mr-2 text-[10px]"></i>${c}</li>`).join('');
-                }
-                
-                const readingTimeMins = Math.max(1, Math.ceil(data.wordCount / 200));
-                document.getElementById('summary-reading-time').innerText = `~${readingTimeMins} minute${readingTimeMins > 1 ? 's' : ''}`;
-
-            } catch (error) {
-                document.getElementById('summary-yield-text').innerText = "Text could not be extracted from this document.";
-                document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-circle-xmark text-red-500 mr-2 text-[10px]"></i>Extraction failed</li>';
-                document.getElementById('summary-reading-time').innerText = '--';
-            }
-        };
-
-        // --- NEW: Session Cache & Delete Engine ---
-        window.aiSessionChats = window.aiSessionChats || {};
-        window.saveAiChatState = function() {
-            const iframe = document.getElementById('doc-reader-iframe');
-            if(!iframe) return;
-            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (fileIdMatch) {
-                window.aiSessionChats[fileIdMatch[1]] = document.getElementById('ai-tutor-chat-feed').innerHTML;
-            }
-        };
-        window.deleteAiChatMessage = function(element) {
-            const block = element.closest('.ai-msg-block');
-            if(block) block.remove();
-            window.saveAiChatState(); // Resave after deleting
-        };
-
         window.toggleAiTutorPanel = async function() {
             const panel = document.getElementById('ai-tutor-panel');
             const chatPanel = document.getElementById('student-chat-panel');
@@ -2791,22 +2264,6 @@
                 const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
                 if (fileIdMatch) {
                     const fileId = fileIdMatch[1];
-                    
-                    // --- ISOLATE AI CHAT TO CURRENT DOCUMENT ---
-                    const chatFeed = document.getElementById('ai-tutor-chat-feed');
-                    if (window.aiSessionChats[fileId]) {
-                        chatFeed.innerHTML = window.aiSessionChats[fileId];
-                    } else {
-                        chatFeed.innerHTML = `
-                            <div class="flex items-start gap-3 ai-msg-block">
-                                <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                               <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    Hello! I am your AI Tutor. I have read this document. Ask me to explain concepts, summarize details, or generate a quiz!
-                                </div>
-                            </div>
-                        `;
-                    }
-                    
                     if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
                     if (!window.documentAnalysisCache[fileId]) {
                         const docTitle = document.getElementById('doc-reader-header-title').innerText;
@@ -2914,23 +2371,10 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
-                                let contentHtml = '';
-                                if (m.isDeleted) {
-                                    contentHtml = `<span class="italic text-gray-400 dark:text-gray-500 flex items-center gap-1 text-xs select-none"><i class="fa-solid fa-ban text-[10px]"></i> This message was deleted</span>`;
-                                } else {
-                                    contentHtml = `${m.text} ${m.isEdited ? '<span class="text-[9px] opacity-40 italic ml-1.5">(edited)</span>' : ''}`;
-                                }
-                                
-                                let reactionHtml = '';
-                                if (m.reaction && !m.isDeleted) {
-                                    reactionHtml = `<div class="whatsapp-reaction-badge absolute -bottom-2 right-3 bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 scale-90 select-none z-10"><span>${m.reaction}</span></div>`;
-                                }
-
                                 feed.innerHTML += `
-                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 chat-msg" data-message-id="${m.id}" style="position: relative;">
+                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4">
                                         <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed msg-text">${contentHtml}</div>
-                                        ${reactionHtml}
+                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed">${m.text}</div>
                                     </div>
                                 `;
                             });
@@ -3095,29 +2539,8 @@
         window.openDocument = function(title, url) {
             originalDocViewer(title, url);
             const fileIdMatch = url.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (fileIdMatch) {
-                const fileId = fileIdMatch[1];
-                window.loadDocumentChat(fileId);
-                
-                // Instantly swap the AI Context if the AI panel was left open
-                const aiPanel = document.getElementById('ai-tutor-panel');
-                const chatFeed = document.getElementById('ai-tutor-chat-feed');
-                if (aiPanel && chatFeed && !aiPanel.classList.contains('w-0')) {
-                    if (window.aiSessionChats && window.aiSessionChats[fileId]) {
-                        chatFeed.innerHTML = window.aiSessionChats[fileId];
-                    } else {
-                        chatFeed.innerHTML = `
-                            <div class="flex items-start gap-3 ai-msg-block">
-                                <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                               <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    Hello! I am your AI Tutor. I have read this document. Ask me to explain concepts, summarize details, or generate a quiz!
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            }
-        }; 
+            if (fileIdMatch) window.loadDocumentChat(fileIdMatch[1]);
+        };
 
        window.communityDiscussionsCache = {};
 
@@ -3268,12 +2691,9 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
             }
 
             feed.innerHTML += `
-                <div class="flex items-start gap-3 justify-end mt-4 ai-msg-block">
-                    <div class="flex flex-col items-end gap-1 max-w-[85%]">
-                        <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm w-full">
-                            ${question}
-                        </div>
-                        <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                <div class="flex items-start gap-3 justify-end mt-4">
+                    <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
+                        ${question}
                     </div>
                 </div>
             `;
@@ -3303,19 +2723,15 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
                 if (bestMatch) {
                     loader.classList.add('hidden');
                     feed.innerHTML += `
-                        <div class="flex items-start gap-3 mt-4 ai-msg-block">
+                        <div class="flex items-start gap-3 mt-4">
                             <div class="w-8 h-8 shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-users text-xs"></i></div>
-                            <div class="flex flex-col items-start gap-1 max-w-[85%]">
-                                <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 leading-relaxed shadow-sm">
-                                    <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
-                                    ${bestMatch.answer.replace(/\n/g, '<br>')}
-                                </div>
-                                <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                            <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
+                                <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
+                                ${bestMatch.answer.replace(/\n/g, '<br>')}
                             </div>
                         </div>
                     `;
                     feed.scrollTop = feed.scrollHeight;
-                    if(window.saveAiChatState) window.saveAiChatState();
                     return; 
                 }
             }
@@ -3332,13 +2748,10 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
                 const aiResponseText = data.response || data.reply || "No response received.";
                 
                 feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4 ai-msg-block">
+                    <div class="flex items-start gap-3 mt-4">
                         <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                        <div class="flex flex-col items-start gap-1 max-w-[85%]">
-                            <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed shadow-sm">
-                                ${aiResponseText.replace(/\n/g, '<br>')}
-                            </div>
-                            <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                        <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
+                            ${aiResponseText.replace(/\n/g, '<br>')}
                         </div>
                     </div>
                 `;
@@ -3356,20 +2769,16 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
 
             } catch(error) {
                 feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4 ai-msg-block">
+                    <div class="flex items-start gap-3 mt-4">
                         <div class="w-8 h-8 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-                        <div class="flex flex-col items-start gap-1 max-w-[85%]">
-                            <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 text-xs font-medium">
-                                Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
-                            </div>
-                            <button onclick="window.deleteAiChatMessage(this)" class="text-[10px] text-gray-400 hover:text-red-500 transition font-medium"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                        <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 max-w-[85%] text-xs font-medium">
+                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
                         </div>
                     </div>
                 `;
             } finally {
                 loader.classList.add('hidden');
                 feed.scrollTop = feed.scrollHeight;
-                if(window.saveAiChatState) window.saveAiChatState();
             }
         };
         
