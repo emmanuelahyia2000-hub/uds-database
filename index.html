@@ -672,16 +672,217 @@
                     </button>
                 </div>
                 
-                <div id="student-chat-feed" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface">
+                <div id="student-chat-feed" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface relative space-y-3">
+                    <!-- Dynamic peer messages go here -->
+                </div>
+
+                <!-- WhatsApp Style Editing Notice Panel Overlay -->
+                <div id="whatsapp-edit-banner-1" class="hidden px-4 py-2 bg-blue-50 dark:bg-blue-950/40 border-t border-gray-100 dark:border-gray-800 text-xs flex justify-between items-center transition-all animate-fade-in">
+                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                        <i class="fa-solid fa-pen text-[10px]"></i>
+                        <span class="font-medium tracking-wide">Editing message</span>
                     </div>
+                    <button onclick="cancelWhatsappEditMode(1)" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+                </div>
                 
-                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
-                    <input type="text" id="student-chat-input" placeholder="Type your message..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendStudentChat()">
-                    <button onclick="sendStudentChat()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
+                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2 relative">
+                    <input type="text" id="student-chat-input" placeholder="Type your message..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') handleWhatsappSendIntercept(1)">
+                    <button onclick="handleWhatsappSendIntercept(1)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
+
+            <!-- Global WhatsApp Action Action Float Popover Structure -->
+            <div id="whatsapp-options-menu" class="hidden fixed z-[999] bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-2 border border-gray-100 dark:border-gray-700 min-w-[180px] scale-95 opacity-0 transition-all duration-150 pointer-events-none">
+                <!-- Premium Emoji Reactions Tray Panel -->
+                <div class="flex items-center gap-2.5 pb-2 mb-2 border-b border-gray-100 dark:border-gray-700 justify-between px-1.5">
+                    <button onclick="applyWhatsappReaction('👍')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">👍</button>
+                    <button onclick="applyWhatsappReaction('❤️')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">❤️</button>
+                    <button onclick="applyWhatsappReaction('😂')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😂</button>
+                    <button onclick="applyWhatsappReaction('😮')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😮</button>
+                    <button onclick="applyWhatsappReaction('😢')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">😢</button>
+                    <button onclick="applyWhatsappReaction('🙏')" class="hover:scale-135 active:scale-95 transition text-base filter drop-shadow-sm">🙏</button>
+                </div>
+                <!-- WhatsApp Core Action Handlers -->
+                <button onclick="activateWhatsappEditSequence()" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700/60 rounded-xl flex items-center gap-2.5 text-gray-700 dark:text-gray-200 font-medium transition">
+                    <i class="fa-solid fa-pen text-blue-500 w-4 text-center text-xs"></i> Edit Message
+                </button>
+                <button onclick="executeWhatsappDeleteForEveryone()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl flex items-center gap-2.5 font-semibold transition">
+                    <i class="fa-solid fa-trash-can w-4 text-center text-xs"></i> Delete for Everyone
+                </button>
+            </div>
+
+            <script>
+                (function() {
+                    let activeTargetMessageElement = null;
+                    let currentEditingStateMessageId = null;
+                    let longPressTimerContext = null;
+
+                    function initializeWhatsappEngine() {
+                        const targets = ['student-chat-feed'];
+                        targets.forEach(id => {
+                            const feed = document.getElementById(id);
+                            if (!feed) return;
+
+                            // Event delegation capturing desktop right click context or long-press mobile holding inputs
+                            feed.addEventListener('contextmenu', (e) => {
+                                const msgContainer = e.target.closest('[data-message-id]') || e.target.closest('.message-bubble') || e.target.closest('.chat-msg');
+                                if (msgContainer) {
+                                    e.preventDefault();
+                                    summonWhatsappTray(msgContainer, e.clientX, e.clientY);
+                                }
+                            });
+
+                            feed.addEventListener('touchstart', (e) => {
+                                const msgContainer = e.target.closest('[data-message-id]') || e.target.closest('.message-bubble') || e.target.closest('.chat-msg');
+                                if (msgContainer) {
+                                    longPressTimerContext = setTimeout(() => {
+                                        const touch = e.touches[0];
+                                        summonWhatsappTray(msgContainer, touch.clientX, touch.clientY);
+                                    }, 600);
+                                }
+                            }, { passive: true });
+
+                            feed.addEventListener('touchend', () => {
+                                if (longPressTimerContext) clearTimeout(longPressTimerContext);
+                            });
+                        } );
+
+                        document.addEventListener('click', (e) => {
+                            const menu = document.getElementById('whatsapp-options-menu');
+                            if (menu && !menu.contains(e.target)) dismissWhatsappTray();
+                        });
+                    }
+
+                    function summonWhatsappTray(element, clientX, clientY) {
+                        activeTargetMessageElement = element;
+                        const menu = document.getElementById('whatsapp-options-menu');
+                        if (!menu) return;
+
+                        menu.classList.remove('hidden');
+                        setTimeout(() => {
+                            menu.style.opacity = '1';
+                            menu.style.transform = 'scale(1)';
+                            menu.style.pointerEvents = 'auto';
+                        }, 10);
+
+                        // Position calculation with protection against screen edge clipping
+                        const menuWidth = 190;
+                        const menuHeight = 110;
+                        let targetLeft = clientX;
+                        let targetTop = clientY;
+
+                        if (clientX + menuWidth > window.innerWidth) targetLeft = window.innerWidth - menuWidth - 16;
+                        if (clientY + menuHeight > window.innerHeight) targetTop = window.innerHeight - menuHeight - 16;
+
+                        menu.style.left = `${targetLeft}px`;
+                        menu.style.top = `${targetTop}px`;
+                        
+                        if (window.navigator && window.navigator.vibrate) {
+                            window.navigator.vibrate(40);
+                        }
+                    }
+
+                    window.dismissWhatsappTray = function() {
+                        const menu = document.getElementById('whatsapp-options-menu');
+                        if (!menu) return;
+                        menu.style.opacity = '0';
+                        menu.style.transform = 'scale(0.95)';
+                        menu.style.pointerEvents = 'none';
+                    };
+
+                    window.applyWhatsappReaction = function(emoji) {
+                        if (!activeTargetMessageElement) return;
+                        
+                        // Look for an existing reaction bubble wrapper or build one natively
+                        let reactionBadgeWrapper = activeTargetMessageElement.querySelector('.whatsapp-reaction-badge');
+                        if (!reactionBadgeWrapper) {
+                            reactionBadgeWrapper = document.createElement('div');
+                            reactionBadgeWrapper.className = "whatsapp-reaction-badge absolute -bottom-2 right-3 bg-white dark:bg-gray-700 shadow border border-gray-100 dark:border-gray-600 rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 scale-90 select-none animate-in zoom-in-50";
+                            activeTargetMessageElement.style.position = 'relative';
+                            activeTargetMessageElement.appendChild(reactionBadgeWrapper);
+                        }
+                        reactionBadgeWrapper.innerHTML = `<span>${emoji}</span>`;
+                        dismissWhatsappTray();
+                    };
+
+                    window.activateWhatsappEditMessageMode = function(instanceIndex) {
+                        if (!activeTargetMessageElement) return;
+                        dismissWhatsappTray();
+
+                        // Intercept structural contents cleanly
+                        let messageTextNode = activeTargetMessageElement.querySelector('.msg-text') || activeTargetMessageElement.querySelector('p') || activeTargetMessageElement;
+                        let targetContent = messageTextNode.innerText || messageTextNode.textContent;
+
+                        // Skip logic if message is marked deleted
+                        if (targetContent.includes('🚫 This message was deleted')) return;
+
+                        currentEditingStateMessageId = activeTargetMessageElement.getAttribute('data-message-id') || 'temp-edit-id';
+                        activeTargetMessageElement.setAttribute('data-message-id', currentEditingStateMessageId);
+
+                        const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
+                        const banner = document.getElementById(`whatsapp-edit-banner-${instanceIndex}`);
+
+                        if (inputField && banner) {
+                            inputField.value = targetContent;
+                            banner.classList.remove('hidden');
+                            inputField.focus();
+                        }
+                    };
+
+                    window.activateWhatsappEditSequence = function() {
+                        // Dynamically determine window scope execution index state
+                        activateWhatsappEditMessageMode(1);
+                        activateWhatsappEditMessageMode(2);
+                    };
+
+                    window.cancelWhatsappEditMode = function(instanceIndex) {
+                        const banner = document.getElementById(`whatsapp-edit-banner-${instanceIndex}`);
+                        const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
+                        if (banner) banner.classList.add('hidden');
+                        if (inputField) inputField.value = '';
+                        currentEditingStateMessageId = null;
+                    };
+
+                    window.handleWhatsappSendIntercept = function(instanceIndex) {
+                        const inputField = instanceIndex === 1 ? document.getElementById('student-chat-input') : document.querySelectorAll('#student-chat-input')[1];
+                        if (!inputField || !inputField.value.trim()) return;
+
+                        if (currentEditingStateMessageId) {
+                            // Locate targeted operational bubble instance context
+                            const targetBubble = document.querySelector(`[data-message-id="${currentEditingStateMessageId}"]`);
+                            if (targetBubble) {
+                                let labelTarget = targetBubble.querySelector('.msg-text') || targetBubble.querySelector('p') || targetBubble;
+                                labelTarget.innerHTML = `${inputField.value.trim()} <span class="text-[9px] opacity-40 italic ml-1.5">(edited)</span>`;
+                            }
+                            cancelWhatsappEditMode(instanceIndex);
+                        } else {
+                            if (typeof window.sendStudentChat === 'function') {
+                                window.sendStudentChat();
+                            }
+                        }
+                    };
+
+                    window.executeWhatsappDeleteForEveryone = function() {
+                        if (!activeTargetMessageElement) return;
+                        let textBlock = activeTargetMessageElement.querySelector('.msg-text') || activeTargetMessageElement.querySelector('p') || activeTargetMessageElement;
+                        
+                        if (textBlock) {
+                            textBlock.innerHTML = `<span class="italic text-gray-400 dark:text-gray-500 flex items-center gap-1 text-xs select-none"><i class="fa-solid fa-ban text-[10px]"></i> This message was deleted</span>`;
+                        }
+                        
+                        // Clear active structural reaction components if present
+                        const reactionBubble = activeTargetMessageElement.querySelector('.whatsapp-reaction-badge');
+                        if (reactionBubble) reactionBubble.remove();
+
+                        dismissWhatsappTray();
+                    };
+
+                    document.addEventListener('DOMContentLoaded', initializeWhatsappEngine);
+                    setTimeout(initializeWhatsappEngine, 800); // Fail-safe bootstrap anchor activation
+                })();
+            </script>
         </div>
     </div>
 
@@ -701,12 +902,22 @@
                     </button>
                 </div>
                 
-                <div id="student-chat-feed" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface">
+                <div id="student-chat-feed" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface relative space-y-3">
+                    <!-- Dynamic peer messages go here -->
+                </div>
+
+                <!-- WhatsApp Style Editing Notice Panel Overlay (Instance 2) -->
+                <div id="whatsapp-edit-banner-2" class="hidden px-4 py-2 bg-blue-50 dark:bg-blue-950/40 border-t border-gray-100 dark:border-gray-800 text-xs flex justify-between items-center transition-all animate-fade-in">
+                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                        <i class="fa-solid fa-pen text-[10px]"></i>
+                        <span class="font-medium tracking-wide">Editing message</span>
                     </div>
+                    <button onclick="cancelWhatsappEditMode(2)" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+                </div>
                 
-                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2">
-                    <input type="text" id="student-chat-input" placeholder="Share your thoughts..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendStudentChat()">
-                    <button onclick="sendStudentChat()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
+                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2 relative">
+                    <input type="text" id="student-chat-input" placeholder="Share your thoughts..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') handleWhatsappSendIntercept(2)">
+                    <button onclick="handleWhatsappSendIntercept(2)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
