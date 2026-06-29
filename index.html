@@ -554,11 +554,43 @@
                     <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-            <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
-                <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
-                    <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
+            <div class="flex items-center gap-1 md:gap-2 bg-gray-50 dark:bg-[#131314] p-1 md:px-2 rounded-full border border-gray-200 dark:border-gray-700">
+                <button onclick="ttsReadDocument()" id="tts-play-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition shrink-0" title="Read Aloud">
+                    <i class="fa-solid fa-volume-high"></i>
                 </button>
+                <button onclick="ttsPauseDocument()" id="tts-pause-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition hidden shrink-0" title="Pause">
+                    <i class="fa-solid fa-pause"></i>
+                </button>
+                <button onclick="ttsResumeDocument()" id="tts-resume-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 transition hidden shrink-0" title="Resume">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <button onclick="ttsStopDocument()" id="tts-stop-btn" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition hidden shrink-0" title="Stop">
+                    <i class="fa-solid fa-stop"></i>
+                </button>
+                
+                <span class="w-[1px] h-5 bg-gray-300 dark:bg-gray-600 mx-0.5 shrink-0"></span>
+                
+                <div class="flex items-center shrink-0 pr-1">
+                    <select id="tts-speed-control" onchange="changeTtsSpeed(this.value)" class="bg-transparent text-xs font-bold text-gray-800 dark:text-gray-100 outline-none cursor-pointer px-1 py-1 text-center" title="Reader Speed">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1.0" selected>1.0x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="1.75">1.75x</option>
+                        <option value="2.0">2.0x</option>
+                    </select>
+                </div>
             </div>
+            <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
+                <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-full transition-all font-medium text-sm border border-blue-200 dark:border-blue-800">
+                    <i class="fa-solid fa-users text-lg md:mr-2"></i> <span class="hidden md:inline">Discuss</span>
+                    <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden shadow">0</span>
+                </button>
+
+                <button onclick="generatePageSummary()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-800/50 text-purple-700 dark:text-purple-400 rounded-full transition-all font-medium text-sm border border-purple-200 dark:border-purple-800">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg md:mr-2"></i> <span class="hidden md:inline">Summarize</span>
+                </button>
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
@@ -570,7 +602,7 @@
                     <div class="w-12 h-12 border-4 border-gray-100 border-t-blue-500 dark:border-gray-800 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
                     <p class="text-sm font-medium text-gray-600 dark:text-gray-400 animate-pulse">Rendering Document...</p>
                 </div>
-                <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out bg-white" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
+               <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out bg-white" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
                 
                 <button onclick="toggleAiTutorPanel()" id="ai-tutor-open-btn" class="absolute top-4 right-4 z-30 bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-robot text-xl"></i>
@@ -581,7 +613,6 @@
                     <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden animate-bounce shadow">0</span>
                 </button>
             </div>
-
             <div id="ai-tutor-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
                 <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-geminiBase shrink-0">
                     <div class="flex items-center gap-3">
@@ -1309,6 +1340,48 @@
         </div>
     </div>
 
+    <div id="ai-summary-modal" class="hidden fixed inset-0 z-[350] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-lg w-full p-6 md:p-8 relative border border-gray-100 dark:border-gray-800 max-h-[90vh] flex flex-col">
+            <button onclick="document.getElementById('ai-summary-modal').classList.add('hidden')" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition shrink-0"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="flex items-center gap-3 mb-6 border-b border-gray-100 dark:border-gray-800 pb-4 shrink-0">
+                <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-medium text-gray-800 dark:text-gray-100 leading-tight">Page Analysis</h2>
+                    <p class="text-xs text-gray-500 font-medium">UDS Learning Assistant</p>
+                </div>
+            </div>
+
+            <div class="overflow-y-auto pr-2 space-y-6 flex-grow">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center"><i class="fa-solid fa-align-left mr-2 text-purple-500"></i>Page Summary</h3>
+                    <div id="summary-yield-text" class="bg-purple-50/50 dark:bg-purple-900/10 p-4 rounded-2xl text-sm text-gray-700 dark:text-gray-300 leading-relaxed border border-purple-100/50 dark:border-purple-800/30">
+                        Loading summary...
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center"><i class="fa-solid fa-key mr-2 text-orange-500"></i>Key Concepts</h3>
+                    <ul id="summary-concepts-list" class="space-y-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+                        <li>Loading concepts...</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-100 dark:border-blue-900/30 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Estimated Reading Time</h4>
+                        <p id="summary-reading-time" class="text-sm font-medium text-blue-900 dark:text-blue-200">-- minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="alumni-profile-modal" class="hidden fixed inset-0 z-[400] bg-black/60 flex justify-center items-center p-0 md:p-4 backdrop-blur-sm transition-opacity">
         <div class="bg-white dark:bg-geminiSurface md:rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col h-full md:h-auto md:max-h-[90vh] border border-transparent dark:border-gray-800 relative overflow-hidden">
             <button onclick="closeAlumniProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 rounded-full flex items-center justify-center transition z-20"><i class="fa-solid fa-xmark"></i></button>
@@ -1798,6 +1871,90 @@
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
+            if(window.speechSynthesis) window.speechSynthesis.cancel();
+            if(window.resetTtsUi) window.resetTtsUi();
+        };
+
+       // --- UDS LEARNING ASSISTANT: PHASE 2 (TTS SPEED & PAGE ANALYSIS) ---
+        let currentTtsUtterance = null;
+        window.currentTtsSpeed = 1.0;
+        window.currentReadingText = "";
+        
+        window.resetTtsUi = function() {
+            document.getElementById('tts-play-btn').classList.remove('hidden');
+            document.getElementById('tts-pause-btn').classList.add('hidden');
+            document.getElementById('tts-resume-btn').classList.add('hidden');
+            document.getElementById('tts-stop-btn').classList.add('hidden');
+        };
+
+        window.changeTtsSpeed = function(newSpeed) {
+            window.currentTtsSpeed = parseFloat(newSpeed);
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                if (currentTtsUtterance) {
+                    currentTtsUtterance = new SpeechSynthesisUtterance(window.currentReadingText);
+                    currentTtsUtterance.rate = window.currentTtsSpeed;
+                    currentTtsUtterance.pitch = 1.0;
+                    currentTtsUtterance.onend = function() { window.resetTtsUi(); };
+                    currentTtsUtterance.onerror = function() { window.resetTtsUi(); };
+                    window.speechSynthesis.speak(currentTtsUtterance);
+                    
+                    document.getElementById('tts-play-btn').classList.add('hidden');
+                    document.getElementById('tts-pause-btn').classList.remove('hidden');
+                    document.getElementById('tts-resume-btn').classList.add('hidden');
+                    document.getElementById('tts-stop-btn').classList.remove('hidden');
+                }
+            }
+        };
+
+        window.ttsReadDocument = function() {
+            if (!('speechSynthesis' in window)) {
+                window.showToast("Your browser does not support text-to-speech.", "error");
+                return;
+            }
+
+            const docTitle = document.getElementById('doc-reader-header-title').innerText;
+            window.currentReadingText = "Learning Assistant activated. Document titled: " + docTitle + ". This is a simulated local extraction of the visible page. Important topics covered include academic methodologies, structural analysis, and standard operating procedures. The reading will proceed at your selected speed.";
+
+            window.speechSynthesis.cancel(); 
+            
+            currentTtsUtterance = new SpeechSynthesisUtterance(window.currentReadingText);
+            currentTtsUtterance.rate = window.currentTtsSpeed; 
+            currentTtsUtterance.pitch = 1.0;
+
+            currentTtsUtterance.onend = function() { window.resetTtsUi(); };
+            currentTtsUtterance.onerror = function() { window.resetTtsUi(); };
+
+            window.speechSynthesis.speak(currentTtsUtterance);
+
+            document.getElementById('tts-play-btn').classList.add('hidden');
+            document.getElementById('tts-pause-btn').classList.remove('hidden');
+            document.getElementById('tts-resume-btn').classList.add('hidden');
+            document.getElementById('tts-stop-btn').classList.remove('hidden');
+            
+            const speedSelect = document.getElementById('tts-speed-control');
+            if(speedSelect) speedSelect.value = window.currentTtsSpeed.toString();
+        };
+
+        window.ttsPauseDocument = function() {
+            if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+                window.speechSynthesis.pause();
+                document.getElementById('tts-pause-btn').classList.add('hidden');
+                document.getElementById('tts-resume-btn').classList.remove('hidden');
+            }
+        };
+
+        window.ttsResumeDocument = function() {
+            if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+                document.getElementById('tts-resume-btn').classList.add('hidden');
+                document.getElementById('tts-pause-btn').classList.remove('hidden');
+            }
+        };
+
+        window.ttsStopDocument = function() {
+            window.speechSynthesis.cancel();
+            window.resetTtsUi();
         };
 
        window.documentAnalysisCache = window.documentAnalysisCache || {};
@@ -2058,7 +2215,77 @@
         // Initialize Global Cache
         setTimeout(() => window.fetchGlobalIndexCache(), 2000);
 
-       window.toggleAiTutorPanel = async function() {
+        window.generatePageSummary = async function() {
+            const docTitle = document.getElementById('doc-reader-header-title').innerText;
+            const iframe = document.getElementById('doc-reader-iframe');
+            
+            document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Reading entire document into local memory...</div>';
+            document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-spinner fa-spin text-orange-500 mr-2 text-[10px]"></i>Building local knowledge model...</li>';
+            document.getElementById('summary-reading-time').innerText = 'Calculating...';
+            document.getElementById('ai-summary-modal').classList.remove('hidden');
+
+            const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+            if (!fileIdMatch) {
+                document.getElementById('summary-yield-text').innerText = "Unable to locate secure document ID for extraction.";
+                return;
+            }
+            
+            const fileId = fileIdMatch[1];
+            const fileType = docTitle.toLowerCase();
+
+            try {
+                // Retrieve from active memory session if already processed
+                let data = window.documentAnalysisCache[fileId];
+
+                // Check Firebase Central Database for existing extraction
+                if (!data && window.firebaseGetDoc) {
+                    try {
+                        const docRef = window.firebaseDoc(window.firebaseDb, "document_index", fileId);
+                        const docSnap = await window.firebaseGetDoc(docRef);
+                        if (docSnap.exists()) {
+                            data = docSnap.data();
+                            window.documentAnalysisCache[fileId] = data;
+                        }
+                    } catch(e) { console.error("Firebase fetch error", e); }
+                }
+
+                // If not in DB, extract text from contents and store in Database
+                if (!data) {
+                    data = await window.extractTextAndSummarize(fileId, fileType);
+                    window.documentAnalysisCache[fileId] = data; // Store in memory
+                    
+                    try {
+                        if (window.firebaseSetDoc) {
+                            await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), {
+                                documentId: fileId,
+                                title: docTitle,
+                                fullText: data.fullText || data.summary,
+                                summary: data.summary,
+                                concepts: data.concepts,
+                                wordCount: data.wordCount,
+                                timestamp: new Date().getTime()
+                            });
+                        }
+                    } catch(e) { console.error("Failed to index document in DB", e); }
+                }
+                
+                document.getElementById('summary-yield-text').innerText = data.summary;
+                
+                if (data.concepts && data.concepts.length > 0) {
+                    document.getElementById('summary-concepts-list').innerHTML = data.concepts.map(c => `<li class="capitalize"><i class="fa-solid fa-circle-check text-green-500 mr-2 text-[10px]"></i>${c}</li>`).join('');
+                }
+                
+                const readingTimeMins = Math.max(1, Math.ceil(data.wordCount / 200));
+                document.getElementById('summary-reading-time').innerText = `~${readingTimeMins} minute${readingTimeMins > 1 ? 's' : ''}`;
+
+            } catch (error) {
+                document.getElementById('summary-yield-text').innerText = "Text could not be extracted from this document.";
+                document.getElementById('summary-concepts-list').innerHTML = '<li><i class="fa-solid fa-circle-xmark text-red-500 mr-2 text-[10px]"></i>Extraction failed</li>';
+                document.getElementById('summary-reading-time').innerText = '--';
+            }
+        };
+
+        window.toggleAiTutorPanel = async function() {
             const panel = document.getElementById('ai-tutor-panel');
             const chatPanel = document.getElementById('student-chat-panel');
             const container = document.getElementById('doc-iframe-container');
