@@ -39,17 +39,16 @@
             theme: {
                 extend: {
                     colors: {
-                        deepNavy: '#0B1B3D',
-                        academicPurple: '#4B2E83',
-                        academicGold: '#D4AF37',
-                        lightGray: '#F3F4F6',
+                        deepNavy: '#050A15', /* 2026 Dark-First Standard */
+                        academicPurple: '#4F46E5', /* High-Saturation Indigo */
+                        academicGold: '#F59E0B', /* High-Saturation Amber */
+                        lightGray: '#FAFAFA', /* Resonant Stark Whitespace */
                         white: '#FFFFFF',
-                        // Map semantic hooks to the new palette to propagate solid colors globally
-                        navy: { DEFAULT: '#0B1B3D', 800: '#08142E', 900: '#050D1F' },
-                        geminiBase: '#0B1B3D',
-                        geminiSurface: '#4B2E83',
-                        geminiLightBase: '#FFFFFF',
-                        geminiLightSurface: '#F3F4F6'
+                        navy: { DEFAULT: '#050A15', 800: '#03060E', 900: '#010205' },
+                        geminiBase: '#050A15',
+                        geminiSurface: '#111827',
+                        geminiLightBase: '#FAFAFA',
+                        geminiLightSurface: '#FFFFFF'
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -61,10 +60,23 @@
 
     <style>
         body { 
-            background-color: #F3F4F6; /* Solid Light Gray */
-            color: #0B1B3D; /* Solid Deep Navy */
+            background-color: #FAFAFA;
+            color: #050A15;
             font-family: 'Inter', sans-serif; 
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em; 
+        }
+        /* 2026 Frosted Glass Trend */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        html.dark .glass-nav {
+            background: rgba(5, 10, 21, 0.75);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .theme-bg { background-color: #0B1B3D; } 
         .theme-text { color: #4B2E83; }
@@ -110,14 +122,16 @@
         <span id="smart-notification-text" class="text-sm font-medium text-gray-800 dark:text-gray-200"></span>
     </div>
 
-    <nav class="bg-white dark:bg-deepNavy px-4 md:px-6 py-3 flex justify-between items-center z-[60] sticky top-0 transition-colors border-b border-academicGold/40">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()" class="lg:hidden text-deepNavy dark:text-white hover:bg-lightGray dark:hover:bg-academicPurple p-2 rounded-full transition w-10 h-10 flex items-center justify-center">
+    <nav class="glass-nav px-4 md:px-8 py-4 flex justify-between items-center z-[60] sticky top-0 transition-all duration-300">
+        <div class="flex items-center gap-4">
+            <button onclick="toggleSidebar()" class="lg:hidden text-deepNavy dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 p-2 rounded-xl transition w-10 h-10 flex items-center justify-center">
                 <i class="fa-solid fa-bars text-lg"></i>
             </button>
-            <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('dashboard')">
-                <i class="fa-solid fa-graduation-cap text-academicPurple dark:text-academicGold text-2xl"></i>
-                <span class="text-xl md:text-2xl font-semibold tracking-tight text-deepNavy dark:text-white">UDS<span class="font-bold text-academicPurple dark:text-academicGold">Hub</span></span>
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo('dashboard')">
+                <div class="w-10 h-10 rounded-xl bg-academicPurple dark:bg-academicGold text-white dark:text-deepNavy flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold tracking-tighter text-deepNavy dark:text-white">UDS<span class="text-academicPurple dark:text-academicGold">Hub</span></span>
             </div>
         </div>
         
@@ -140,11 +154,22 @@
 
     <main class="flex-grow w-full py-6 px-4 md:px-8 flex flex-col items-center">
 
-        <div id="guest-onboarding-view" class="w-full text-center py-20 md:py-32 flex flex-col items-center max-w-2xl mx-auto">
-            <i class="fa-solid fa-graduation-cap text-navy dark:text-blue-400 text-6xl md:text-7xl mb-6"></i>
-            <h1 class="text-4xl sm:text-5xl font-medium text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Welcome to <br class="md:hidden"><span class="font-bold text-navy dark:text-blue-400">UDS Hub</span></h1>
-            <p class="text-gray-600 dark:text-gray-400 mb-10 text-base md:text-lg leading-relaxed">Access academic databases, find student accommodation, and calculate GPA performance seamlessly.</p>
-            <button onclick="openAuthModal()" class="bg-navy dark:bg-blue-300 text-white dark:text-navy font-medium px-8 py-3.5 rounded-full hover:opacity-90 transition text-base w-full max-w-xs shadow">Access Academic Profile</button>
+        <div id="guest-onboarding-view" class="w-full text-center py-24 md:py-40 flex flex-col items-center max-w-4xl mx-auto px-4">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-academicPurple/10 dark:bg-academicGold/10 text-academicPurple dark:text-academicGold text-sm font-semibold mb-8 border border-academicPurple/20 dark:border-academicGold/20">
+                <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-current"></span></span>
+                2026 Academic Platform
+            </div>
+            <h1 class="text-5xl sm:text-7xl font-extrabold text-deepNavy dark:text-white mb-6 tracking-tighter leading-[1.1]">
+                Empowering the <br class="hidden sm:block"><span class="text-transparent bg-clip-text bg-gradient-to-r from-academicPurple to-blue-500 dark:from-academicGold dark:to-yellow-300">Next Generation</span>
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 mb-10 text-lg md:text-2xl leading-relaxed max-w-2xl font-light">
+                Access intelligent academic databases, centralized campus tools, and interactive student resources in one unified space.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                <button onclick="openAuthModal()" class="bg-deepNavy dark:bg-white text-white dark:text-deepNavy font-semibold px-8 py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-300 text-base shadow-xl flex items-center justify-center gap-3">
+                    Access Profile <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
 
         <div id="portal-workspace" class="hidden w-full max-w-6xl mx-auto flex-col lg:flex-row gap-8 relative items-start">
@@ -267,6 +292,34 @@
                             </div>
                             <div id="admin-report-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
+
+                        <!-- NEW ADMIN FEATURE: Login Screen Branding -->
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-image mr-1"></i> 10. Login Portal Branding</span>
+                                <span class="text-[10px] text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-0.5 rounded-full font-medium">Design Control</span>
+                            </div>
+                            <form onsubmit="updateLoginBranding(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl">
+                                <input type="url" id="admin-login-img-url" placeholder="Paste Image URL here..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                                <input type="text" id="admin-login-heading" placeholder="Welcome Heading..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                                <div class="flex gap-2">
+                                    <input type="text" id="admin-login-subtext" placeholder="Subtext description..." class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                                    <button type="submit" class="bg-gray-900 dark:bg-blue-300 dark:text-navy text-white px-4 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition shadow-sm">Update</button>
+                                </div>
+                            </form>
+                            <script>
+                                function updateLoginBranding(e) {
+                                    e.preventDefault();
+                                    const img = document.getElementById('admin-login-img-url').value;
+                                    const title = document.getElementById('admin-login-heading').value;
+                                    const desc = document.getElementById('admin-login-subtext').value;
+                                    if(img) document.getElementById('admin-login-bg').src = img;
+                                    if(title) document.getElementById('admin-login-title').innerText = title;
+                                    if(desc) document.getElementById('admin-login-desc').innerText = desc;
+                                    alert("Login portal branding successfully updated!");
+                                }
+                            </script>
+                        </div>
                     </div>
                 </section>
 
@@ -355,14 +408,20 @@
                 </div>
 
                 <div id="section-marketplace" class="hidden w-full max-w-5xl mx-auto">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
-                        <div>
-                            <h2 class="text-2xl font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-store mr-2 text-blue-500"></i>Student Marketplace</h2>
-                            <p class="text-sm text-gray-500 mt-1">Buy, sell, advertise services, and find student businesses.</p>
+                    <!-- E-commerce Premium Hero -->
+                    <div class="mb-8 relative rounded-3xl overflow-hidden shadow-lg bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-[#0B1B3D] dark:to-gray-900 flex items-center p-8 md:p-10">
+                        <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1200&auto=format&fit=crop" alt="E-commerce Background" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                        <div class="relative z-10 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                            <div>
+                                <span class="inline-block py-1.5 px-3 rounded-full bg-blue-500/30 text-blue-200 text-[10px] font-bold tracking-widest uppercase mb-3 border border-blue-400/30 backdrop-blur-sm">Official Hub Store</span>
+                                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">Campus <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-academicGold">Marketplace</span></h2>
+                                <p class="text-blue-100 text-sm md:text-base max-w-md font-medium">Discover student-run businesses, premium services, and essential academic tools all in one trusted hub.</p>
+                            </div>
+                            <button onclick="openListingChoiceModal()" class="bg-academicGold hover:bg-yellow-400 text-blue-900 px-8 py-3.5 rounded-2xl transition-all font-bold text-sm flex items-center gap-2 whitespace-nowrap shadow-2xl hover:scale-105 active:scale-95">
+                                <i class="fa-solid fa-store"></i> Start Selling
+                            </button>
                         </div>
-                        <button onclick="openListingChoiceModal()" class="bg-gray-800 dark:bg-blue-300 dark:text-navy hover:opacity-90 text-white px-5 py-2.5 rounded-full transition font-medium text-sm flex items-center gap-2 whitespace-nowrap shadow-sm">
-                            <i class="fa-solid fa-tag"></i> Create Listing
-                        </button>
                     </div>
 
                     <div class="bg-white dark:bg-geminiSurface border border-gray-100 dark:border-gray-800 rounded-3xl p-4 mb-8 shadow-sm flex flex-col md:flex-row gap-3">
@@ -407,9 +466,22 @@
                     </div>
                 </div>
 
-                <div id="section-announcements" class="hidden w-full max-w-3xl mx-auto">
-                    <h2 class="text-2xl font-medium text-gray-800 dark:text-white mb-8 pb-4 border-b border-gray-100 dark:border-gray-800 px-2"><i class="fa-regular fa-bell text-blue-500 mr-2"></i>Campus Notifications</h2>
-                    <div id="announcements-yield-box" class="space-y-6 px-2"></div>
+                <div id="section-announcements" class="hidden w-full max-w-4xl mx-auto">
+                    <!-- Official Bulletin Board Frame -->
+                    <div class="bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 rounded-t-3xl p-6 flex items-center gap-4 relative overflow-hidden shadow-sm">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-red-600"></div>
+                        <div class="w-14 h-14 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner">
+                            <i class="fa-solid fa-bullhorn text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Official Campus Notices</h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">Verified directives and announcements from the administration.</p>
+                        </div>
+                    </div>
+                    <!-- Pinned Notice Environment -->
+                    <div class="bg-gray-50/80 dark:bg-[#0A0A0A] border border-t-0 border-gray-200 dark:border-gray-700 rounded-b-3xl p-6 md:p-8 shadow-inner mb-8">
+                        <div id="announcements-yield-box" class="space-y-6"></div>
+                    </div>
                 </div>
 
                 <div id="section-career-bridge" class="hidden w-full max-w-5xl mx-auto">
@@ -475,9 +547,22 @@
     </main>
 
     <div id="auth-gateway-modal" class="hidden fixed inset-0 z-[200] bg-black/60 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-md w-full p-8 relative border border-gray-100 dark:border-gray-800">
-            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 flex items-center justify-center rounded-full transition"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <div class="text-center mb-8">
+        <div class="bg-white dark:bg-geminiSurface rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col md:flex-row overflow-hidden relative border border-gray-100 dark:border-gray-800">
+            <!-- Premium School Branding Side -->
+            <div class="hidden md:flex w-1/2 relative bg-academicPurple dark:bg-deepNavy items-center justify-center p-10 overflow-hidden">
+                <img id="admin-login-bg" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=800&auto=format&fit=crop" alt="Campus" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay">
+                <div class="relative z-10 text-white text-left">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/30 shadow-lg">
+                        <i class="fa-solid fa-graduation-cap text-3xl text-white"></i>
+                    </div>
+                    <h2 id="admin-login-title" class="text-3xl font-extrabold mb-4 tracking-tight">Welcome to UDS Hub</h2>
+                    <p id="admin-login-desc" class="text-white/80 text-sm leading-relaxed max-w-sm font-medium">Access your official campus resources, intelligent databases, and exclusive student network all in one premium environment.</p>
+                </div>
+            </div>
+            <!-- Form Side -->
+            <div class="w-full md:w-1/2 p-8 relative flex flex-col justify-center">
+                <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-geminiBase w-8 h-8 flex items-center justify-center rounded-full transition z-20"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <div class="text-center mb-8 md:mt-2">
                 <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-graduation-cap text-3xl"></i>
                 </div>
@@ -560,6 +645,10 @@
                     <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden shadow">0</span>
                 </button>
 
+                <button onclick="toggleStudyClassPanel()" id="study-class-open-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-700 dark:text-green-400 rounded-full transition-all font-medium text-sm border border-green-200 dark:border-green-800">
+                    <i class="fa-solid fa-user-group text-lg md:mr-2"></i> <span class="hidden md:inline">Classes</span>
+                </button>
+
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
@@ -580,6 +669,10 @@
                 <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="absolute top-[76px] right-4 z-30 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-comments text-xl"></i>
                     <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden animate-bounce shadow">0</span>
+                </button>
+
+                <button onclick="toggleStudyClassPanel()" id="study-class-float-btn" class="absolute top-[136px] right-4 z-30 bg-green-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-green-700 transition flex items-center justify-center">
+                    <i class="fa-solid fa-user-group text-xl"></i>
                 </button>
             </div>
             <div id="ai-tutor-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
@@ -870,42 +963,155 @@
         </div>
     </div>
 
-            <div id="student-chat-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
+            <div id="study-class-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
                 <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-geminiBase shrink-0">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
-                            <i class="fa-solid fa-users"></i>
+                        <button onclick="showClassList()" id="back-to-class-list" class="hidden text-gray-500 hover:text-gray-800 dark:hover:text-white mr-1"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-screen-users"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Class Discussion</h3>
-                            <p class="text-[10px] text-blue-500 font-medium">Learn with peers</p>
+                            <h3 id="study-class-header-title" class="font-bold text-gray-800 dark:text-gray-100 text-sm">Study Classes</h3>
+                            <p id="study-class-header-subtitle" class="text-[10px] text-green-500 font-medium">Private Group Study</p>
                         </div>
                     </div>
-                    <button onclick="toggleStudentChatPanel()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700">
+                    <button onclick="toggleStudyClassPanel()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
                 
-                <div id="student-chat-feed" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface relative space-y-3">
-                    <!-- Dynamic peer messages go here -->
+                <!-- View 1: List of Classes -->
+                <div id="class-list-view" class="flex-grow p-4 overflow-y-auto bg-gray-50 dark:bg-geminiSurface relative space-y-4">
+                    <button onclick="generateNewClass()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-sm flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Create New Class
+                    </button>
+                    <div id="available-classes-container" class="space-y-2">
+                        <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Available Classes</h4>
+                        <p class="text-sm text-gray-400 text-center py-4" id="no-class-msg">No classes created for this document yet.</p>
+                    </div>
                 </div>
 
-                <!-- WhatsApp Style Editing Notice Panel Overlay (Instance 2) -->
-                <div id="whatsapp-edit-banner-2" class="hidden px-4 py-2 bg-blue-50 dark:bg-blue-950/40 border-t border-gray-100 dark:border-gray-800 text-xs flex justify-between items-center transition-all animate-fade-in">
-                    <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                        <i class="fa-solid fa-pen text-[10px]"></i>
-                        <span class="font-medium tracking-wide">Editing message</span>
+                <!-- View 2: Private Chat Feed (Hidden by default) -->
+                <div id="private-class-chat-view" class="hidden flex-grow flex-col h-full bg-gray-50 dark:bg-geminiSurface relative">
+                    <div id="private-class-chat-feed" class="flex-grow p-4 overflow-y-auto space-y-3">
+                        <!-- Private messages -->
                     </div>
-                    <button onclick="cancelWhatsappEditMode(2)" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-full"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                
-                <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2 relative">
-                    <input type="text" id="student-chat-input" placeholder="Share your thoughts..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') handleWhatsappSendIntercept(2)">
-                    <button onclick="handleWhatsappSendIntercept(2)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
+                    
+                    <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2 relative">
+                        <input type="text" id="private-class-chat-input" placeholder="Message class..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') sendPrivateClassMessage()">
+                        <button onclick="sendPrivateClassMessage()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <script>
+                let currentDocumentClasses = [];
+                
+                function toggleStudyClassPanel() {
+                    const panel = document.getElementById('study-class-panel');
+                    if (panel.classList.contains('w-0')) {
+                        // Close existing panels cleanly
+                        const tutorPanel = document.getElementById('ai-tutor-panel');
+                        if (tutorPanel) { tutorPanel.classList.add('w-0'); tutorPanel.classList.remove('w-80', 'md:w-96'); }
+                        
+                        const chatPanel = document.getElementById('student-chat-panel');
+                        if (chatPanel) { chatPanel.classList.add('w-0'); chatPanel.classList.remove('w-80', 'md:w-96'); }
+                        
+                        panel.classList.remove('w-0');
+                        panel.classList.add('w-80', 'md:w-96');
+                        renderClassList();
+                    } else {
+                        panel.classList.add('w-0');
+                        panel.classList.remove('w-80', 'md:w-96');
+                    }
+                }
+
+                function generateNewClass() {
+                    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    const className = prompt("Enter a name for your Class:");
+                    if (!className) return;
+
+                    const newClass = { id: Date.now(), name: className, code: code, creator: "Admin (You)" };
+                    currentDocumentClasses.push(newClass);
+                    
+                    alert(`Class created successfully!\n\nClass Name: ${className}\nSecret Code: ${code}\n\nShare this secret code with members who want to join.`);
+                    renderClassList();
+                }
+
+                function renderClassList() {
+                    const container = document.getElementById('available-classes-container');
+                    container.innerHTML = '<h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Available Classes</h4>';
+                    
+                    if (currentDocumentClasses.length === 0) {
+                        container.innerHTML += '<p class="text-sm text-gray-400 text-center py-4">No classes created for this document yet.</p>';
+                        return;
+                    }
+
+                    currentDocumentClasses.forEach(cls => {
+                        container.innerHTML += `
+                            <div onclick="attemptJoinClass(${cls.id})" class="bg-white dark:bg-geminiBase border border-gray-200 dark:border-gray-700 p-3 rounded-xl cursor-pointer hover:border-green-500 transition shadow-sm flex justify-between items-center group">
+                                <div>
+                                    <h5 class="font-medium text-sm text-gray-800 dark:text-white">${cls.name}</h5>
+                                    <p class="text-[10px] text-gray-500">Created by ${cls.creator}</p>
+                                </div>
+                                <i class="fa-solid fa-lock text-gray-300 group-hover:text-green-500 transition"></i>
+                            </div>
+                        `;
+                    });
+                }
+
+                function attemptJoinClass(classId) {
+                    const cls = currentDocumentClasses.find(c => c.id === classId);
+                    if (!cls) return;
+
+                    const enteredCode = prompt(`Enter the secret code to join "${cls.name}":`);
+                    if (enteredCode === cls.code) {
+                        openPrivateClassChat(cls);
+                    } else if (enteredCode !== null) {
+                        alert("Incorrect code. You cannot join this class.");
+                    }
+                }
+
+                function openPrivateClassChat(cls) {
+                    document.getElementById('class-list-view').classList.add('hidden');
+                    const chatView = document.getElementById('private-class-chat-view');
+                    chatView.classList.remove('hidden');
+                    chatView.classList.add('flex');
+                    
+                    document.getElementById('study-class-header-title').innerText = cls.name;
+                    document.getElementById('study-class-header-subtitle').innerText = "Private Chat";
+                    document.getElementById('back-to-class-list').classList.remove('hidden');
+                }
+
+                function showClassList() {
+                    document.getElementById('class-list-view').classList.remove('hidden');
+                    const chatView = document.getElementById('private-class-chat-view');
+                    chatView.classList.add('hidden');
+                    chatView.classList.remove('flex');
+                    
+                    document.getElementById('study-class-header-title').innerText = "Study Classes";
+                    document.getElementById('study-class-header-subtitle').innerText = "Private Group Study";
+                    document.getElementById('back-to-class-list').classList.add('hidden');
+                }
+
+                function sendPrivateClassMessage() {
+                    const input = document.getElementById('private-class-chat-input');
+                    if(!input.value.trim()) return;
+                    
+                    const feed = document.getElementById('private-class-chat-feed');
+                    feed.innerHTML += `
+                        <div class="flex justify-end mb-3">
+                            <div class="bg-green-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-sm">
+                                ${input.value}
+                            </div>
+                        </div>
+                    `;
+                    input.value = '';
+                    feed.scrollTop = feed.scrollHeight;
+                }
+            </script>
         </div>
     </div>
 
@@ -2371,10 +2577,33 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
+                                const reactions = m.reactions || {};
+                                let reactionHtml = '';
+                                
+                                // Generate reaction badges
+                                Object.entries(reactions).forEach(([emoji, count]) => {
+                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-full px-1.5 py-0.5 text-[10px] shadow-sm ml-1">${emoji} ${count}</span>`;
+                                });
+
+                                const isDeleted = m.text === "🚫 This message was deleted";
+
                                 feed.innerHTML += `
-                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4">
+                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 group relative" data-id="${m.id}">
                                         <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed">${m.text}</div>
+                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed relative">
+                                            ${m.text}
+                                            <div class="absolute -bottom-2 ${isMe ? 'left-0' : 'right-0'} flex">${reactionHtml}</div>
+                                        </div>
+                                        
+                                        ${!isDeleted ? `
+                                        <div class="flex items-center gap-3 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div class="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-full border border-gray-200 dark:border-gray-700">
+                                                <button onclick="window.reactToMessage('${m.id}', '👍')" class="hover:scale-125 transition px-1 text-xs">👍</button>
+                                                <button onclick="window.reactToMessage('${m.id}', '❤️')" class="hover:scale-125 transition px-1 text-xs">❤️</button>
+                                                <button onclick="window.reactToMessage('${m.id}', '😂')" class="hover:scale-125 transition px-1 text-xs">😂</button>
+                                            </div>
+                                            ${isMe ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-[10px] text-red-400 hover:text-red-600 font-bold uppercase tracking-tighter"><i class="fa-solid fa-trash-can mr-1"></i>Delete</button>` : ''}
+                                        </div>` : ''}
                                     </div>
                                 `;
                             });
@@ -2533,7 +2762,33 @@
                 });
             } catch(e) { window.showToast("Failed to send message", "error"); }
         };
+// Persistent Delete for Everyone
+        window.deleteCommunityMessage = async function(messageId) {
+            if(!confirm("Delete this message for everyone?")) return;
+            try {
+                const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
+                await window.firebaseUpdateDoc(docRef, {
+                    text: "🚫 This message was deleted",
+                    deletedAt: Date.now()
+                });
+                window.showToast("Message deleted for everyone", "success");
+            } catch(e) { window.showToast("Delete failed", "error"); }
+        };
 
+        // WhatsApp-style Persistent Reactions
+        window.reactToMessage = async function(messageId, emoji) {
+            if(!window.currentUserProfile) return;
+            try {
+                const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
+                const docSnap = await window.firebaseGetDoc(docRef);
+                if(docSnap.exists()) {
+                    const data = docSnap.data();
+                    const reactions = data.reactions || {};
+                    reactions[emoji] = (reactions[emoji] || 0) + 1;
+                    await window.firebaseUpdateDoc(docRef, { reactions: reactions });
+                }
+            } catch(e) { console.error("Reaction failed", e); }
+        };
         // Override original document opener to trigger chat listener silently in the background
         const originalDocViewer = window.openDocument;
         window.openDocument = function(title, url) {
