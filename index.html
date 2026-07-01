@@ -2434,7 +2434,7 @@
         };
 
         window.runAutonomousIndexMonitor = async function(currentMaterials) {
-            if(!window.firebaseDb || !window.isAdmin) return; // Restrict heavy monitoring to admin sessions to save global reads
+            if(!window.firebaseDb || !window.currentUserProfile) return; // Now runs for any logged-in student
             try {
                 const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                 const indexSnap = await getDocs(window.firebaseCollection(window.firebaseDb, "document_index"));
@@ -2545,58 +2545,39 @@
             const container = document.getElementById('doc-iframe-container');
             const openBtn = document.getElementById('ai-tutor-open-btn');
             
-            // Close Student Chat if open to prevent overlap
-            if(chatPanel && !chatPanel.classList.contains('w-0')) {
-                window.toggleStudentChatPanel();
-            }
+            if(chatPanel && !chatPanel.classList.contains('w-0')) window.toggleStudentChatPanel();
             
             if (panel.classList.contains('w-0')) {
-                // Open Panel
                 panel.classList.remove('w-0');
                 panel.classList.add('w-full', 'md:w-[380px]', 'lg:w-[420px]');
                 openBtn.classList.add('hidden');
-                
-                if (window.innerWidth >= 768) {
-                    container.classList.add('md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
-                } else {
-                    container.classList.add('hidden'); // Hide iframe on small mobile
-                }
+                window.innerWidth >= 768 ? container.classList.add('md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]') : container.classList.add('hidden');
 
-             // Autoload document context quietly if not already cached
                 const iframe = document.getElementById('doc-reader-iframe');
                 const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
                 if (fileIdMatch) {
                     const fileId = fileIdMatch[1];
-                    if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
-                    if (!window.documentAnalysisCache[fileId]) {
-                        const docTitle = document.getElementById('doc-reader-header-title').innerText;
+                    const docTitle = document.getElementById('doc-reader-header-title').innerText;
+                    
+                    // 1. Check if AI already "knows" this document from the database
+                    const docRef = window.firebaseDoc(window.firebaseDb, "document_index", fileId);
+                    const docSnap = await window.firebaseGetDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        window.documentAnalysisCache[fileId] = docSnap.data();
+                    } else {
+                        // 2. If it's a NEW document, the student's browser extracts it right now
+                        console.log("AI Training: Learning new document...");
                         try {
-                            let dbData = null;
-                            if (window.firebaseGetDoc) {
-                                const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId));
-                                if (docSnap.exists()) dbData = docSnap.data();
-                            }
-                            
-                            if (dbData) {
-                                window.documentAnalysisCache[fileId] = dbData;
-                            } else {
-                                const extracted = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
-                                window.documentAnalysisCache[fileId] = extracted;
-                                if (window.firebaseSetDoc) {
-                                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), {
-                                        documentId: fileId,
-                                        title: docTitle,
-                                        fullText: extracted.fullText || extracted.summary,
-                                        summary: extracted.summary,
-                                        concepts: extracted.concepts,
-                                        wordCount: extracted.wordCount,
-                                        timestamp: new Date().getTime()
-                                    });
-                                }
-                            }
-                        } catch (e) {
-                            console.error("Silent context extraction/DB index failed:", e);
-                        }
+                            const extracted = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
+                            window.documentAnalysisCache[fileId] = extracted;
+                            // 3. Save it to the Global Database so it's "trained" for every other student
+                            await window.firebaseSetDoc(docRef, {
+                                documentId: fileId, title: docTitle,
+                                fullText: extracted.fullText, concepts: extracted.concepts,
+                                timestamp: Date.now(), status: 'indexed'
+                            });
+                        } catch(e) { console.error("Auto-Learn failed", e); }
                     }
                 }
             } else {
@@ -2820,7 +2801,6 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
-                                const isDeleted = m.text === "🚫 This message was deleted";
                                 
                                 const reactions = m.reactions || {};
                                 let reactionHtml = '';
@@ -2899,14 +2879,12 @@
         };
 // Persistent Delete for Everyone
         window.deleteCommunityMessage = async function(messageId) {
-            if(!confirm("Delete this message for everyone?")) return;
+            if(!confirm("Are you sure you want to permanently delete this message?")) return;
             try {
+                // Completely remove the document from Firestore
                 const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
-                await window.firebaseUpdateDoc(docRef, {
-                    text: "🚫 This message was deleted",
-                    deletedAt: Date.now()
-                });
-                window.showToast("Message deleted for everyone", "success");
+                await window.firebaseDeleteDoc(docRef);
+                window.showToast("Message permanently removed", "success");
             } catch(e) { window.showToast("Delete failed", "error"); }
         };
 
@@ -3066,17 +3044,16 @@
                         }
                     }
                     
-                    documentContext = `[EXTRACTED ACADEMIC CONTENT - CURRENT DOCUMENT]
-${textToFeed}
-${relatedDocsContext}
+                    documentContext = `[INTERNAL KNOWLEDGE BASE]
+CURRENT ARTICLE: ${textToFeed}
+RELATED ARTICLES IN DRIVE: ${relatedDocsContext}
 
-[STRICT SEARCH PROTOCOL & MANDATORY RULES]
-You are the UDS Academic Knowledge Engine. You operate strictly on raw extracted text. Ignore all metadata including filenames. Base your reasoning exclusively on the extracted academic content supplied below.
-RULE 1: ABSOLUTE PROHIBITION ON METADATA GUESSING. NEVER introduce your answer with conversational filler like "It looks like you are referring to a document..." or "This text appears to be about...". NEVER attempt to guess a filename.
-RULE 2: DIVE STRAIGHT INTO THE ANSWER. Begin your response immediately with the factual academic explanation based on the text.
-RULE 3: PIPELINE SEARCH ORDER: 1. Current Document Content -> 2. Entire Academic Library (Related Matches) -> 3. General AI Knowledge.
-RULE 4: NO HALLUCINATIONS. If the exact answer is not found in the Extracted Content or Library Matches, you MUST state: "The indexed academic materials do not contain sufficient information for this specific query," before answering from General AI knowledge.
-RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabricate page numbers, titles, or authors.`;
+[MANDATORY SYSTEM PROTOCOL]
+1. INTERNAL FIRST: You must search the "INTERNAL KNOWLEDGE BASE" above for the answer. 
+2. SEARCH ALL ARTICLES: If the answer is not in the 'Current Article', check the 'Related Articles in Drive'.
+3. NO HALLUCINATION: If the information is found in these internal documents, summarize it accurately.
+4. FALLBACK: Only if the internal documents do not contain the answer, you may use your general training data, but you MUST start your response with: "This specific info is not in the campus articles, but based on general knowledge..."
+5. TONE: Be a helpful academic tutor for UDS students.`;
                 }
             }
 
