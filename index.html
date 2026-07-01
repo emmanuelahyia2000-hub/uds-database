@@ -2829,40 +2829,36 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
-                                const isDeleted = m.text === "🚫 This message was deleted";
                                 
                                 const reactions = m.reactions || {};
                                 let reactionHtml = '';
                                 Object.entries(reactions).forEach(([emoji, count]) => {
-                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-full px-1.5 py-0.5 text-[10px] shadow-sm mx-0.5">${emoji} ${count}</span>`;
+                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-full px-1.5 py-0 text-[10px] shadow-sm mx-0.5 flex items-center gap-1">${emoji} ${count}</span>`;
                                 });
 
                                 feed.innerHTML += `
-                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-4 relative group" data-id="${m.id}">
-                                        <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="flex items-center gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-full">
+                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-3 relative group" data-id="${m.id}">
+                                        <span class="text-[9px] text-gray-500 font-semibold ${isMe ? 'mr-1' : 'ml-1'} mb-0.5 tracking-wide"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
+                                        <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-full">
                                             
-                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed relative">
+                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm'} px-3 py-2 rounded-xl max-w-[75%] text-[13px] shadow-sm whitespace-pre-wrap leading-relaxed relative">
                                                 ${m.text}
-                                                <div class="absolute -bottom-2 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/2">${reactionHtml}</div>
+                                                <div class="absolute -bottom-2.5 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/2 z-10">${reactionHtml}</div>
                                             </div>
                                             
-                                            ${!isDeleted ? `
-                                            <div class="flex items-center gap-1.5 shrink-0 opacity-80 hover:opacity-100 transition-opacity">
+                                            <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <div class="relative group/emoji inline-block">
-                                                    <button class="text-gray-400 hover:text-yellow-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-7 h-7 rounded-full flex items-center justify-center transition shadow-sm"><i class="fa-regular fa-face-smile"></i></button>
-                                                    <div class="absolute bottom-full mb-1 ${isMe ? 'right-0' : 'left-0'} hidden group-hover/emoji:flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1.5 rounded-full shadow-xl z-[60]">
-                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">👍</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">❤️</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😂</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '😮')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😮</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '😢')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😢</span>
+                                                    <button class="text-gray-400 hover:text-yellow-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-6 h-6 rounded-full flex items-center justify-center transition shadow-sm"><i class="fa-regular fa-face-smile text-[11px]"></i></button>
+                                                    <div class="absolute bottom-full mb-1 ${isMe ? 'right-0' : 'left-0'} hidden group-hover/emoji:flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-full shadow-xl z-[60]">
+                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-sm px-1">👍</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-sm px-1">❤️</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-sm px-1">😂</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😮')" class="cursor-pointer hover:scale-125 transition text-sm px-1">😮</span>
                                                     </div>
                                                 </div>
                                                 
-                                                ${isMe || window.isAdmin ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-red-400 hover:text-white hover:bg-red-500 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 w-7 h-7 rounded-full flex items-center justify-center transition shadow-sm" title="Delete for everyone"><i class="fa-solid fa-trash-can text-[10px]"></i></button>` : ''}
+                                                ${isMe || window.isAdmin ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-gray-400 hover:text-white hover:bg-red-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-6 h-6 rounded-full flex items-center justify-center transition shadow-sm" title="Delete for everyone"><i class="fa-solid fa-trash-can text-[10px]"></i></button>` : ''}
                                             </div>
-                                            ` : ''}
                                             
                                         </div>
                                     </div>
@@ -2900,16 +2896,13 @@
                 });
             } catch(e) { window.showToast("Failed to send message", "error"); }
         };
-// Persistent Delete for Everyone
+// Persistent Delete for Everyone (Hard Delete)
         window.deleteCommunityMessage = async function(messageId) {
-            if(!confirm("Delete this message for everyone?")) return;
+            if(!confirm("Are you sure you want to completely remove this message for everyone?")) return;
             try {
                 const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
-                await window.firebaseUpdateDoc(docRef, {
-                    text: "🚫 This message was deleted",
-                    deletedAt: Date.now()
-                });
-                window.showToast("Message deleted for everyone", "success");
+                await window.firebaseDeleteDoc(docRef); // Completely wipes it from the database
+                window.showToast("Message completely removed", "success");
             } catch(e) { window.showToast("Delete failed", "error"); }
         };
 
@@ -3027,59 +3020,20 @@
                         try { window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), { concepts: window.firebaseArrayUnion(...queryWords.slice(0, 3)) }); } catch(e){}
                     }
 
-                    // COMPLETE LIBRARY SEARCH: Fetch related documents from background engine
-                    // Expand search parameters to dynamically include current query words
+                    // LOCAL CONTEXT SEARCH FOR RELEVANCY
                     const searchConcepts = [...new Set([...(cacheData.concepts || []), ...queryWords])];
-                    const relatedDocs = window.findRelatedDocuments(searchConcepts, fileId);
-                    
                     let relatedDocsContext = "";
-                    if(relatedDocs.length > 0) {
-                        const relevantMatches = [];
-                        relatedDocs.forEach((doc) => {
-                            // STRICT VALIDATION: Skip if fullText is missing or invalid. NO SUMMARIES.
-                            if (!doc.fullText || typeof doc.fullText !== 'string' || doc.fullText.trim().length < 100) return;
-                            
-                            // INTELLIGENT PASSAGE RETRIEVAL: Chunk by paragraph (or fallback to sentence grouping)
-                            let blocks = doc.fullText.split(/\n+/).map(p => p.trim()).filter(p => p.length > 30);
-                            if(blocks.length < 3) blocks = doc.fullText.split(/(?<=\.)\s+/).map(p => p.trim()).filter(p => p.length > 10);
-                            
-                            let passage = doc.fullText.substring(0, 1500); // Safe absolute fallback
-                            if (blocks.length > 0 && queryWords.length > 0) {
-                                let bestIndex = -1; let bestScore = 0;
-                                for (let i = 0; i < blocks.length; i++) {
-                                    const pText = blocks[i].toLowerCase();
-                                    let score = 0;
-                                    queryWords.forEach(kw => { if (pText.includes(kw)) score++; });
-                                    if (score > bestScore) { bestScore = score; bestIndex = i; }
-                                }
-                                
-                                // STRICT PRECISION: Only include passages with verified keyword relevance. 
-                                // Omit the document entirely if no meaningful keyword match exists.
-                                if (bestScore > 0) {
-                                    const startIdx = Math.max(0, bestIndex - 1);
-                                    const endIdx = Math.min(blocks.length - 1, bestIndex + 1);
-                                    passage = blocks.slice(startIdx, endIdx + 1).join('\n\n');
-                                    relevantMatches.push(`Library Match ${relevantMatches.length + 1}:\nKeywords: ${doc.concepts.join(', ')}\nExtracted Content: ${passage}`);
-                                }
-                            }
-                        });
-                        
-                        if(relevantMatches.length > 0) {
-                            relatedDocsContext = "\n[ENTIRE ACADEMIC LIBRARY - RELATED MATCHES]\n" + relevantMatches.join('\n\n');
-                        }
-                    }
                     
-                    documentContext = `[EXTRACTED ACADEMIC CONTENT - CURRENT DOCUMENT]
+                    documentContext = `[CURRENT DOCUMENT CONTEXT]
 ${textToFeed}
-${relatedDocsContext}
 
-[STRICT SEARCH PROTOCOL & MANDATORY RULES]
-You are the UDS Academic Knowledge Engine. You operate strictly on raw extracted text. Ignore all metadata including filenames. Base your reasoning exclusively on the extracted academic content supplied below.
-RULE 1: ABSOLUTE PROHIBITION ON METADATA GUESSING. NEVER introduce your answer with conversational filler like "It looks like you are referring to a document..." or "This text appears to be about...". NEVER attempt to guess a filename.
-RULE 2: DIVE STRAIGHT INTO THE ANSWER. Begin your response immediately with the factual academic explanation based on the text.
-RULE 3: PIPELINE SEARCH ORDER: 1. Current Document Content -> 2. Entire Academic Library (Related Matches) -> 3. General AI Knowledge.
-RULE 4: NO HALLUCINATIONS. If the exact answer is not found in the Extracted Content or Library Matches, you MUST state: "The indexed academic materials do not contain sufficient information for this specific query," before answering from General AI knowledge.
-RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabricate page numbers, titles, or authors.`;
+[STRICT EXTERNAL ACADEMIC SEARCH PROTOCOL]
+You are the UDS Hub Academic Research Assistant.
+RULE 1: EXTERNAL ACADEMIC SOURCING. You MUST act as if you are searching external, verified academic databases (like Google Scholar, ResearchGate, PubMed, JSTOR, etc.) to comprehensively answer the user's question. Do not limit yourself to the current document context.
+RULE 2: MANDATORY CITATIONS. You MUST provide clear, professional academic references at the end of your response for ANY fact, concept, or data you provide. Format them as a standard bibliography.
+RULE 3: RELATE TO CONTEXT. Use the [CURRENT DOCUMENT CONTEXT] above to understand what the student is studying, but supplement and answer their question using your broad external academic knowledge.
+RULE 4: PROFESSIONAL TONE. Maintain a highly professional, academic tone suitable for university students.
+RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it is a real, well-known academic concept, journal, or standard textbook in that field. Provide the Author, Year, and Title.`;
                 }
             }
 
