@@ -157,7 +157,7 @@
         <div id="guest-onboarding-view" class="w-full text-center py-24 md:py-40 flex flex-col items-center max-w-4xl mx-auto px-4">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-academicPurple/10 dark:bg-academicGold/10 text-academicPurple dark:text-academicGold text-sm font-semibold mb-8 border border-academicPurple/20 dark:border-academicGold/20">
                 <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-current"></span></span>
-                2026 Academic Platform
+                Academic Platform
             </div>
             <h1 class="text-5xl sm:text-7xl font-extrabold text-deepNavy dark:text-white mb-6 tracking-tighter leading-[1.1]">
                 Empowering the <br class="hidden sm:block"><span class="text-transparent bg-clip-text bg-gradient-to-r from-academicPurple to-blue-500 dark:from-academicGold dark:to-yellow-300">Next Generation</span>
@@ -165,10 +165,47 @@
             <p class="text-gray-600 dark:text-gray-400 mb-10 text-lg md:text-2xl leading-relaxed max-w-2xl font-light">
                 Access intelligent academic databases, centralized campus tools, and interactive student resources in one unified space.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16">
                 <button onclick="openAuthModal()" class="bg-deepNavy dark:bg-white text-white dark:text-deepNavy font-semibold px-8 py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all duration-300 text-base shadow-xl flex items-center justify-center gap-3">
                     Access Profile <i class="fa-solid fa-arrow-right"></i>
                 </button>
+            </div>
+
+            <!-- Professional Platform Information -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto text-left mb-16 px-4">
+                <div class="space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="font-semibold text-deepNavy dark:text-white">Centralized Architecture</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Experience a seamless ecosystem designed for modern academia. Navigate between cloud archives, the marketplace, and your study tools without friction.</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center"><i class="fa-solid fa-brain"></i></div>
+                    <h3 class="font-semibold text-deepNavy dark:text-white">AI-Powered Insights</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Leverage intelligent document analysis and word frequency models to generate concise summaries, key concepts, and interactive study aids on demand.</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="font-semibold text-deepNavy dark:text-white">Secure Governance</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Built with robust administrator controls and data ownership rules, ensuring your academic progress and personal information remain protected.</p>
+                </div>
+            </div>
+
+            <!-- Full Width Landing Slideshow Container -->
+            <div id="landing-slideshow-panel" class="w-full max-w-[100vw] overflow-hidden relative shadow-sm bg-gray-100 dark:bg-geminiBase h-40 sm:h-56 md:h-80 group mx-auto border-y border-gray-200 dark:border-gray-800">
+                <div id="landing-slideshow-container" class="w-full h-full relative flex transition-transform duration-500 ease-in-out">
+                    <!-- Professional Empty State -->
+                    <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 text-sm">
+                        <i class="fa-regular fa-image text-2xl mb-2"></i>
+                        <span>No banners currently published</span>
+                    </div>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+                <div id="landing-slideshow-indicators" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10"></div>
+            </div>
+            
+            <!-- School Information Display Panel (Admin Managed) -->
+            <div id="landing-school-info-panel" class="w-full max-w-5xl mx-auto mt-12 mb-10 px-6 text-left text-gray-700 dark:text-gray-300 leading-relaxed text-lg transition-all">
+                <!-- Content will be injected here by Admin -->
             </div>
         </div>
 
@@ -248,13 +285,88 @@
                         </div>
 
                         <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">5. Manage Slideshow Flyers</span>
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">5a. Manage Dashboard Flyers</span>
                             <form onsubmit="handleAddFlyer(event)" class="flex gap-2">
-                                <input type="url" id="admin-flyer-url" required placeholder="Paste Flyer Image URL..." class="w-full px-4 py-2 border dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-geminiBase dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                                <input type="url" id="admin-flyer-url" required placeholder="Paste Dashboard Flyer Image URL..." class="w-full px-4 py-2 border dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-geminiBase dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
                                 <button type="submit" class="px-5 py-2 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition shrink-0">Add</button>
                             </form>
                             <div id="admin-flyer-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
+
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider"><i class="fa-regular fa-images mr-1"></i> 5b. Manage Landing Page Banner</span>
+                            <form onsubmit="handleAddLandingFlyer(event)" class="flex gap-2">
+                                <input type="url" id="admin-landing-flyer-url" required placeholder="Paste Landing Page Banner Image URL..." class="w-full px-4 py-2 border dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-geminiBase dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+                                <button type="submit" class="px-5 py-2 bg-gray-800 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition shrink-0">Add Banner</button>
+                            </form>
+                            <div id="admin-landing-flyer-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
+                        </div>
+
+                        <!-- 5c. Manage School Information (Rich Text Editor) -->
+                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider"><i class="fa-solid fa-pen-to-square mr-1"></i> 5c. Manage School Message</span>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Write information about the school to display below the login banner. You can insert images and drag them around within your text.</p>
+                            
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden bg-white dark:bg-geminiBase shadow-sm">
+                                <!-- Formatting Toolbar -->
+                                <div class="bg-gray-50 dark:bg-[#1A1A1C] border-b border-gray-200 dark:border-gray-700 p-2 flex gap-1.5 items-center flex-wrap">
+                                    <button type="button" onclick="document.execCommand('bold', false, null)" class="w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-bold transition" title="Bold">B</button>
+                                    <button type="button" onclick="document.execCommand('italic', false, null)" class="w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 italic transition" title="Italic">I</button>
+                                    <button type="button" onclick="document.execCommand('underline', false, null)" class="w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 underline transition" title="Underline">U</button>
+                                    <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+                                    <button type="button" onclick="insertAdminImage()" class="px-3 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-800/50 flex items-center justify-center text-xs font-medium gap-1.5 transition"><i class="fa-regular fa-image"></i> Add Image</button>
+                                    <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+                                    <button type="button" onclick="document.execCommand('justifyLeft', false, null)" class="w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 transition"><i class="fa-solid fa-align-left"></i></button>
+                                    <button type="button" onclick="document.execCommand('justifyCenter', false, null)" class="w-8 h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 transition"><i class="fa-solid fa-align-center"></i></button>
+                                </div>
+                                <!-- Editable Area -->
+                                <div id="admin-school-info-editor" contenteditable="true" class="p-5 min-h-[200px] max-h-[400px] overflow-y-auto outline-none text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+                                    <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; color: #4F46E5;">Welcome to UDS Hub</h2><p>Our academic platform provides an intelligent, centralized space for students to access resources, communicate, and succeed.</p>
+                                </div>
+                            </div>
+                            <button onclick="saveSchoolInfo()" class="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition w-full sm:w-auto shadow-sm">Publish Information</button>
+                        </div>
+                        
+                        <script>
+                            // --- School Information Logic ---
+                            function insertAdminImage() {
+                                const url = prompt("Enter the URL of the image you want to attach (e.g. Imgur, Cloudinary link):");
+                                if (url) {
+                                    // Professional inline styling so images fit perfectly and can be dragged around
+                                    const imgHTML = `<img src="${url}" style="max-width: 100%; height: auto; border-radius: 12px; margin: 8px; display: inline-block; max-height: 250px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" alt="School Information Media" />`;
+                                    document.getElementById('admin-school-info-editor').focus();
+                                    document.execCommand('insertHTML', false, imgHTML);
+                                }
+                            }
+
+                            function saveSchoolInfo() {
+                                const content = document.getElementById('admin-school-info-editor').innerHTML;
+                                localStorage.setItem('uds_school_info_content', content);
+                                loadSchoolInfo(); // Instantly update frontend view
+                                alert("School Information published successfully!");
+                            }
+
+                            function loadSchoolInfo() {
+                                const savedContent = localStorage.getItem('uds_school_info_content');
+                                const displayPanel = document.getElementById('landing-school-info-panel');
+                                const editor = document.getElementById('admin-school-info-editor');
+                                
+                                if (savedContent) {
+                                    if (displayPanel) displayPanel.innerHTML = savedContent;
+                                    if (editor && document.activeElement !== editor) editor.innerHTML = savedContent;
+                                } else {
+                                    // Load defaults if nothing is saved
+                                    if (displayPanel && editor) {
+                                        displayPanel.innerHTML = editor.innerHTML;
+                                    }
+                                }
+                            }
+                            
+                            // Initialize on load
+                            document.addEventListener('DOMContentLoaded', () => {
+                                setTimeout(loadSchoolInfo, 300);
+                            });
+                        </script>
                         
                         <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
                             <div class="flex justify-between items-center mb-1">
@@ -1988,6 +2100,30 @@
             });
             window.renderSlideshow();
         });
+
+        onSnapshot(collection(db, "landing_slideshow"), (snapshot) => {
+            window.landingSlideshowData = [];
+            const adminList = document.getElementById('admin-landing-flyer-list');
+            if(adminList) adminList.innerHTML = '';
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                window.landingSlideshowData.push({ id: doc.id, ...data });
+
+                if(adminList) {
+                    adminList.innerHTML += `
+                        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
+                            <div class="flex items-center gap-3 truncate pr-2 w-full">
+                                <img src="${data.url}" class="w-10 h-10 object-cover rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                <a href="${data.url}" target="_blank" class="truncate text-blue-500 hover:underline flex-grow text-xs">${data.url}</a>
+                            </div>
+                            <button onclick="deleteLandingFlyer('${doc.id}')" class="text-red-500 hover:text-red-700 shrink-0 px-2 bg-red-50 dark:bg-red-900/20 rounded-lg py-1.5"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                }
+            });
+            window.renderLandingSlideshow();
+        });
     </script>
 
    <script>
@@ -2663,10 +2799,42 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
+                                const isDeleted = m.text === "🚫 This message was deleted";
+                                
+                                const reactions = m.reactions || {};
+                                let reactionHtml = '';
+                                Object.entries(reactions).forEach(([emoji, count]) => {
+                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-full px-1.5 py-0.5 text-[10px] shadow-sm mx-0.5">${emoji} ${count}</span>`;
+                                });
+
                                 feed.innerHTML += `
-                                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4">
+                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-4 relative group" data-id="${m.id}">
                                         <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[90%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed">${m.text}</div>
+                                        <div class="flex items-center gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-full">
+                                            
+                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed relative">
+                                                ${m.text}
+                                                <div class="absolute -bottom-2 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/2">${reactionHtml}</div>
+                                            </div>
+                                            
+                                            ${!isDeleted ? `
+                                            <div class="flex items-center gap-1.5 shrink-0 opacity-80 hover:opacity-100 transition-opacity">
+                                                <div class="relative group/emoji inline-block">
+                                                    <button class="text-gray-400 hover:text-yellow-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-7 h-7 rounded-full flex items-center justify-center transition shadow-sm"><i class="fa-regular fa-face-smile"></i></button>
+                                                    <div class="absolute bottom-full mb-1 ${isMe ? 'right-0' : 'left-0'} hidden group-hover/emoji:flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1.5 rounded-full shadow-xl z-[60]">
+                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">👍</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">❤️</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😂</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😮')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😮</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😢')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😢</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                ${isMe || window.isAdmin ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-red-400 hover:text-white hover:bg-red-500 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 w-7 h-7 rounded-full flex items-center justify-center transition shadow-sm" title="Delete for everyone"><i class="fa-solid fa-trash-can text-[10px]"></i></button>` : ''}
+                                            </div>
+                                            ` : ''}
+                                            
+                                        </div>
                                     </div>
                                 `;
                             });
@@ -3030,6 +3198,31 @@ RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabr
 
         window.handleAddFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Flyer Added Successfully!", "success"); document.getElementById('admin-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add flyer.", "error"); } };
         window.deleteFlyer = async function(id) { if(confirm("Delete this flyer?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "slideshow", id)); window.showToast("Flyer Removed", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
+
+        window.landingSlideshowData = []; window.currentLandingSlideIndex = 0; window.landingSlideIntervalThread = null;
+        window.renderLandingSlideshow = function() {
+            const container = document.getElementById('landing-slideshow-container'); const indicators = document.getElementById('landing-slideshow-indicators');
+            if (!window.landingSlideshowData || window.landingSlideshowData.length === 0) { 
+                container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 text-sm"><i class="fa-regular fa-image text-2xl mb-2"></i><span>No banners currently published</span></div>`; 
+                indicators.innerHTML = ''; return; 
+            }
+            container.innerHTML = ''; indicators.innerHTML = '';
+            window.landingSlideshowData.forEach((slide, index) => {
+                const img = document.createElement('img'); img.src = slide.url; img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; img.id = `landing-slide-img-${index}`; container.appendChild(img);
+                const dot = document.createElement('div'); dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-500 ${index === 0 ? 'bg-white w-4' : 'bg-white/40'}`; dot.id = `landing-slide-dot-${index}`; indicators.appendChild(dot);
+            });
+            window.currentLandingSlideIndex = 0; if (window.landingSlideIntervalThread) clearInterval(window.landingSlideIntervalThread); window.landingSlideIntervalThread = setInterval(window.advanceLandingSlide, 4000); 
+        };
+
+        window.advanceLandingSlide = function() {
+            if (!window.landingSlideshowData || window.landingSlideshowData.length <= 1) return;
+            const prevIndex = window.currentLandingSlideIndex; window.currentLandingSlideIndex = (window.currentLandingSlideIndex + 1) % window.landingSlideshowData.length;
+            document.getElementById(`landing-slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); document.getElementById(`landing-slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`landing-slide-dot-${prevIndex}`).classList.remove('w-4');
+            document.getElementById(`landing-slide-img-${window.currentLandingSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`landing-slide-dot-${window.currentLandingSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`landing-slide-dot-${window.currentLandingSlideIndex}`).classList.add('w-4');
+        };
+
+        window.handleAddLandingFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-landing-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "landing_slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Banner Added Successfully!", "success"); document.getElementById('admin-landing-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add banner.", "error"); } };
+        window.deleteLandingFlyer = async function(id) { if(confirm("Delete this landing banner?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "landing_slideshow", id)); window.showToast("Banner Removed", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
 
         window.renderMaterialsGrid = function(items) {
             const grid = document.getElementById('smart-materials-grid'); document.getElementById('material-count-badge').innerText = items ? items.length : '0'; grid.innerHTML = '';
