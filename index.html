@@ -862,18 +862,20 @@
                     let currentEditingStateMessageId = null;
 
                     function initializeWhatsappEngine() {
-                        const feed = document.getElementById('student-chat-feed');
-                        if (!feed) return;
+                        const targets = ['student-chat-feed'];
+                        targets.forEach(id => {
+                            const feed = document.getElementById(id);
+                            if (!feed) return;
 
-                        // FIXED: Disconnect observer during DOM updates to completely prevent recursive rendering loops
-                        const observer = new MutationObserver(() => {
-                            observer.disconnect();
+                            // Watch for new incoming messages and attach inline actions automatically
+                            const observer = new MutationObserver(() => {
+                                attachInlineActionsToMessages(feed);
+                            });
+                            observer.observe(feed, { childList: true, subtree: true });
+
+                            // Run initial pass
                             attachInlineActionsToMessages(feed);
-                            observer.observe(feed, { childList: true });
                         });
-
-                        observer.observe(feed, { childList: true });
-                        attachInlineActionsToMessages(feed);
                     }
 
                     function attachInlineActionsToMessages(feed) {
@@ -1038,106 +1040,6 @@
                     document.addEventListener('DOMContentLoaded', initializeWhatsappEngine);
                     setTimeout(initializeWhatsappEngine, 800);
                 })();
-
-                // ADDED: AI Tutor logic connecting to academic databases
-                window.submitAiTutorQuestion = function() {
-                    const input = document.getElementById('ai-tutor-input');
-                    const feed = document.getElementById('ai-tutor-chat-feed');
-                    const loader = document.getElementById('ai-tutor-loader');
-                    const query = input.value.trim();
-                    if (!query) return;
-
-                    // 1. Paint User Question
-                    feed.insertAdjacentHTML('beforeend', `
-                        <div class="flex items-start gap-3 justify-end mt-4">
-                            <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm">
-                                ${query}
-                            </div>
-                        </div>
-                    `);
-                    
-                    input.value = '';
-                    feed.scrollTop = feed.scrollHeight;
-                    loader.classList.remove('hidden');
-
-                    // 2. Fetch Simulated External Academic Synthesis with References
-                    setTimeout(() => {
-                        loader.classList.add('hidden');
-                        
-                        // Academic terminology generation matrix
-                        const cleanTopic = query.replace(/[^\w\s]/gi, '');
-                        const year1 = 2024, year2 = 2025;
-                        
-                        const aiResponseHTML = `
-                            <div class="flex items-start gap-3 mt-4 w-full animate-fade-in">
-                                <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                                <div class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed text-sm w-full space-y-3">
-                                    <div class="flex items-center gap-2 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-full w-fit">
-                                        <i class="fa-solid fa-earth-americas"></i> Sourced from External Academic Repositories Only
-                                    </div>
-                                    
-                                    <p>Based on global peer-reviewed literature compiled from external academic databases, investigations regarding <strong>"${query}"</strong> emphasize structured analytical frameworks. Recent experimental studies suggest that optimizations in this domain rely on verified operational methodologies [1]. Furthermore, comparative global assessments indicate that systemic integrations yields significantly higher fidelity results when matched against traditional baseline models [2].</p>
-                                    
-                                    <p>In terms of practical implementation, scholarly focus has shifted towards long-term scalability and edge-case error mitigation, proving that real-world deployment requires continuous parameter verification [3].</p>
-                                    
-                                    <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                                        <h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5"><i class="fa-solid fa-book-bookmark"></i> References & Bibliography</h4>
-                                        
-                                        <div class="space-y-2 text-[12px]">
-                                            <div class="p-2 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/60">
-                                                <span class="font-bold text-purple-600 dark:text-purple-400">[1]</span> 
-                                                <span>Alhassan, M. & Mensah, K. (${year1}). "Empirical Analysis on ${cleanTopic || 'Modern Concepts'}: Methodological Approaches." <em>Journal of Academic Science and Global Technology</em>, 14(3), pp. 112-128.</span>
-                                                <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(query)}" target="_blank" class="block text-[10px] text-blue-500 hover:underline mt-1"><i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> View on Google Scholar</a>
-                                            </div>
-                                            
-                                            <div class="p-2 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/60">
-                                                <span class="font-bold text-purple-600 dark:text-purple-400">[2]</span> 
-                                                <span>Rodriguez, E., et al. (${year2}). "Systemic Optimization Layer Implementations for Student-Facing Environments." <em>International Review of Open Access Research (CORE)</em>, 29(1), pp. 45-59.</span>
-                                                <a href="https://core.ac.uk/search?q=${encodeURIComponent(query)}" target="_blank" class="block text-[10px] text-blue-500 hover:underline mt-1"><i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> View on CORE Repository</a>
-                                            </div>
-
-                                            <div class="p-2 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700/60">
-                                                <span class="font-bold text-purple-600 dark:text-purple-400">[3]</span> 
-                                                <span>Academic Consortium for Digital Innovation (${year2}). "Global Scalability and Error Mitigation Protocols in Integrated Educational Software Architecture." <em>JSTOR Institutional Repository Archives</em>, Ref: 8849-X.</span>
-                                                <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(query)}" target="_blank" class="block text-[10px] text-blue-500 hover:underline mt-1"><i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> View Citations Directory</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        
-                        feed.insertAdjacentHTML('beforeend', aiResponseHTML);
-                        feed.scrollTop = feed.scrollHeight;
-                    }, 1200);
-                };
-
-                // ADDED: Community Chat disappearing text fix
-                window.sendStudentChat = function() {
-                    const input = document.getElementById('student-chat-input');
-                    const feed = document.getElementById('student-chat-feed');
-                    if (!input || !feed) return;
-                    
-                    const msgText = input.value.trim();
-                    if (!msgText) return;
-                    
-                    const msgId = 'msg-' + Date.now();
-                    const msgHTML = `
-                        <div class="chat-msg flex justify-end mb-3 select-text" data-message-id="${msgId}">
-                            <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-sm relative break-words">
-                                <p class="msg-text">${msgText}</p>
-                            </div>
-                        </div>
-                    `;
-                    
-                    feed.insertAdjacentHTML('beforeend', msgHTML);
-                    input.value = '';
-                    
-                    // Force DOM recalculation layout update
-                    setTimeout(() => {
-                        feed.scrollTop = feed.scrollHeight;
-                    }, 50);
-                };
             </script>
         </div>
     </div>
@@ -2338,37 +2240,46 @@
             const modal = document.getElementById('google-document-reader-modal');
             const iframe = document.getElementById('doc-reader-iframe');
             const loader = document.getElementById('doc-reader-loader');
-            
-            // 1. Show UI instantly
-            modal.classList.remove('hidden'); 
-            document.body.style.overflow = 'hidden';
+            const titleEl = document.getElementById('doc-reader-header-title');
+            const iconEl = document.getElementById('doc-reader-icon');
+
             loader.classList.remove('hidden');
             iframe.classList.add('opacity-0');
-
-            document.getElementById('doc-reader-header-title').innerText = title; 
+            iframe.src = ''; 
+            titleEl.innerText = title; 
             
-            // 2. Set Icon Snappily
-            let iconImg = "File_icon.svg";
-            const t = title.toLowerCase();
-            if (t.includes('.pdf')) iconImg = "8/87/PDF_file_icon.svg";
-            else if (t.includes('.ppt')) iconImg = "0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg";
-            else if (t.includes('.doc')) iconImg = "f/fb/Microsoft_Word_2013_logo.svg";
-            document.getElementById('doc-reader-icon').innerHTML = `<img src="https://upload.wikimedia.org/wikipedia/commons/${iconImg}" class="w-8 h-8 object-contain">`;
+            let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-8 h-8 object-contain">';
+            const titleLower = title.toLowerCase();
+            
+            if (titleLower.includes('.pdf')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" class="w-8 h-8 object-contain">'; } 
+            else if (titleLower.includes('.ppt') || titleLower.includes('.pptx')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-8 h-8 object-contain">'; } 
+            else if (titleLower.includes('.doc') || titleLower.includes('.docx')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-8 h-8 object-contain">'; }
+            iconEl.innerHTML = iconHtml;
 
-            // 3. Fast URL parsing
-            let finalUrl = url;
+           let finalUrl = url;
             const fileIdMatch = url.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (!finalUrl.includes('embeddedfolderview') && fileIdMatch) {
-                finalUrl = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
-            } else if (finalUrl.includes('/view')) {
-                finalUrl = finalUrl.replace('/view', '/preview');
+
+            // If it is an embedded folder, preserve the URL completely
+            if (finalUrl.includes('embeddedfolderview')) {
+                // Do nothing, folder URL is already perfectly formatted
+            } 
+            // For all files with a valid Drive ID, use the universal Drive previewer
+            else if (fileIdMatch && fileIdMatch[1]) {
+                const fileId = fileIdMatch[1];
+                finalUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+            } 
+            // Fallback for standard links
+            else {
+                if (finalUrl.includes('/view')) finalUrl = finalUrl.replace('/view', '/preview');
             }
 
-            // 4. Load Chat in background immediately
-            if (fileIdMatch) window.loadDocumentChat(fileIdMatch[1]);
-
-            // 5. Trigger Iframe Load
             iframe.src = finalUrl; 
+            modal.classList.remove('hidden'); 
+            document.body.style.overflow = 'hidden';
+
+            if (fileIdMatch && fileIdMatch[1]) {
+                window.loadDocumentChat(fileIdMatch[1]);
+            }
         };
         
        window.terminateDocViewer = function() { 
@@ -2532,7 +2443,7 @@
         };
 
         window.runAutonomousIndexMonitor = async function(currentMaterials) {
-            if(!window.firebaseDb || !window.currentUserProfile) return; // Now runs for any logged-in student
+            if(!window.firebaseDb || !window.isAdmin) return; // Restrict heavy monitoring to admin sessions to save global reads
             try {
                 const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                 const indexSnap = await getDocs(window.firebaseCollection(window.firebaseDb, "document_index"));
@@ -2643,39 +2554,58 @@
             const container = document.getElementById('doc-iframe-container');
             const openBtn = document.getElementById('ai-tutor-open-btn');
             
-            if(chatPanel && !chatPanel.classList.contains('w-0')) window.toggleStudentChatPanel();
+            // Close Student Chat if open to prevent overlap
+            if(chatPanel && !chatPanel.classList.contains('w-0')) {
+                window.toggleStudentChatPanel();
+            }
             
             if (panel.classList.contains('w-0')) {
+                // Open Panel
                 panel.classList.remove('w-0');
                 panel.classList.add('w-full', 'md:w-[380px]', 'lg:w-[420px]');
                 openBtn.classList.add('hidden');
-                window.innerWidth >= 768 ? container.classList.add('md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]') : container.classList.add('hidden');
+                
+                if (window.innerWidth >= 768) {
+                    container.classList.add('md:w-[calc(100%-380px)]', 'lg:w-[calc(100%-420px)]');
+                } else {
+                    container.classList.add('hidden'); // Hide iframe on small mobile
+                }
 
+             // Autoload document context quietly if not already cached
                 const iframe = document.getElementById('doc-reader-iframe');
                 const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
                 if (fileIdMatch) {
                     const fileId = fileIdMatch[1];
-                    const docTitle = document.getElementById('doc-reader-header-title').innerText;
-                    
-                    // 1. Check if AI already "knows" this document from the database
-                    const docRef = window.firebaseDoc(window.firebaseDb, "document_index", fileId);
-                    const docSnap = await window.firebaseGetDoc(docRef);
-                    
-                    if (docSnap.exists()) {
-                        window.documentAnalysisCache[fileId] = docSnap.data();
-                    } else {
-                        // 2. If it's a NEW document, the student's browser extracts it right now
-                        console.log("AI Training: Learning new document...");
+                    if(window.loadCommunityDiscussions) window.loadCommunityDiscussions(fileId);
+                    if (!window.documentAnalysisCache[fileId]) {
+                        const docTitle = document.getElementById('doc-reader-header-title').innerText;
                         try {
-                            const extracted = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
-                            window.documentAnalysisCache[fileId] = extracted;
-                            // 3. Save it to the Global Database so it's "trained" for every other student
-                            await window.firebaseSetDoc(docRef, {
-                                documentId: fileId, title: docTitle,
-                                fullText: extracted.fullText, concepts: extracted.concepts,
-                                timestamp: Date.now(), status: 'indexed'
-                            });
-                        } catch(e) { console.error("Auto-Learn failed", e); }
+                            let dbData = null;
+                            if (window.firebaseGetDoc) {
+                                const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId));
+                                if (docSnap.exists()) dbData = docSnap.data();
+                            }
+                            
+                            if (dbData) {
+                                window.documentAnalysisCache[fileId] = dbData;
+                            } else {
+                                const extracted = await window.extractTextAndSummarize(fileId, docTitle.toLowerCase());
+                                window.documentAnalysisCache[fileId] = extracted;
+                                if (window.firebaseSetDoc) {
+                                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), {
+                                        documentId: fileId,
+                                        title: docTitle,
+                                        fullText: extracted.fullText || extracted.summary,
+                                        summary: extracted.summary,
+                                        concepts: extracted.concepts,
+                                        wordCount: extracted.wordCount,
+                                        timestamp: new Date().getTime()
+                                    });
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Silent context extraction/DB index failed:", e);
+                        }
                     }
                 }
             } else {
@@ -2899,46 +2829,41 @@
                             feed.innerHTML = '';
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
+                                const isDeleted = m.text === "🚫 This message was deleted";
                                 
                                 const reactions = m.reactions || {};
                                 let reactionHtml = '';
                                 Object.entries(reactions).forEach(([emoji, count]) => {
-                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100/50 dark:border-gray-700 rounded-full px-1.5 py-0.5 text-[10px] shadow-sm mx-0.5">${emoji} ${count}</span>`;
+                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-full px-1.5 py-0.5 text-[10px] shadow-sm mx-0.5">${emoji} ${count}</span>`;
                                 });
 
                                 feed.innerHTML += `
-                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-3 group relative" data-id="${m.id}">
-                                        <span class="text-[9px] text-gray-400 font-bold ${isMe ? 'mr-2' : 'ml-2'} mb-0.5 uppercase tracking-tighter">${m.userName}</span>
-                                        
-                                        <div class="relative max-w-[85%]">
-                                            <!-- Message Text Box -->
-                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-2xl rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-100 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-tl-none'} px-3.5 py-2 text-[13px] shadow-sm whitespace-pre-wrap leading-snug">
+                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-4 relative group" data-id="${m.id}">
+                                        <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-1"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
+                                        <div class="flex items-center gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-full">
+                                            
+                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-4 py-2.5 rounded-2xl max-w-[85%] text-sm shadow-sm whitespace-pre-wrap leading-relaxed relative">
                                                 ${m.text}
+                                                <div class="absolute -bottom-2 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/2">${reactionHtml}</div>
                                             </div>
                                             
-                                            <!-- Reaction Badges -->
-                                            <div class="absolute -bottom-2 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/4 z-10">
-                                                ${reactionHtml}
-                                            </div>
-
-                                            <!-- Hidden Actions Menu (Shows only on Hover to save space) -->
                                             ${!isDeleted ? `
-                                            <div class="absolute top-0 ${isMe ? '-left-10' : '-right-10'} h-full flex flex-col justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                            <div class="flex items-center gap-1.5 shrink-0 opacity-80 hover:opacity-100 transition-opacity">
                                                 <div class="relative group/emoji inline-block">
-                                                    <button class="text-gray-300 hover:text-blue-500 transition-colors"><i class="fa-regular fa-face-smile text-sm"></i></button>
-                                                    <div class="absolute bottom-full mb-2 ${isMe ? 'left-0' : 'right-0'} hidden group-hover/emoji:flex items-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1.5 rounded-full shadow-xl z-[99]">
-                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-sm">👍</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-sm">❤️</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-sm">😂</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '🔥')" class="cursor-pointer hover:scale-125 transition text-sm">🔥</span>
+                                                    <button class="text-gray-400 hover:text-yellow-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-7 h-7 rounded-full flex items-center justify-center transition shadow-sm"><i class="fa-regular fa-face-smile"></i></button>
+                                                    <div class="absolute bottom-full mb-1 ${isMe ? 'right-0' : 'left-0'} hidden group-hover/emoji:flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1.5 rounded-full shadow-xl z-[60]">
+                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">👍</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">❤️</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😂</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😮')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😮</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😢')" class="cursor-pointer hover:scale-125 transition text-sm px-0.5">😢</span>
                                                     </div>
                                                 </div>
-                                                ${isMe || window.isAdmin ? `
-                                                <button onclick="window.deleteCommunityMessage('${m.id}')" class="text-gray-300 hover:text-red-500 transition-colors">
-                                                    <i class="fa-solid fa-trash-can text-[11px]"></i>
-                                                </button>` : ''}
+                                                
+                                                ${isMe || window.isAdmin ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-red-400 hover:text-white hover:bg-red-500 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/30 w-7 h-7 rounded-full flex items-center justify-center transition shadow-sm" title="Delete for everyone"><i class="fa-solid fa-trash-can text-[10px]"></i></button>` : ''}
                                             </div>
                                             ` : ''}
+                                            
                                         </div>
                                     </div>
                                 `;
@@ -2977,12 +2902,14 @@
         };
 // Persistent Delete for Everyone
         window.deleteCommunityMessage = async function(messageId) {
-            if(!confirm("Are you sure you want to permanently delete this message?")) return;
+            if(!confirm("Delete this message for everyone?")) return;
             try {
-                // Completely remove the document from Firestore
                 const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
-                await window.firebaseDeleteDoc(docRef);
-                window.showToast("Message permanently removed", "success");
+                await window.firebaseUpdateDoc(docRef, {
+                    text: "🚫 This message was deleted",
+                    deletedAt: Date.now()
+                });
+                window.showToast("Message deleted for everyone", "success");
             } catch(e) { window.showToast("Delete failed", "error"); }
         };
 
@@ -3142,16 +3069,17 @@
                         }
                     }
                     
-                    documentContext = `[INTERNAL KNOWLEDGE BASE]
-CURRENT ARTICLE: ${textToFeed}
-RELATED ARTICLES IN DRIVE: ${relatedDocsContext}
+                    documentContext = `[EXTRACTED ACADEMIC CONTENT - CURRENT DOCUMENT]
+${textToFeed}
+${relatedDocsContext}
 
-[MANDATORY SYSTEM PROTOCOL]
-1. INTERNAL FIRST: You must search the "INTERNAL KNOWLEDGE BASE" above for the answer. 
-2. SEARCH ALL ARTICLES: If the answer is not in the 'Current Article', check the 'Related Articles in Drive'.
-3. NO HALLUCINATION: If the information is found in these internal documents, summarize it accurately.
-4. FALLBACK: Only if the internal documents do not contain the answer, you may use your general training data, but you MUST start your response with: "This specific info is not in the campus articles, but based on general knowledge..."
-5. TONE: Be a helpful academic tutor for UDS students.`;
+[STRICT SEARCH PROTOCOL & MANDATORY RULES]
+You are the UDS Academic Knowledge Engine. You operate strictly on raw extracted text. Ignore all metadata including filenames. Base your reasoning exclusively on the extracted academic content supplied below.
+RULE 1: ABSOLUTE PROHIBITION ON METADATA GUESSING. NEVER introduce your answer with conversational filler like "It looks like you are referring to a document..." or "This text appears to be about...". NEVER attempt to guess a filename.
+RULE 2: DIVE STRAIGHT INTO THE ANSWER. Begin your response immediately with the factual academic explanation based on the text.
+RULE 3: PIPELINE SEARCH ORDER: 1. Current Document Content -> 2. Entire Academic Library (Related Matches) -> 3. General AI Knowledge.
+RULE 4: NO HALLUCINATIONS. If the exact answer is not found in the Extracted Content or Library Matches, you MUST state: "The indexed academic materials do not contain sufficient information for this specific query," before answering from General AI knowledge.
+RULE 5: CITATIONS. If quoting, strictly use [Source: Document Text]. DO NOT fabricate page numbers, titles, or authors.`;
                 }
             }
 
