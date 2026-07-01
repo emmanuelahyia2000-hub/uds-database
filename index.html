@@ -235,7 +235,6 @@
                             <li><button onclick="navigateTo('dashboard')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-book-open w-5 text-center text-academicGold"></i> Cloud Archive</button></li>
                             <li><button onclick="navigateTo('accommodation')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-building-user w-5 text-center text-academicGold"></i> Accommodation Finder</button></li>
                             <li><button onclick="navigateTo('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center text-academicGold"></i> Marketplace</button></li>
-                            <li><button onclick="navigateTo('group-studies')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-user-group w-5 text-center text-academicGold"></i> My Group Studies</button></li>
                             <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center text-academicGold"></i> GPA Engine</button></li>
                            <li><button onclick="navigateTo('announcements')" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-bullhorn w-5 text-center text-academicGold"></i> Campus Notices</button></li>
                            <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white lg:text-deepNavy lg:dark:text-white hover:bg-white/10 lg:hover:bg-lightGray lg:dark:hover:bg-academicPurple flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center text-academicGold"></i> Contribute File</button></li>
@@ -579,26 +578,6 @@
                     <div id="announcements-yield-box" class="space-y-6 px-2"></div>
                 </div>
 
-                <div id="section-group-studies" class="hidden w-full max-w-4xl mx-auto px-2">
-                    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">My Group Studies</h2>
-                            <p class="text-sm text-gray-500">Private collaborative circles for your documents.</p>
-                        </div>
-                        <button onclick="joinGroupByCode()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-medium transition whitespace-nowrap flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center">
-                            <i class="fa-solid fa-right-to-bracket"></i> Join Group by Code
-                        </button>
-                    </div>
-                    <div id="my-groups-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Private groups will load here -->
-                        <div class="col-span-full py-20 text-center bg-white dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
-                            <i class="fa-solid fa-people-group text-4xl mb-4 text-gray-300"></i>
-                            <p class="text-gray-500 font-medium">You haven't joined any study groups yet.</p>
-                            <p class="text-xs text-gray-400 mt-1">Create one while viewing an academic document or join using a Group Code!</p> 
-                        </div>
-                    </div>
-                </div>
-
                 <div id="section-career-bridge" class="hidden w-full max-w-5xl mx-auto">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 px-2">
                         <div>
@@ -747,8 +726,8 @@
                     <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden shadow">0</span>
                 </button>
 
-                <button onclick="handleGroupInitiation()" id="study-group-init-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition-all font-medium text-sm shadow-lg">
-                    <i class="fa-solid fa-user-group text-lg md:mr-2"></i> <span class="hidden md:inline">Create Group</span>
+                <button onclick="toggleStudyClassPanel()" id="study-class-open-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-700 dark:text-green-400 rounded-full transition-all font-medium text-sm border border-green-200 dark:border-green-800">
+                    <i class="fa-solid fa-user-group text-lg md:mr-2"></i> <span class="hidden md:inline">Classes</span>
                 </button>
 
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
@@ -764,7 +743,6 @@
                 </div>
                <iframe id="doc-reader-iframe" class="w-full h-full border-none opacity-0 transition-opacity duration-700 ease-in-out bg-white" src="" onload="document.getElementById('doc-reader-loader').classList.add('hidden'); this.classList.remove('opacity-0');"></iframe>
                 
-                <!-- Floating Action Buttons -->
                 <button onclick="toggleAiTutorPanel()" id="ai-tutor-open-btn" class="absolute top-4 right-4 z-30 bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-robot text-xl"></i>
                 </button>
@@ -772,6 +750,10 @@
                 <button onclick="toggleStudentChatPanel()" id="student-chat-open-btn" class="absolute top-[76px] right-4 z-30 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-comments text-xl"></i>
                     <span id="chat-notice-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden animate-bounce shadow">0</span>
+                </button>
+
+                <button onclick="toggleStudyClassPanel()" id="study-class-float-btn" class="absolute top-[136px] right-4 z-30 bg-green-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-green-700 transition flex items-center justify-center">
+                    <i class="fa-solid fa-user-group text-xl"></i>
                 </button>
             </div>
             <div id="ai-tutor-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
@@ -1106,210 +1088,110 @@
             </div>
 
             <script>
-                window.activeGroupId = null;
-                window.groupChatUnsubscribe = null;
-
-                async function handleGroupInitiation() {
-                    if(!window.currentUserProfile) { 
-                        window.showToast("Please sign in to create groups.", "error"); 
-                        return; 
-                    }
-                    
-                    const gName = prompt("Enter Group Name (e.g. VISION):");
-                    if(!gName) return;
-
-                    const myEmail = window.currentUserProfile.email.toLowerCase();
-                    const fileTitle = document.getElementById('doc-reader-header-title').innerText;
-                    const fileUrl = document.getElementById('doc-reader-iframe').src;
-                    
-                    // Generate Unique Group Code (6 alphanumeric characters)
-                    const groupCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-                    try {
-                        window.showToast("Creating group...", "success");
+                let currentDocumentClasses = [];
+                
+                function toggleStudyClassPanel() {
+                    const panel = document.getElementById('study-class-panel');
+                    if (panel.classList.contains('w-0')) {
+                        // Close existing panels cleanly
+                        const tutorPanel = document.getElementById('ai-tutor-panel');
+                        if (tutorPanel) { tutorPanel.classList.add('w-0'); tutorPanel.classList.remove('w-80', 'md:w-96'); }
                         
-                        await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "study_groups"), {
-                            groupName: gName,
-                            groupCode: groupCode,
-                            fileName: fileTitle,
-                            fileUrl: fileUrl,
-                            creatorId: myEmail,
-                            members: [myEmail],
-                            timestamp: Date.now()
-                        });
-
-                        alert(`Group Created Successfully!\n\nYour Group Code is: ${groupCode}\n\nShare this code with your friends so they can join!`);
-                        window.terminateDocViewer(); 
-                        window.navigateTo('group-studies');
-                    } catch(e) { 
-                        console.error(e);
-                        window.showToast("Failed to create group.", "error"); 
+                        const chatPanel = document.getElementById('student-chat-panel');
+                        if (chatPanel) { chatPanel.classList.add('w-0'); chatPanel.classList.remove('w-80', 'md:w-96'); }
+                        
+                        panel.classList.remove('w-0');
+                        panel.classList.add('w-80', 'md:w-96');
+                        renderClassList();
+                    } else {
+                        panel.classList.add('w-0');
+                        panel.classList.remove('w-80', 'md:w-96');
                     }
                 }
 
-                window.joinGroupByCode = async function() {
-                    if(!window.currentUserProfile) { 
-                        alert("Please sign in to join groups.");
-                        if(typeof openAuthModal === 'function') openAuthModal();
-                        return; 
+                function generateNewClass() {
+                    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    const className = prompt("Enter a name for your Class:");
+                    if (!className) return;
+
+                    const newClass = { id: Date.now(), name: className, code: code, creator: "Admin (You)" };
+                    currentDocumentClasses.push(newClass);
+                    
+                    alert(`Class created successfully!\n\nClass Name: ${className}\nSecret Code: ${code}\n\nShare this secret code with members who want to join.`);
+                    renderClassList();
+                }
+
+                function renderClassList() {
+                    const container = document.getElementById('available-classes-container');
+                    container.innerHTML = '<h4 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Available Classes</h4>';
+                    
+                    if (currentDocumentClasses.length === 0) {
+                        container.innerHTML += '<p class="text-sm text-gray-400 text-center py-4">No classes created for this document yet.</p>';
+                        return;
                     }
-                    
-                    const code = prompt("Enter Group Code:");
-                    if(!code) return;
 
-                    const myEmail = window.currentUserProfile.email.toLowerCase();
-
-                    try {
-                        const groupsRef = window.firebaseCollection(window.firebaseDb, "study_groups");
-                        const q = window.firebaseQuery(groupsRef, window.firebaseWhere("groupCode", "==", code.toUpperCase()));
-                        const querySnapshot = await window.firebaseGetDocs(q);
-
-                        if (querySnapshot.empty) {
-                            alert("Invalid Group Code. Please check and try again.");
-                            return;
-                        }
-
-                        let groupId = null;
-                        let groupData = null;
-                        querySnapshot.forEach((doc) => {
-                            groupId = doc.id;
-                            groupData = doc.data();
-                        });
-
-                        if (groupData.members && groupData.members.includes(myEmail)) {
-                            alert("You are already a member of this group.");
-                            return;
-                        }
-
-                        // Add user to members array
-                        const docRef = window.firebaseDoc(window.firebaseDb, "study_groups", groupId);
-                        await window.firebaseUpdateDoc(docRef, {
-                            members: window.firebaseArrayUnion(myEmail)
-                        });
-
-                        alert("Successfully joined group!");
-                        window.loadMyPrivateGroups();
-                    } catch(e) {
-                        console.error(e);
-                        alert("An error occurred while joining.");
-                    }
-                };
-
-                window.loadMyPrivateGroups = function() {
-                    if(!window.currentUserProfile) return;
-                    const myEmail = window.currentUserProfile.email.toLowerCase();
-                    const container = document.getElementById('my-groups-list');
-
-                    const q = window.firebaseCollection(window.firebaseDb, "study_groups");
-                    window.onSnapshot(q, (snapshot) => {
-                        container.innerHTML = '';
-                        let hasGroups = false;
-
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            if(data.members && data.members.includes(myEmail)) {
-                                hasGroups = true;
-                                container.innerHTML += `
-                                    <div class="bg-white dark:bg-geminiSurface p-5 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition cursor-pointer group" onclick="openPrivateGroupChat('${doc.id}')">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h4 class="font-bold text-gray-800 dark:text-white text-lg">${data.groupName}</h4>
-                                                <p class="text-xs text-gray-500 font-mono mt-1">Code: <span class="font-bold text-gray-800 dark:text-white">${data.groupCode || 'N/A'}</span></p>
-                                                <div class="flex items-center gap-1.5 mt-2">
-                                                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
-                                                    <span class="text-[11px] text-gray-600 dark:text-gray-400 font-medium truncate">Studying: ${data.fileName}</span>
-                                                </div>
-                                            </div>
-                                            <div class="w-10 h-10 bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-500 transition">
-                                                <i class="fa-solid fa-chevron-right"></i>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                            }
-                        });
-
-                        if(!hasGroups) {
-                            container.innerHTML = `<div class="col-span-full py-20 text-center bg-white dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-solid fa-people-group text-4xl mb-4 text-gray-300"></i><p class="text-gray-500 font-medium">You haven't joined any study groups yet.</p><p class="text-xs text-gray-400 mt-1">Create one while viewing an academic document or join using a Group Code!</p></div>`;
-                        }
-                    });
-                };
-
-                window.openPrivateGroupChat = function(groupId) {
-                    window.activeGroupId = groupId;
-                    const readerModal = document.getElementById('google-document-reader-modal');
-                    readerModal.classList.remove('hidden');
-                    
-                    document.getElementById('doc-reader-header-title').innerText = "Private Study Group";
-                    document.getElementById('doc-reader-loader').classList.add('hidden');
-                    document.getElementById('doc-reader-iframe').classList.add('hidden');
-                    
-                    const container = document.getElementById('doc-iframe-container');
-                    const welcomeMsg = document.createElement('div');
-                    welcomeMsg.id = "group-welcome-screen";
-                    welcomeMsg.className = "absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#0a0a0a] p-10 text-center";
-                    welcomeMsg.innerHTML = `
-                        <div class="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-full flex items-center justify-center mb-6 text-3xl shadow-sm">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Private Study Group</h2>
-                        <p class="text-gray-500 text-sm max-w-xs mb-8">Discuss this file securely with your group members. All group messages are private.</p>
-                        <button onclick="reOpenGroupMaterial('${groupId}')" class="bg-navy dark:bg-white text-white dark:text-navy px-8 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2">
-                            <i class="fa-solid fa-file-pdf"></i> Open Slides
-                        </button>
-                    `;
-                    
-                    const old = document.getElementById('group-welcome-screen');
-                    if(old) old.remove();
-                    container.appendChild(welcomeMsg);
-
-                    window.toggleStudentChatPanel();
-                    if(window.loadGroupChatMessages) window.loadGroupChatMessages(groupId);
-                };
-
-                window.reOpenGroupMaterial = async function(groupId) {
-                    const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "study_groups", groupId));
-                    if(docSnap.exists()) {
-                        const data = docSnap.data();
-                        const iframe = document.getElementById('doc-reader-iframe');
-                        iframe.src = data.fileUrl;
-                        iframe.classList.remove('hidden');
-                        document.getElementById('doc-reader-header-title').innerText = data.fileName;
-                        document.getElementById('group-welcome-screen').remove();
-                    }
-                };
-
-                window.loadGroupChatMessages = function(groupId) {
-                    const feed = document.getElementById('student-chat-feed');
-                    feed.innerHTML = '<p class="text-xs text-gray-400 text-center mt-10">Syncing private messages...</p>';
-                    
-                    if(window.groupChatUnsubscribe) window.groupChatUnsubscribe();
-
-                    const chatRef = window.firebaseCollection(window.firebaseDb, `study_groups/${groupId}/messages`);
-                    window.groupChatUnsubscribe = window.onSnapshot(chatRef, (snapshot) => {
-                        const msgs = [];
-                        snapshot.forEach(doc => msgs.push({id: doc.id, ...doc.data()}));
-                        msgs.sort((a,b) => a.timestamp - b.timestamp);
-
-                        feed.innerHTML = `
-                            <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl mb-4 border border-blue-100 dark:border-blue-800 text-[10px] text-blue-600 dark:text-blue-300 font-medium flex items-center gap-2">
-                                <i class="fa-solid fa-circle-info"></i> Your messages are encrypted and private.
+                    currentDocumentClasses.forEach(cls => {
+                        container.innerHTML += `
+                            <div onclick="attemptJoinClass(${cls.id})" class="bg-white dark:bg-geminiBase border border-gray-200 dark:border-gray-700 p-3 rounded-xl cursor-pointer hover:border-green-500 transition shadow-sm flex justify-between items-center group">
+                                <div>
+                                    <h5 class="font-medium text-sm text-gray-800 dark:text-white">${cls.name}</h5>
+                                    <p class="text-[10px] text-gray-500">Created by ${cls.creator}</p>
+                                </div>
+                                <i class="fa-solid fa-lock text-gray-300 group-hover:text-green-500 transition"></i>
                             </div>
                         `;
-
-                        msgs.forEach(m => {
-                            const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
-                            feed.innerHTML += `
-                                <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-3">
-                                    <span class="text-[9px] text-gray-500 font-bold mb-0.5">${m.userName}</span>
-                                    <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'} px-3 py-2 rounded-xl max-w-[85%] text-[13px] shadow-sm">
-                                        ${m.text}
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        feed.scrollTop = feed.scrollHeight;
                     });
-                };
+                }
+
+                function attemptJoinClass(classId) {
+                    const cls = currentDocumentClasses.find(c => c.id === classId);
+                    if (!cls) return;
+
+                    const enteredCode = prompt(`Enter the secret code to join "${cls.name}":`);
+                    if (enteredCode === cls.code) {
+                        openPrivateClassChat(cls);
+                    } else if (enteredCode !== null) {
+                        alert("Incorrect code. You cannot join this class.");
+                    }
+                }
+
+                function openPrivateClassChat(cls) {
+                    document.getElementById('class-list-view').classList.add('hidden');
+                    const chatView = document.getElementById('private-class-chat-view');
+                    chatView.classList.remove('hidden');
+                    chatView.classList.add('flex');
+                    
+                    document.getElementById('study-class-header-title').innerText = cls.name;
+                    document.getElementById('study-class-header-subtitle').innerText = "Private Chat";
+                    document.getElementById('back-to-class-list').classList.remove('hidden');
+                }
+
+                function showClassList() {
+                    document.getElementById('class-list-view').classList.remove('hidden');
+                    const chatView = document.getElementById('private-class-chat-view');
+                    chatView.classList.add('hidden');
+                    chatView.classList.remove('flex');
+                    
+                    document.getElementById('study-class-header-title').innerText = "Study Classes";
+                    document.getElementById('study-class-header-subtitle').innerText = "Private Group Study";
+                    document.getElementById('back-to-class-list').classList.add('hidden');
+                }
+
+                function sendPrivateClassMessage() {
+                    const input = document.getElementById('private-class-chat-input');
+                    if(!input.value.trim()) return;
+                    
+                    const feed = document.getElementById('private-class-chat-feed');
+                    feed.innerHTML += `
+                       <div class="flex justify-end mb-3">
+                            <div class="bg-green-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] w-fit inline-block text-sm shadow-sm">
+                                ${input.value}
+                            </div>
+                        </div>
+                    `;
+                    input.value = '';
+                    feed.scrollTop = feed.scrollHeight;
+                }
             </script>
         </div>
     </div>
@@ -2315,12 +2197,10 @@
                 window.toggleSidebar();
             }
 
-            // CLEANUP: Hide every main section before showing the new one
             document.getElementById('section-main-search').classList.add('hidden');
             document.getElementById('section-announcements').classList.add('hidden');
             document.getElementById('section-accommodation').classList.add('hidden');
             document.getElementById('section-marketplace').classList.add('hidden'); 
-            document.getElementById('section-group-studies').classList.add('hidden'); // This line fixes your issue
             document.getElementById('section-career-bridge').classList.add('hidden');
             document.getElementById('slideshow-panel').classList.add('hidden');
             
@@ -2329,13 +2209,6 @@
                 if(window.slideshowData && window.slideshowData.length > 0) document.getElementById('slideshow-panel').classList.remove('hidden');
             } 
             else if(v === 'announcements') { document.getElementById('section-announcements').classList.remove('hidden'); }
-            else if(v === 'group-studies') { 
-                document.getElementById('section-group-studies').classList.remove('hidden'); 
-                // Force a refresh of the group list every time the section is opened
-                if(typeof window.loadMyPrivateGroups === 'function') {
-                    window.loadMyPrivateGroups();
-                }
-            }
             else if(v === 'accommodation') { 
                 document.getElementById('section-accommodation').classList.remove('hidden'); 
                 window.renderAccommodations();
@@ -2413,14 +2286,6 @@
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
-            
-            // RESET GROUP STATE
-            window.activeGroupId = null;
-            if(window.groupChatUnsubscribe) window.groupChatUnsubscribe();
-            document.getElementById('doc-reader-iframe').classList.remove('hidden');
-            const welcome = document.getElementById('group-welcome-screen');
-            if(welcome) welcome.remove();
-
             if(window.speechSynthesis) window.speechSynthesis.cancel();
             if(window.resetTtsUi) window.resetTtsUi();
         };
@@ -3022,24 +2887,13 @@
             input.value = '';
             
             try {
-                if(window.activeGroupId) {
-                    // Send to Private Group
-                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, `study_groups/${window.activeGroupId}/messages`), {
-                        userId: window.currentUserProfile.email,
-                        userName: window.currentUserProfile.name,
-                        text: text,
-                        timestamp: Date.now()
-                    });
-                } else {
-                    // Send to Global Discussion
-                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "document_chats"), {
-                        documentId: fileId,
-                        userId: window.currentUserProfile.email,
-                        userName: window.currentUserProfile.name,
-                        text: text,
-                        timestamp: Date.now()
-                    });
-                }
+                await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "document_chats"), {
+                    documentId: fileId,
+                    userId: window.currentUserProfile.email,
+                    userName: window.currentUserProfile.name,
+                    text: text,
+                    timestamp: Date.now()
+                });
             } catch(e) { window.showToast("Failed to send message", "error"); }
         };
 // Persistent Delete for Everyone (Hard Delete)
