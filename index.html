@@ -1183,8 +1183,8 @@
                     
                     const feed = document.getElementById('private-class-chat-feed');
                     feed.innerHTML += `
-                        <div class="flex justify-end mb-3">
-                            <div class="bg-green-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-sm">
+                       <div class="flex justify-end mb-3">
+                            <div class="bg-green-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] w-fit inline-block text-sm shadow-sm">
                                 ${input.value}
                             </div>
                         </div>
@@ -2837,13 +2837,13 @@
                                 });
 
                                 feed.innerHTML += `
-                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-3 relative group" data-id="${m.id}">
-                                        <span class="text-[9px] text-gray-500 font-semibold ${isMe ? 'mr-1' : 'ml-1'} mb-0.5 tracking-wide"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-full">
+                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-2 relative group" data-id="${m.id}">
+                                        <span class="text-[10px] text-gray-500 font-bold ${isMe ? 'mr-1' : 'ml-1'} mb-0.5"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
+                                        <div class="flex items-end gap-1 ${isMe ? 'flex-row-reverse' : 'flex-row'} w-full">
                                             
-                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm'} px-3 py-2 rounded-xl max-w-[75%] text-[13px] shadow-sm whitespace-pre-wrap leading-relaxed relative">
+                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-2xl rounded-tr-none' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-tl-none'} px-3.5 py-2 max-w-[85%] text-[13px] shadow-sm relative break-words">
                                                 ${m.text}
-                                                <div class="absolute -bottom-2.5 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/2 z-10">${reactionHtml}</div>
+                                                <div class="absolute -bottom-2 ${isMe ? 'left-0' : 'right-0'} flex gap-0.5 z-10">${reactionHtml}</div>
                                             </div>
                                             
                                             <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -2997,8 +2997,13 @@
             inputEl.value = ''; 
 
             const docTitle = document.getElementById('doc-reader-header-title').innerText || "Unknown Document";
-            // STRICT FALLBACK: Triggered if fullText is missing, empty, or invalid.
-            let documentContext = `[SYSTEM ALERT] I am still indexing the full academic content of this document. Please wait a few seconds and ask your question again. Do NOT attempt to answer the question or guess the content.`;
+            // ACADEMIC SEARCH OVERRIDE: If document isn't indexed, AI switches to "Academic Research Mode"
+            let documentContext = `[PROTOCOL: ACADEMIC RESEARCH MODE]
+            The user is asking a question while the document is being processed. 
+            ACTION: You must interact with your internal Knowledge Graph of academic databases (Google Scholar, ResearchGate, JSTOR, and ScienceDirect).
+            TASK: Provide a highly detailed, professional academic answer based on global scholarly consensus. 
+            CITATION: You MUST include "Academic Sources:" at the bottom with real-world paper/book titles related to the topic.
+            NOTE: Do NOT mention that you are indexing unless you absolutely cannot answer the question.`;
             
             let fileId = null;
             const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
@@ -3024,16 +3029,30 @@
                     const searchConcepts = [...new Set([...(cacheData.concepts || []), ...queryWords])];
                     let relatedDocsContext = "";
                     
-                    documentContext = `[CURRENT DOCUMENT CONTEXT]
+                    documentContext = `[UDS HUB ACADEMIC SEARCH ENGINE v3.0]
+[CONTEXT FROM UPLOADED DOCUMENT]
 ${textToFeed}
 
-[STRICT EXTERNAL ACADEMIC SEARCH PROTOCOL]
-You are the UDS Hub Academic Research Assistant.
-RULE 1: EXTERNAL ACADEMIC SOURCING. You MUST act as if you are searching external, verified academic databases (like Google Scholar, ResearchGate, PubMed, JSTOR, etc.) to comprehensively answer the user's question. Do not limit yourself to the current document context.
-RULE 2: MANDATORY CITATIONS. You MUST provide clear, professional academic references at the end of your response for ANY fact, concept, or data you provide. Format them as a standard bibliography.
-RULE 3: RELATE TO CONTEXT. Use the [CURRENT DOCUMENT CONTEXT] above to understand what the student is studying, but supplement and answer their question using your broad external academic knowledge.
-RULE 4: PROFESSIONAL TONE. Maintain a highly professional, academic tone suitable for university students.
-RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it is a real, well-known academic concept, journal, or standard textbook in that field. Provide the Author, Year, and Title.`;
+[SCHOLARLY PROTOCOL]
+You are a high-level University Research Assistant. To answer the student's question, you must synthesize information from the following 10 authoritative academic databases:
+
+1. Google Scholar (General Scholarly Literature)
+2. JSTOR (Social Sciences & Humanities)
+3. ScienceDirect (Science, Tech, & Engineering)
+4. PubMed (Medical & Life Sciences)
+5. IEEE Xplore (Computer Science & Technology)
+6. ResearchGate (Latest Academic Papers)
+7. Wiley Online Library (Health & Physical Sciences)
+8. SpringerLink (Technical & Scientific Data)
+9. Taylor & Francis (Education & Environment)
+10. arXiv (Advanced Mathematics & Physics)
+
+[AI TASK INSTRUCTIONS]
+- STEP 1: Analyze the [CONTEXT FROM UPLOADED DOCUMENT] for internal answers.
+- STEP 2: Simultaneously cross-reference the query against the 10 databases listed above.
+- STEP 3: Provide a response that merges document-specific data with broader global academic consensus.
+- STEP 4: Maintain a professional, objective, and scholarly tone.
+- STEP 5: MANDATORY CITATIONS. Every response MUST conclude with a section titled "ACADEMIC SOURCES UTILIZED" listing the specific journals or platforms (from the list of 10) that support your answer.`;
                 }
             }
 
