@@ -580,16 +580,21 @@
                 </div>
 
                 <div id="section-group-studies" class="hidden w-full max-w-4xl mx-auto px-2">
-                    <div class="mb-8">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">My Group Studies</h2>
-                        <p class="text-sm text-gray-500">Private collaborative circles for your documents.</p>
+                    <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">My Group Studies</h2>
+                            <p class="text-sm text-gray-500">Private collaborative circles for your documents.</p>
+                        </div>
+                        <button onclick="joinGroupByCode()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-medium transition whitespace-nowrap flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center">
+                            <i class="fa-solid fa-right-to-bracket"></i> Join Group by Code
+                        </button>
                     </div>
                     <div id="my-groups-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Private groups will load here -->
                         <div class="col-span-full py-20 text-center bg-white dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
                             <i class="fa-solid fa-people-group text-4xl mb-4 text-gray-300"></i>
                             <p class="text-gray-500 font-medium">You haven't joined any study groups yet.</p>
-                            <p class="text-xs text-gray-400 mt-1">Create or one while viewing an academic document or let someone add you to their group!</p> 
+                            <p class="text-xs text-gray-400 mt-1">Create one while viewing an academic document or join using a Group Code!</p> 
                         </div>
                     </div>
                 </div>
@@ -743,7 +748,7 @@
                 </button>
 
                 <button onclick="handleGroupInitiation()" id="study-group-init-btn" class="relative flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition-all font-medium text-sm shadow-lg">
-                    <i class="fa-solid fa-user-group text-lg md:mr-2"></i> <span class="hidden md:inline">Create Study Group</span>
+                    <i class="fa-solid fa-user-group text-lg md:mr-2"></i> <span class="hidden md:inline">Create Group</span>
                 </button>
 
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
@@ -1110,38 +1115,30 @@
                         return; 
                     }
                     
-                    const gName = prompt("Study Group Name (e.g. VISION):");
+                    const gName = prompt("Enter Group Name (e.g. VISION):");
                     if(!gName) return;
 
-                    const membersRaw = prompt("Enter Member IDs (e.g. deo, gracelarbi32):");
-                    if(!membersRaw) return;
-
-                    // Convert 'deo' to 'deo@gmail.com' for Firebase compatibility
-                    const memberList = membersRaw.split(',').map(m => {
-                        let id = m.trim().toLowerCase();
-                        if(!id.includes('@')) id = id + "@gmail.com"; 
-                        return id;
-                    });
-
                     const myEmail = window.currentUserProfile.email.toLowerCase();
-                    if(!memberList.includes(myEmail)) memberList.push(myEmail);
-
                     const fileTitle = document.getElementById('doc-reader-header-title').innerText;
                     const fileUrl = document.getElementById('doc-reader-iframe').src;
+                    
+                    // Generate Unique Group Code (6 alphanumeric characters)
+                    const groupCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
                     try {
-                        window.showToast("Creating circle...", "success");
+                        window.showToast("Creating group...", "success");
                         
                         await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "study_groups"), {
                             groupName: gName,
+                            groupCode: groupCode,
                             fileName: fileTitle,
                             fileUrl: fileUrl,
                             creatorId: myEmail,
-                            members: memberList,
+                            members: [myEmail],
                             timestamp: Date.now()
                         });
 
-                        window.showToast("Group Created! Go to 'My Group Studies'", "success");
+                        alert(`Group Created Successfully!\n\nYour Group Code is: ${groupCode}\n\nShare this code with your friends so they can join!`);
                         window.terminateDocViewer(); 
                         window.navigateTo('group-studies');
                     } catch(e) { 
@@ -1150,11 +1147,58 @@
                     }
                 }
 
+                window.joinGroupByCode = async function() {
+                    if(!window.currentUserProfile) { 
+                        alert("Please sign in to join groups.");
+                        if(typeof openAuthModal === 'function') openAuthModal();
+                        return; 
+                    }
+                    
+                    const code = prompt("Enter Group Code:");
+                    if(!code) return;
+
+                    const myEmail = window.currentUserProfile.email.toLowerCase();
+
+                    try {
+                        const groupsRef = window.firebaseCollection(window.firebaseDb, "study_groups");
+                        const q = window.firebaseQuery(groupsRef, window.firebaseWhere("groupCode", "==", code.toUpperCase()));
+                        const querySnapshot = await window.firebaseGetDocs(q);
+
+                        if (querySnapshot.empty) {
+                            alert("Invalid Group Code. Please check and try again.");
+                            return;
+                        }
+
+                        let groupId = null;
+                        let groupData = null;
+                        querySnapshot.forEach((doc) => {
+                            groupId = doc.id;
+                            groupData = doc.data();
+                        });
+
+                        if (groupData.members && groupData.members.includes(myEmail)) {
+                            alert("You are already a member of this group.");
+                            return;
+                        }
+
+                        // Add user to members array
+                        const docRef = window.firebaseDoc(window.firebaseDb, "study_groups", groupId);
+                        await window.firebaseUpdateDoc(docRef, {
+                            members: window.firebaseArrayUnion(myEmail)
+                        });
+
+                        alert("Successfully joined group!");
+                        window.loadMyPrivateGroups();
+                    } catch(e) {
+                        console.error(e);
+                        alert("An error occurred while joining.");
+                    }
+                };
+
                 window.loadMyPrivateGroups = function() {
                     if(!window.currentUserProfile) return;
-                    const myId = window.currentUserProfile.email.split('@')[0].toLowerCase();
+                    const myEmail = window.currentUserProfile.email.toLowerCase();
                     const container = document.getElementById('my-groups-list');
-                    container.innerHTML = '<p class="text-center py-10 opacity-50"><i class="fa-solid fa-circle-notch fa-spin"></i> Locating your circles...</p>';
 
                     const q = window.firebaseCollection(window.firebaseDb, "study_groups");
                     window.onSnapshot(q, (snapshot) => {
@@ -1163,50 +1207,42 @@
 
                         snapshot.forEach(doc => {
                             const data = doc.data();
-                            if(data.members.includes(myId)) {
+                            if(data.members && data.members.includes(myEmail)) {
                                 hasGroups = true;
                                 container.innerHTML += `
                                     <div class="bg-white dark:bg-geminiSurface p-5 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition cursor-pointer group" onclick="openPrivateGroupChat('${doc.id}')">
                                         <div class="flex justify-between items-start mb-3">
                                             <div>
                                                 <h4 class="font-bold text-gray-800 dark:text-white text-lg">${data.groupName}</h4>
-                                                <div class="flex items-center gap-1.5 mt-1">
-                                                    <span class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase">${data.fileName}</span>
-                                                    <span class="text-[10px] text-gray-400">Locked Material</span>
+                                                <p class="text-xs text-gray-500 font-mono mt-1">Code: <span class="font-bold text-gray-800 dark:text-white">${data.groupCode || 'N/A'}</span></p>
+                                                <div class="flex items-center gap-1.5 mt-2">
+                                                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+                                                    <span class="text-[11px] text-gray-600 dark:text-gray-400 font-medium truncate">Studying: ${data.fileName}</span>
                                                 </div>
                                             </div>
                                             <div class="w-10 h-10 bg-gray-50 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-blue-500 transition">
                                                 <i class="fa-solid fa-chevron-right"></i>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="flex -space-x-2">
-                                                ${data.members.slice(0,3).map(m => `<div class="w-6 h-6 rounded-full bg-academicGold text-[8px] flex items-center justify-center border-2 border-white dark:border-geminiSurface font-bold text-navy">${m[0].toUpperCase()}</div>`).join('')}
-                                            </div>
-                                            <span class="text-[10px] text-gray-500">${data.members.length} Members in circle</span>
-                                        </div>
                                     </div>`;
                             }
                         });
 
                         if(!hasGroups) {
-                            container.innerHTML = `<div class="col-span-full py-20 text-center bg-white dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-solid fa-people-group text-4xl mb-4 text-gray-300"></i><p class="text-gray-500 font-medium">No private circles found.</p></div>`;
+                            container.innerHTML = `<div class="col-span-full py-20 text-center bg-white dark:bg-geminiSurface rounded-3xl border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-solid fa-people-group text-4xl mb-4 text-gray-300"></i><p class="text-gray-500 font-medium">You haven't joined any study groups yet.</p><p class="text-xs text-gray-400 mt-1">Create one while viewing an academic document or join using a Group Code!</p></div>`;
                         }
                     });
                 };
 
                 window.openPrivateGroupChat = function(groupId) {
                     window.activeGroupId = groupId;
-                    // Trigger the UI change
                     const readerModal = document.getElementById('google-document-reader-modal');
                     readerModal.classList.remove('hidden');
                     
-                    // Setup Chat Header
-                    document.getElementById('doc-reader-header-title').innerText = "Private Study Circle";
+                    document.getElementById('doc-reader-header-title').innerText = "Private Study Group";
                     document.getElementById('doc-reader-loader').classList.add('hidden');
                     document.getElementById('doc-reader-iframe').classList.add('hidden');
                     
-                    // Show a message in the iframe area
                     const container = document.getElementById('doc-iframe-container');
                     const welcomeMsg = document.createElement('div');
                     welcomeMsg.id = "group-welcome-screen";
@@ -1215,20 +1251,19 @@
                         <div class="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-full flex items-center justify-center mb-6 text-3xl shadow-sm">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">You are inside a Private Circle</h2>
-                        <p class="text-gray-500 text-sm max-w-xs mb-8">Discuss this file securely with your team. Only members can see these messages.</p>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Private Study Group</h2>
+                        <p class="text-gray-500 text-sm max-w-xs mb-8">Discuss this file securely with your group members. All group messages are private.</p>
                         <button onclick="reOpenGroupMaterial('${groupId}')" class="bg-navy dark:bg-white text-white dark:text-navy px-8 py-3 rounded-2xl font-bold text-sm hover:scale-105 transition-transform flex items-center gap-2">
-                            <i class="fa-solid fa-file-pdf"></i> Open Study Slides
+                            <i class="fa-solid fa-file-pdf"></i> Open Slides
                         </button>
                     `;
-                    // Remove old welcome if exists
+                    
                     const old = document.getElementById('group-welcome-screen');
                     if(old) old.remove();
                     container.appendChild(welcomeMsg);
 
-                    // Open the side panel automatically
                     window.toggleStudentChatPanel();
-                    window.loadGroupChatMessages(groupId);
+                    if(window.loadGroupChatMessages) window.loadGroupChatMessages(groupId);
                 };
 
                 window.reOpenGroupMaterial = async function(groupId) {
