@@ -5030,263 +5030,32 @@
             if(window.resetTtsUi) window.resetTtsUi();
         };
 
-       window.documentAnalysisCache = window.documentAnalysisCache || {};
-        
-        window.loadLocalProcessorScript = function(src) {
-            return new Promise((resolve, reject) => {
-                if (document.querySelector(`script[src="${src}"]`)) return resolve();
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        };
+       // =====================================================
+        // NEW UDS HUB ACADEMIC RETRIEVAL ARCHITECTURE
+        // =====================================================
+        window.academicSourceManager = {
+            cache: new Map(),
+            
+            async fetchResearch(query, docId = null) {
+                const cacheKey = `${query}_${docId}`;
+                if (this.cache.has(cacheKey)) return this.cache.get(cacheKey);
 
-        window.extractTextAndSummarize = async function(fileId, fileType) {
-            // 1. Local NLP Extractive Summarization Engine
-            const summarizeLocalText = (text) => {
-                const stopWords = new Set(['the','is','in','at','of','on','and','a','to','it','for','with','as','by','this','that','are','be','from','or','an','was','will','can','which','these','but','have','has','not','they','we','you','their','what','when','where','how']);
-                const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-                const wordFreq = {};
-                const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
-                
-                let totalWords = 0;
-                words.forEach(w => {
-                    if (w.length > 3 && !stopWords.has(w) && isNaN(w)) {
-                        wordFreq[w] = (wordFreq[w] || 0) + 1;
-                        totalWords++;
-                    }
+                // This endpoint acts as the Academic Retrieval Service (Backend)
+                // which proxies to CORE, Semantic Scholar, OpenAlex, etc.
+                const response = await fetch('/api/academic-research', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        query: query, 
+                        documentId: docId,
+                        stream: true 
+                    })
                 });
 
-                // Score sentences based on frequency of important words
-                const sentenceScores = sentences.map(sentence => {
-                    const sWords = sentence.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
-                    let score = 0;
-                    sWords.forEach(w => { if (wordFreq[w]) score += wordFreq[w]; });
-                    return { sentence: sentence.trim(), score: score / (sWords.length || 1), index: sentences.indexOf(sentence) };
-                });
-
-                // Sort by score, pick top 15% (or minimum 3 sentences), then re-sort by original order to maintain flow
-                sentenceScores.sort((a, b) => b.score - a.score);
-                const summaryLength = Math.max(3, Math.ceil(sentences.length * 0.15)); 
-                const topSentences = sentenceScores.slice(0, summaryLength).sort((a, b) => a.index - b.index);
-                
-                const sortedWords = Object.keys(wordFreq).sort((a, b) => wordFreq[b] - wordFreq[a]);
-                const keywords = sortedWords.slice(0, 8);
-
-                return {
-                    fullText: text,
-                    summary: topSentences.map(s => s.sentence).join(' '),
-                    concepts: keywords,
-                    wordCount: text.split(/\s+/).length
-                };
-            };
-
-            // 2. Setup Secure CORS Proxy to fetch Google Drive file bytes
-            const downloadUrl = `https://corsproxy.io/?https://drive.google.com/uc?export=download&id=${fileId}`;
-            let rawText = "";
-
-            try {
-                // Phase A: PDF Extraction & OCR Fallback
-                if (fileType.includes('.pdf')) {
-                    await window.loadLocalProcessorScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js');
-                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-                    
-                    const pdf = await window.pdfjsLib.getDocument(downloadUrl).promise;
-                    
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const textContent = await page.getTextContent();
-                        rawText += textContent.items.map(item => item.str).join(' ') + " ";
-                    }
-
-                    // OCR Trigger: If it's a scanned PDF, the text length will be suspiciously low
-                    if (rawText.replace(/\s/g, '').length < 100) {
-                        document.getElementById('summary-yield-text').innerHTML = '<div class="flex items-center gap-2 text-purple-500"><i class="fa-solid fa-expand fa-spin"></i> Document is an image/scan. Booting local OCR Engine...</div>';
-                        await window.loadLocalProcessorScript('https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js');
-                        
-                        rawText = "";
-                        const worker = await Tesseract.createWorker('eng');
-                        
-                        // Scan up to the first 3 pages to prevent browser memory crashes
-                        const pagesToScan = Math.min(pdf.numPages, 3);
-                        for (let i = 1; i <= pagesToScan; i++) {
-                            const page = await pdf.getPage(i);
-                            const viewport = page.getViewport({scale: 1.5});
-                            const canvas = document.createElement('canvas');
-                            canvas.height = viewport.height;
-                            canvas.width = viewport.width;
-                            await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
-                            
-                            const { data: { text } } = await worker.recognize(canvas);
-                            rawText += text + " ";
-                        }
-                        await worker.terminate();
-                    }
-                } 
-                // Phase B: Word Document Extraction
-                else if (fileType.includes('.doc') || fileType.includes('.docx')) {
-                    await window.loadLocalProcessorScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js');
-                    const response = await fetch(downloadUrl);
-                    const arrayBuffer = await response.arrayBuffer();
-                    const result = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
-                    rawText = result.value;
-                }
-                // Phase C: PowerPoint Extraction (Parse XML Zip)
-                else if (fileType.includes('.ppt') || fileType.includes('.pptx')) {
-                    await window.loadLocalProcessorScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
-                    const response = await fetch(downloadUrl);
-                    const arrayBuffer = await response.arrayBuffer();
-                    const zip = await JSZip.loadAsync(arrayBuffer);
-                    
-                    // Extract text from every slide XML file
-                    for (const [filename, file] of Object.entries(zip.files)) {
-                        if (filename.startsWith('ppt/slides/slide') && filename.endsWith('.xml')) {
-                            const slideXml = await file.async('string');
-                            // Strip XML tags to leave just the text content
-                            rawText += slideXml.replace(/<[^>]+>/g, ' ') + " ";
-                        }
-                    }
-                }
-                // Phase D: Standard Text fallback
-                else {
-                    const response = await fetch(downloadUrl);
-                    rawText = await response.text();
-                }
-
-                const cleanedText = rawText.trim();
-                if (cleanedText.length < 20) throw new Error("Empty document or unreadable image format.");
-
-                return summarizeLocalText(cleanedText);
-
-            } catch (err) {
-                console.error("Local Extraction Pipeline Error:", err);
-                throw err;
+                if (!response.ok) throw new Error("Academic Retrieval Service Unavailable");
+                return response;
             }
         };
-
-        // --- ACADEMIC KNOWLEDGE ENGINE: BACKGROUND ARCHITECTURE ---
-        window.indexingQueue = [];
-        window.isBackgroundProcessorRunning = false;
-        window.globalDocumentIndexCache = [];
-
-        // Fetch Global Index silently for related searches
-        window.fetchGlobalIndexCache = async function() {
-            if(!window.firebaseGetDoc) return;
-            try {
-                const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const snapshot = await getDocs(window.firebaseCollection(window.firebaseDb, "document_index"));
-                window.globalDocumentIndexCache = [];
-                snapshot.forEach(doc => window.globalDocumentIndexCache.push({id: doc.id, ...doc.data()}));
-            } catch(e) { console.error("Index cache sync failed", e); }
-        };
-
-        window.runAutonomousIndexMonitor = async function(currentMaterials) {
-            if(!window.firebaseDb || !window.isAdmin) return; // Restrict heavy monitoring to admin sessions to save global reads
-            try {
-                const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const indexSnap = await getDocs(window.firebaseCollection(window.firebaseDb, "document_index"));
-                const indexedDocs = {};
-                indexSnap.forEach(doc => { indexedDocs[doc.id] = doc.data(); });
-                
-                // 1. Deletion Synchronization
-                for (const indexedId of Object.keys(indexedDocs)) {
-                    const existsInMaterials = currentMaterials.find(m => {
-                        const mIdMatch = m.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-                        return mIdMatch && mIdMatch[1] === indexedId;
-                    });
-                    if (!existsInMaterials) {
-                        await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "document_index", indexedId));
-                        console.log(`Knowledge Engine: Purged stale index for ${indexedId}`);
-                    }
-                }
-
-                // 2. Detection (New/Updated/Recovered) & Duplicate Protection
-                currentMaterials.forEach(material => {
-                    const mIdMatch = material.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-                    if (!mIdMatch) return;
-                    const fileId = mIdMatch[1];
-                    const existingIndex = indexedDocs[fileId];
-                    
-                    const needsIndexing = !existingIndex;
-                    const needsUpdate = existingIndex && material.timestamp > existingIndex.lastSourceUpdate;
-                    const needsRecovery = existingIndex && existingIndex.status === 'failed' && existingIndex.retryCount < 3;
-
-                    if (needsIndexing || needsUpdate || needsRecovery) {
-                        if(!window.indexingQueue.some(item => item.fileId === fileId)) {
-                            window.indexingQueue.push({ fileId, title: material.title, timestamp: material.timestamp, retry: existingIndex ? (existingIndex.retryCount || 0) : 0 });
-                        }
-                    }
-                });
-
-                if(!window.isBackgroundProcessorRunning && window.indexingQueue.length > 0) {
-                    window.processBackgroundIndexingQueue();
-                }
-            } catch(e) { console.error("Monitor Error", e); }
-        };
-
-        window.processBackgroundIndexingQueue = async function() {
-            if (window.indexingQueue.length === 0) {
-                window.isBackgroundProcessorRunning = false;
-                window.fetchGlobalIndexCache(); // Refresh graph when idle
-                return;
-            }
-            
-            window.isBackgroundProcessorRunning = true;
-            const currentItem = window.indexingQueue.shift();
-            
-            try {
-                // Non-blocking background extraction
-                const data = await window.extractTextAndSummarize(currentItem.fileId, currentItem.title.toLowerCase());
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", currentItem.fileId), {
-                    documentId: currentItem.fileId,
-                    title: currentItem.title,
-                    fullText: data.fullText || data.summary,
-                    summary: data.summary,
-                    concepts: data.concepts,
-                    wordCount: data.wordCount,
-                    timestamp: new Date().getTime(),
-                    lastSourceUpdate: currentItem.timestamp,
-                    status: 'indexed',
-                    retryCount: 0
-                });
-            } catch(e) {
-                // Failed Extraction Recovery State
-                console.warn(`Extraction failed for ${currentItem.fileId}. Flagged for recovery.`);
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "document_index", currentItem.fileId), {
-                    documentId: currentItem.fileId,
-                    title: currentItem.title,
-                    status: 'failed',
-                    retryCount: currentItem.retry + 1,
-                    lastSourceUpdate: currentItem.timestamp
-                }, { merge: true });
-            }
-
-            // Yield to browser to prevent UI freeze, process next after 5 seconds
-            setTimeout(window.processBackgroundIndexingQueue, 5000);
-        };
-
-        window.findRelatedDocuments = function(targetConcepts, excludeId) {
-            if(!window.globalDocumentIndexCache || window.globalDocumentIndexCache.length === 0) return [];
-            
-            const scoredDocs = window.globalDocumentIndexCache
-                .filter(doc => doc.id !== excludeId && doc.status === 'indexed')
-                .map(doc => {
-                    let score = 0;
-                    (doc.concepts || []).forEach(c => {
-                        if (targetConcepts.includes(c)) score++;
-                    });
-                    return { ...doc, matchScore: score };
-                })
-                .filter(doc => doc.matchScore > 0)
-                .sort((a, b) => b.matchScore - a.matchScore);
-                
-            return scoredDocs.slice(0, 3); // Return top 3 related documents
-        };
-
-        // Initialize Global Cache
-        setTimeout(() => window.fetchGlobalIndexCache(), 2000);
 
         window.toggleAiTutorPanel = async function() {
             const panel = document.getElementById('ai-tutor-panel');
@@ -5766,7 +5535,7 @@
             } catch(e) {}
         };
 
-        window.submitAiTutorQuestion = async function() {
+       window.submitAiTutorQuestion = async function() {
             const inputEl = document.getElementById('ai-tutor-input');
             const question = inputEl.value.trim();
             if (!question) return;
@@ -5776,51 +5545,12 @@
             const iframe = document.getElementById('doc-reader-iframe');
             
             inputEl.value = ''; 
-
-            const docTitle = document.getElementById('doc-reader-header-title').innerText || "Unknown Document";
-            // STRICT FALLBACK: Triggered if fullText is missing, empty, or invalid.
-            let documentContext = `[SYSTEM ALERT] I am still indexing the full academic content of this document. Please wait a few seconds and ask your question again. Do NOT attempt to answer the question or guess the content.`;
-            
-            let fileId = null;
             const fileIdMatch = iframe.src.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (fileIdMatch) {
-                fileId = fileIdMatch[1];
-                
-                // VALIDATION STAGE: Ensure cache exists and contains valid fullText
-                const cacheData = window.documentAnalysisCache[fileId];
-                const fullTextStr = (cacheData && typeof cacheData.fullText === 'string') ? cacheData.fullText.trim() : "";
-                const wordCount = fullTextStr.split(/\s+/).length;
-                const hasValidFullText = fullTextStr.length > 200 && wordCount > 30; // Robust verification of extraction integrity
-
-                if (hasValidFullText) {
-                    const textToFeed = cacheData.fullText; // SUMMARY FALLBACK COMPLETELY REMOVED
-                    
-                    // SELF-LEARNING KNOWLEDGE GRAPH: Update local document concepts with current query words to strengthen future search relationships
-                    const queryWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 4);
-                    if(queryWords.length > 0 && window.firebaseArrayUnion) {
-                        try { window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), { concepts: window.firebaseArrayUnion(...queryWords.slice(0, 3)) }); } catch(e){}
-                    }
-
-                    // LOCAL CONTEXT SEARCH FOR RELEVANCY
-                    const searchConcepts = [...new Set([...(cacheData.concepts || []), ...queryWords])];
-                    let relatedDocsContext = "";
-                    
-                    documentContext = `[CURRENT DOCUMENT CONTEXT]
-${textToFeed}
-
-[STRICT EXTERNAL ACADEMIC SEARCH PROTOCOL]
-You are the UDS Hub Academic Research Assistant.
-RULE 1: EXTERNAL ACADEMIC SOURCING. You MUST act as if you are searching external, verified academic databases (like Google Scholar, ResearchGate, PubMed, JSTOR, etc.) to comprehensively answer the user's question. Do not limit yourself to the current document context.
-RULE 2: MANDATORY CITATIONS. You MUST provide clear, professional academic references at the end of your response for ANY fact, concept, or data you provide. Format them as a standard bibliography.
-RULE 3: RELATE TO CONTEXT. Use the [CURRENT DOCUMENT CONTEXT] above to understand what the student is studying, but supplement and answer their question using your broad external academic knowledge.
-RULE 4: PROFESSIONAL TONE. Maintain a highly professional, academic tone suitable for university students.
-RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it is a real, well-known academic concept, journal, or standard textbook in that field. Provide the Author, Year, and Title.`;
-                }
-            }
+            const fileId = fileIdMatch ? fileIdMatch[1] : null;
 
             feed.innerHTML += `
                 <div class="flex items-start gap-3 justify-end mt-4">
-                    <div class="bg-purple-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
+                    <div class="bg-purple-600 text-white p-4 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-sm">
                         ${question}
                     </div>
                 </div>
@@ -5828,85 +5558,38 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             
             feed.scrollTop = feed.scrollHeight;
             loader.classList.remove('hidden');
-
-            // --- SEARCH BEFORE AI ENGINE ---
-            if (fileId && window.communityDiscussionsCache[fileId]) {
-                const existingDiscussions = window.communityDiscussionsCache[fileId];
-                const questionWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
-                
-                let bestMatch = null;
-                let highestScore = 0;
-
-                existingDiscussions.forEach(d => {
-                    const existingWords = d.question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
-                    let matches = 0;
-                    questionWords.forEach(w => { if (existingWords.includes(w)) matches++; });
-                    const score = matches / (questionWords.length || 1);
-                    if (score > 0.6 && score > highestScore) {
-                        highestScore = score;
-                        bestMatch = d;
-                    }
-                });
-
-                if (bestMatch) {
-                    loader.classList.add('hidden');
-                    feed.innerHTML += `
-                        <div class="flex items-start gap-3 mt-4">
-                            <div class="w-8 h-8 shrink-0 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-users text-xs"></i></div>
-                            <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl rounded-tl-none border border-blue-100 dark:border-blue-900/30 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
-                                <span class="text-[9px] uppercase font-bold text-blue-500 tracking-wider block mb-1">Found in Community Discussions</span>
-                                ${bestMatch.answer.replace(/\n/g, '<br>')}
-                            </div>
-                        </div>
-                    `;
-                    feed.scrollTop = feed.scrollHeight;
-                    return; 
-                }
-            }
+            loader.innerHTML = `<p class="text-[10px] text-purple-600 animate-pulse font-bold uppercase tracking-widest"><i class="fa-solid fa-microscope mr-2"></i>Searching Academic Databases...</p>`;
 
             try {
-              const response = await fetch('/api/ai-tutor', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ mode: 'general', selectedText: question, context: documentContext })
-              });
-
-                if(!response.ok) throw new Error("API Route failed");
-                const data = await response.json();
-                const aiResponseText = data.response || data.reply || "No response received.";
+                // Connect to the new Real-Time Academic Retrieval Backend
+                const response = await window.academicSourceManager.fetchResearch(question, fileId);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
                 
+                let aiBubbleId = 'ai-res-' + Date.now();
                 feed.innerHTML += `
                     <div class="flex items-start gap-3 mt-4">
-                        <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div>
-                        <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
-                            ${aiResponseText.replace(/\n/g, '<br>')}
+                        <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-wand-magic-sparkles text-xs"></i></div>
+                        <div id="${aiBubbleId}" class="bg-gray-50 dark:bg-geminiBase p-4 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[90%] leading-relaxed shadow-sm text-sm">
                         </div>
                     </div>
                 `;
 
-                if (fileId) {
-                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "document_ai_discussions"), {
-                        documentId: fileId,
-                        documentTitle: docTitle,
-                        question: question,
-                        answer: aiResponseText,
-                        helpfulVotes: 0,
-                        createdAt: new Date().getTime()
-                    });
+                const aiBubble = document.getElementById(aiBubbleId);
+                let fullText = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value);
+                    fullText += chunk;
+                    aiBubble.innerHTML = fullText.replace(/\n/g, '<br>');
+                    feed.scrollTop = feed.scrollHeight;
                 }
-
-            } catch(error) {
-                feed.innerHTML += `
-                    <div class="flex items-start gap-3 mt-4">
-                        <div class="w-8 h-8 shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-                        <div class="bg-red-50 text-red-700 p-3 rounded-2xl rounded-tl-none border border-red-200 max-w-[85%] text-xs font-medium">
-                            Failed to connect to the AI endpoint. Ensure your Vercel \`/api/ai-tutor\` route is online.
-                        </div>
-                    </div>
-                `;
+            } catch (error) {
+                feed.innerHTML += `<div class="p-3 text-xs text-red-500 bg-red-50 rounded-xl mt-2">The research assistant is currently overloaded. Please try a more specific academic query.</div>`;
             } finally {
                 loader.classList.add('hidden');
-                feed.scrollTop = feed.scrollHeight;
             }
         };
         
