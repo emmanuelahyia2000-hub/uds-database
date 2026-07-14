@@ -467,8 +467,8 @@
                     </div>
                     <div class="flex flex-col items-center p-6">
                         <div class="w-14 h-14 rounded-full bg-[#D4AF37] text-[#1B365D] flex items-center justify-center mb-4 text-2xl shadow-md"><i class="fa-solid fa-brain"></i></div>
-                        <h3 class="font-bold text-xl text-[#1B365D] dark:text-white uppercase tracking-wide mb-2">AI Insights</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-xs">Intelligent document analysis to generate concise summaries, key concepts, and interactive study aids.</p>
+                        <h3 class="font-bold text-xl text-[#1B365D] dark:text-white uppercase tracking-wide mb-2">AI Academic Assistant</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-xs">Instantly search verified UDS resources and trusted global academic databases (Scholar, PubMed, etc.) with cited, educational answers.</p>
                     </div>
                     <div class="flex flex-col items-center p-6">
                         <div class="w-14 h-14 rounded-full bg-[#1B365D] text-white flex items-center justify-center mb-4 text-2xl shadow-md"><i class="fa-solid fa-shield-halved"></i></div>
@@ -733,12 +733,12 @@
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                             <i class="fa-solid fa-magnifying-glass text-academicPurple dark:text-academicGold transition"></i>
                         </div>
-                        <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-deepNavy border border-academicPurple/30 dark:border-academicGold/30 rounded-full text-base shadow-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-academicGold placeholder-gray-400">
+                        <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Ask AI: Search UDS Hub, Google Scholar, PubMed & academic databases..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-deepNavy border border-academicPurple/30 dark:border-academicGold/30 rounded-full text-base shadow-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-academicGold placeholder-gray-400">
                     </div>
 
                     <div class="w-full max-w-3xl text-sm text-gray-500 mb-4 px-2 flex justify-between items-center">
-                        <span>Cloud Archive Documents</span>
-                        <span class="bg-gray-100 dark:bg-geminiSurface px-2 py-1 rounded-full text-xs font-medium"><span id="material-count-badge">0</span> items</span>
+                        <span>Academic Sources & Cloud Archive</span>
+                        <span class="bg-gray-100 dark:bg-geminiSurface px-2 py-1 rounded-full text-xs font-medium"><span id="material-count-badge">0</span> indexed items</span>
                     </div>
 
                   <div id="smart-materials-grid" class="flex flex-col gap-3 w-full max-w-3xl pb-8"></div>
@@ -2795,20 +2795,8 @@
                     let currentEditingStateMessageId = null;
 
                     function initializeWhatsappEngine() {
-                        const targets = ['student-chat-feed'];
-                        targets.forEach(id => {
-                            const feed = document.getElementById(id);
-                            if (!feed) return;
-
-                            // Watch for new incoming messages and attach inline actions automatically
-                            const observer = new MutationObserver(() => {
-                                attachInlineActionsToMessages(feed);
-                            });
-                            observer.observe(feed, { childList: true, subtree: true });
-
-                            // Run initial pass
-                            attachInlineActionsToMessages(feed);
-                        });
+                        // Bypassed: Native real-time actions are now handled securely via Firebase onSnapshot
+                        return;
                     }
 
                     function attachInlineActionsToMessages(feed) {
@@ -5556,7 +5544,6 @@
             }
             
             try {
-                // Background listener for real-time messages
                 const { onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                 const chatRef = window.firebaseCollection(window.firebaseDb, "document_chats");
                 
@@ -5569,47 +5556,68 @@
                     
                     msgs.sort((a,b) => a.timestamp - b.timestamp);
                     
-                    // Show notification badge if there are messages and panel is closed
                     if(msgs.length > 0 && badge && chatPanel.classList.contains('w-0')) {
                         badge.classList.remove('hidden');
                         badge.innerText = msgs.length > 9 ? '9+' : msgs.length;
                     }
                     
-                    // Render messages if panel is open
                     if(feed && !chatPanel.classList.contains('w-0')) {
                         if(msgs.length > 0) {
                             feed.innerHTML = '';
+                            let lastUserId = null;
+                            
                             msgs.forEach(m => {
                                 const isMe = window.currentUserProfile && m.userId === window.currentUserProfile.email;
+                                const isConsecutive = lastUserId === m.userId;
+                                lastUserId = m.userId;
+                                
+                                const msgTime = new Date(m.timestamp);
+                                const timeStr = msgTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                                const dateStr = msgTime.toLocaleDateString();
+                                const todayStr = new Date().toLocaleDateString();
+                                const displayTime = dateStr === todayStr ? timeStr : 'Yesterday';
                                 
                                 const reactions = m.reactions || {};
                                 let reactionHtml = '';
-                                Object.entries(reactions).forEach(([emoji, count]) => {
-                                    if(count > 0) reactionHtml += `<span class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-full px-1.5 py-0 text-[10px] shadow-sm mx-0.5 flex items-center gap-1">${emoji} ${count}</span>`;
+                                Object.entries(reactions).forEach(([emoji, data]) => {
+                                    const count = Array.isArray(data) ? data.length : Number(data);
+                                    const userReacted = Array.isArray(data) && window.currentUserProfile && data.includes(window.currentUserProfile.email);
+                                    
+                                    if(count > 0) {
+                                        reactionHtml += `<button onclick="window.reactToMessage('${m.id}', '${emoji}')" class="${userReacted ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-blue-300 dark:border-blue-700' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700'} border rounded-full px-2 py-0.5 text-[10px] shadow-sm flex items-center gap-1 hover:scale-105 transition">${emoji} ${count}</button>`;
+                                    }
                                 });
 
+                                const headerHtml = isConsecutive ? '' : `<span class="text-[9px] text-gray-500 font-semibold ${isMe ? 'mr-2' : 'ml-2'} mb-1 mt-2 tracking-wide"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>`;
+                                const bubbleRadius = isConsecutive ? (isMe ? 'rounded-l-2xl rounded-r-md' : 'rounded-r-2xl rounded-l-md') : (isMe ? 'rounded-l-2xl rounded-tr-sm rounded-br-2xl' : 'rounded-r-2xl rounded-tl-sm rounded-bl-2xl');
+
                                 feed.innerHTML += `
-                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-3 relative group" data-id="${m.id}">
-                                        <span class="text-[9px] text-gray-500 font-semibold ${isMe ? 'mr-1' : 'ml-1'} mb-0.5 tracking-wide"><i class="fa-solid fa-graduation-cap text-blue-400 mr-1"></i>${m.userName}</span>
-                                        <div class="flex items-center gap-1.5 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-full">
+                                    <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} ${isConsecutive ? 'mb-1' : 'mb-3'} relative group" data-id="${m.id}">
+                                        ${headerHtml}
+                                        <div class="flex items-center gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} w-full max-w-full relative">
                                             
-                                            <div class="${isMe ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm'} px-3 py-2 rounded-xl max-w-[75%] text-[13px] shadow-sm whitespace-pre-wrap leading-relaxed relative">
-                                                ${m.text}
-                                                <div class="absolute -bottom-2.5 ${isMe ? 'left-0' : 'right-0'} flex translate-y-1/2 z-10">${reactionHtml}</div>
+                                            <div class="w-fit max-w-[85%] md:max-w-[70%] ${isMe ? 'bg-blue-600 text-white' : 'bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200'} ${bubbleRadius} px-3 py-2 text-[13px] shadow-sm relative">
+                                                <div class="whitespace-pre-wrap leading-relaxed break-words pb-4" id="msg-text-${m.id}">${m.text}</div>
+                                                <span class="absolute bottom-1.5 ${isMe ? 'right-3 text-blue-200' : 'right-3 text-gray-400'} text-[9px] font-medium leading-none">${displayTime}</span>
+                                                <div class="absolute -bottom-3 ${isMe ? 'left-2' : 'right-2'} flex flex-wrap-reverse gap-1 translate-y-1/2 z-10">${reactionHtml}</div>
                                             </div>
                                             
-                                            <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div class="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
                                                 <div class="relative group/emoji inline-block">
-                                                    <button class="text-gray-400 hover:text-yellow-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-6 h-6 rounded-full flex items-center justify-center transition shadow-sm"><i class="fa-regular fa-face-smile text-[11px]"></i></button>
-                                                    <div class="absolute bottom-full mb-1 ${isMe ? 'right-0' : 'left-0'} hidden group-hover/emoji:flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-full shadow-xl z-[60]">
-                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-sm px-1">👍</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-sm px-1">❤️</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-sm px-1">😂</span>
-                                                        <span onclick="window.reactToMessage('${m.id}', '😮')" class="cursor-pointer hover:scale-125 transition text-sm px-1">😮</span>
+                                                    <button class="text-gray-400 hover:text-yellow-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-8 h-8 rounded-full flex items-center justify-center transition shadow-sm"><i class="fa-regular fa-face-smile text-sm"></i></button>
+                                                    <div class="absolute bottom-full mb-2 ${isMe ? 'right-0' : 'left-0'} hidden group-hover/emoji:flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 rounded-full shadow-xl z-[60]">
+                                                        <span onclick="window.reactToMessage('${m.id}', '👍')" class="cursor-pointer hover:scale-125 transition text-lg px-1">👍</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '❤️')" class="cursor-pointer hover:scale-125 transition text-lg px-1">❤️</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😂')" class="cursor-pointer hover:scale-125 transition text-lg px-1">😂</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😮')" class="cursor-pointer hover:scale-125 transition text-lg px-1">😮</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '😢')" class="cursor-pointer hover:scale-125 transition text-lg px-1">😢</span>
+                                                        <span onclick="window.reactToMessage('${m.id}', '👎')" class="cursor-pointer hover:scale-125 transition text-lg px-1">👎</span>
                                                     </div>
                                                 </div>
                                                 
-                                                ${isMe || window.isAdmin ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-gray-400 hover:text-white hover:bg-red-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-6 h-6 rounded-full flex items-center justify-center transition shadow-sm" title="Delete for everyone"><i class="fa-solid fa-trash-can text-[10px]"></i></button>` : ''}
+                                                <button onclick="window.copyCommunityMessage('${m.id}')" class="text-gray-400 hover:text-green-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-8 h-8 rounded-full flex items-center justify-center transition shadow-sm" title="Copy Message"><i class="fa-regular fa-copy text-xs"></i></button>
+
+                                                ${isMe || window.isAdmin ? `<button onclick="window.deleteCommunityMessage('${m.id}')" class="text-gray-400 hover:text-white hover:bg-red-500 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-8 h-8 rounded-full flex items-center justify-center transition shadow-sm" title="Delete for everyone"><i class="fa-solid fa-trash-can text-xs"></i></button>` : ''}
                                             </div>
                                             
                                         </div>
@@ -5648,26 +5656,47 @@
                 });
             } catch(e) { window.showToast("Failed to send message", "error"); }
         };
-// Persistent Delete for Everyone (Hard Delete)
+
+        window.copyCommunityMessage = function(messageId) {
+            const textEl = document.getElementById('msg-text-' + messageId);
+            if(!textEl) return;
+            navigator.clipboard.writeText(textEl.innerText).then(() => {
+                window.showToast("Message text copied!", "success");
+            });
+        };
+
+        // Persistent Delete for Everyone (Hard Delete)
         window.deleteCommunityMessage = async function(messageId) {
-            if(!confirm("Are you sure you want to completely remove this message for everyone?")) return;
+            if(!confirm("Are you sure you want to permanently delete this message for everyone?")) return;
             try {
                 const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
-                await window.firebaseDeleteDoc(docRef); // Completely wipes it from the database
+                await window.firebaseDeleteDoc(docRef); 
                 window.showToast("Message completely removed", "success");
             } catch(e) { window.showToast("Delete failed", "error"); }
         };
 
-        // WhatsApp-style Persistent Reactions
+        // WhatsApp-style Persistent Reactions (Array Based)
         window.reactToMessage = async function(messageId, emoji) {
-            if(!window.currentUserProfile) return;
+            if(!window.currentUserProfile) { window.showToast("Sign in to react", "error"); return; }
             try {
                 const docRef = window.firebaseDoc(window.firebaseDb, "document_chats", messageId);
                 const docSnap = await window.firebaseGetDoc(docRef);
                 if(docSnap.exists()) {
                     const data = docSnap.data();
                     const reactions = data.reactions || {};
-                    reactions[emoji] = (reactions[emoji] || 0) + 1;
+                    const userEmail = window.currentUserProfile.email;
+                    
+                    if(typeof reactions[emoji] === 'number') reactions[emoji] = []; 
+                    if(!reactions[emoji]) reactions[emoji] = [];
+
+                    const hasReacted = reactions[emoji].includes(userEmail);
+
+                    if (hasReacted) {
+                        reactions[emoji] = reactions[emoji].filter(e => e !== userEmail);
+                    } else {
+                        reactions[emoji].push(userEmail);
+                    }
+
                     await window.firebaseUpdateDoc(docRef, { reactions: reactions });
                 }
             } catch(e) { console.error("Reaction failed", e); }
