@@ -641,8 +641,7 @@
                             <li><button onclick="navigateTo('accommodation'); setFeatureBackground('accommodation')" class="w-full text-left px-3 py-2.5 rounded-xl text-white hover:bg-white/10 flex items-center gap-3 transition"><i class="fa-solid fa-building-user w-5 text-center text-academicGold"></i> Accommodation Finder</button></li>
                             <li><button onclick="navigateTo('marketplace'); setFeatureBackground('marketplace')" class="w-full text-left px-3 py-2.5 rounded-xl text-white hover:bg-white/10 flex items-center gap-3 transition"><i class="fa-solid fa-store w-5 text-center text-academicGold"></i> Marketplace</button></li>
                             <li><button onclick="openGpaModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white hover:bg-white/10 flex items-center gap-3 transition"><i class="fa-solid fa-calculator w-5 text-center text-academicGold"></i> GPA Engine</button></li>
-                          <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white hover:bg-white/10 flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center text-academicGold"></i> Contribute File</button></li>
-                           <li><button onclick="window.openAccountSecurity()" class="w-full text-left px-3 py-2.5 rounded-xl text-white hover:bg-white/10 flex items-center gap-3 transition border border-white/10 bg-white/5"><i class="fa-solid fa-shield-halved w-5 text-center text-blue-400"></i> Account Security</button></li>
+                           <li><button onclick="openContributeModal()" class="w-full text-left px-3 py-2.5 rounded-xl text-white hover:bg-white/10 flex items-center gap-3 transition"><i class="fa-solid fa-file-arrow-up w-5 text-center text-academicGold"></i> Contribute File</button></li>
                         </ul>
                     </div>
 
@@ -661,12 +660,9 @@
                 </div>
 
                 <section id="admin-dashboard-panel" class="hidden bg-white dark:bg-geminiSurface rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm mb-8 space-y-6 mx-auto w-full">
-                   <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
+                    <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
                         <h2 class="text-base font-medium text-gray-800 dark:text-white"><i class="fa-solid fa-sliders mr-2"></i>Admin Terminal</h2>
-                        <div class="flex gap-2">
-                            <button onclick="adminFactoryResetAds()" class="text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-900 px-3 py-1.5 rounded-full transition shadow-sm font-bold"><i class="fa-solid fa-skull-crossbones mr-1"></i> Wipe Corrupted Ads</button>
-                            <button onclick="lockAdminSession()" class="text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-full transition">Close Terminal</button>
-                        </div>
+                        <button onclick="lockAdminSession()" class="text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-full transition">Close Terminal</button>
                     </div>
                     
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -709,48 +705,6 @@
                                 <button onclick="handleAddLandingFlyer(event)" class="w-full py-3 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-bold rounded-xl hover:opacity-90 transition">Publish Banner to Landing Page</button>
                             </div>
                             <div id="admin-landing-flyer-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
-                        </div>
-
-                        <!-- 5e. Manage Accommodation Finder Ads & Video Ticker -->
-                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider"><i class="fa-solid fa-rectangle-ad mr-1"></i> 5e. Accommodation Finder Ads & Video Bar</span>
-                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Add promotional flyers (images) or video links (.mp4) that will flow horizontally above the hostel search bar. Videos play automatically on mute; users can click the speaker button to turn on sound.</p>
-                            <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl space-y-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <input type="text" id="admin-ad-title-input" placeholder="Ad Title (e.g. Premium Hostel Promo)" class="px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                    <select id="admin-ad-type-input" class="px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                        <option value="image">Image Advertisement / Flyer</option>
-                                        <option value="video">Promotional Video (.mp4 / link)</option>
-                                    </select>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                    <input type="url" id="admin-ad-url-input" placeholder="Paste image or video link here..." class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                    <button type="button" onclick="triggerAdminCloudinary('admin-ad-url-input')" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-upload mr-1"></i> Upload Media</button>
-                                </div>
-                                <button onclick="handleAddAccommodationAd(event)" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition">Publish Ad/Video to Accommodation Bar</button>
-                            </div>
-                            <div id="admin-accommodation-ads-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
-                        </div>
-
-                        <!-- 5f. Manage Marketplace Ads & Video Ticker -->
-                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider"><i class="fa-solid fa-store mr-1"></i> 5f. Marketplace Ads & Video Bar</span>
-                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Add sponsored banners or video promotions for the Marketplace.</p>
-                            <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl space-y-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <input type="text" id="admin-mkt-ad-title-input" placeholder="Ad Title (e.g. Gadget Sale Promo)" class="px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                    <select id="admin-mkt-ad-type-input" class="px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                        <option value="image">Image Advertisement / Flyer</option>
-                                        <option value="video">Promotional Video (.mp4 / link)</option>
-                                    </select>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                    <input type="url" id="admin-mkt-ad-url-input" placeholder="Paste image or video link here..." class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                    <button type="button" onclick="triggerAdminCloudinary('admin-mkt-ad-url-input')" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-upload mr-1"></i> Upload Media</button>
-                                </div>
-                                <button onclick="handleAddMarketplaceAd(event)" class="w-full py-3 bg-shop-orange hover:brightness-110 text-white text-sm font-bold rounded-xl transition">Publish Ad/Video to Marketplace Bar</button>
-                            </div>
-                            <div id="admin-marketplace-ads-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
                         </div>
 
                         <!-- 5d. Manage Login Page Background Picture Link -->
@@ -989,14 +943,11 @@
                                     `).join('');
                                 }
 
-                               if (adminList) {
+                                if (adminList) {
                                     adminList.innerHTML = urls.map((url, i) => `
                                         <div class="flex items-center justify-between bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-4">
-                                            <div class="flex items-center gap-3 min-w-0 flex-grow">
-                                                <img src="${url}" class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 shrink-0">
-                                                <a href="${url}" target="_blank" class="truncate text-xs font-mono text-blue-500 hover:underline flex-grow">${url}</a>
-                                            </div>
-                                            <button onclick="handleDeleteLandingFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg transition"><i class="fa-solid fa-trash"></i> Delete</button>
+                                            <span class="truncate text-xs font-mono text-gray-600 dark:text-gray-300 flex-grow">${url}</span>
+                                            <button onclick="handleDeleteLandingFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
                                         </div>
                                     `).join('');
                                 }
@@ -1115,11 +1066,8 @@
                                 if (adminList) {
                                     adminList.innerHTML = urls.map((url, i) => `
                                         <div class="flex items-center justify-between bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-4">
-                                            <div class="flex items-center gap-3 min-w-0 flex-grow">
-                                                <img src="${url}" class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 shrink-0">
-                                                <a href="${url}" target="_blank" class="truncate text-xs font-mono text-blue-500 hover:underline flex-grow">${url}</a>
-                                            </div>
-                                            <button onclick="handleDeleteFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg transition"><i class="fa-solid fa-trash"></i> Delete</button>
+                                            <span class="truncate text-xs font-mono text-gray-600 dark:text-gray-300 flex-grow">${url}</span>
+                                            <button onclick="handleDeleteFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
                                         </div>
                                     `).join('');
                                 }
@@ -1404,68 +1352,36 @@
                     };
                 </script>
 
-               <div id="section-accommodation" class="hidden w-full max-w-7xl mx-auto">
-                    <!-- IMPLEMENTATION ONE: MODERN SLIM PREMIUM HERO -->
-                    <div class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#050A15] to-[#1B365D] mb-6 group py-6 px-6 md:px-10 flex items-center shadow-lg border border-white/5">
+                <div id="section-accommodation" class="hidden w-full max-w-7xl mx-auto">
+                    <!-- IMPLEMENTATION ONE: MODERN PREMIUM HERO -->
+                    <div class="relative w-full rounded-[2rem] overflow-hidden bg-gradient-to-br from-[#050A15] to-[#1B365D] mb-10 group min-h-[280px] flex items-center shadow-xl border border-white/5">
                         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                         <div class="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
                         
-                        <div class="relative z-10 w-full text-center md:text-left">
-                            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                                <div class="max-w-2xl">
-                                    <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-blue-300 text-[9px] font-bold uppercase tracking-[0.2em] mb-2 backdrop-blur-md">
+                        <div class="relative z-10 px-6 md:px-12 py-10 w-full text-center md:text-left">
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                                <div class="max-w-xl">
+                                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-blue-300 text-[9px] font-bold uppercase tracking-[0.2em] mb-5 backdrop-blur-md">
                                         <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span></span>
                                         Real-Time Database Connected
                                     </div>
-                                    <h2 id="hostel-hero-text" class="text-2xl md:text-3xl font-black text-white leading-tight tracking-tight mb-2 hero-text-animate">
-                                        Find Your Safe, <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-academicGold">Perfect Home at UDS.</span>
+                                    <h2 id="hostel-hero-text" class="text-3xl md:text-5xl font-black text-white leading-tight tracking-tight mb-4 hero-text-animate">
+                                        Find Your Safe, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-academicGold">Perfect Home at UDS.</span>
                                     </h2>
-                                    <p id="hostel-hero-sub" class="text-gray-300 text-xs md:text-sm font-light max-w-lg mx-auto md:mx-0">
-                                        Compare prices, verified facilities and real student reviews.
+                                    <p id="hostel-hero-sub" class="text-gray-300 text-sm md:text-lg font-light max-w-md mx-auto md:mx-0">
+                                        Compare facilities, verified pricing, and student reviews in one professional hub.
                                     </p>
                                 </div>
-                                <button onclick="openAddHostelModal()" class="shrink-0 bg-academicGold hover:bg-yellow-500 text-navy font-bold px-6 py-3 rounded-xl shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 text-xs md:text-sm">
+                                <button onclick="openAddHostelModal()" class="shrink-0 bg-academicGold hover:bg-yellow-500 text-navy font-bold px-10 py-4 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3">
                                     <i class="fa-solid fa-plus-circle"></i> Contribute Hostel
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                  <!-- SEARCH SECTION WITH EDGE-TO-EDGE HORIZONTAL SMOOTH MARQUEE ADS TICKER -->
-                    <div class="mb-12 px-2 space-y-3 w-full">
-                        <!-- Horizontal Smooth Auto-Scrolling Marquee Ticker -->
-                        <style>
-                            @keyframes slowMarquee {
-                                0% { transform: translateX(0%); }
-                                100% { transform: translateX(-50%); }
-                            }
-                            .animate-slow-marquee {
-                                display: flex;
-                                width: max-content;
-                                animation: slowMarquee 35s linear infinite;
-                            }
-                            .animate-slow-marquee:hover {
-                                animation-play-state: paused;
-                            }
-                        </style>
-
-                        <!-- Stretched Edge-to-Edge Banner -->
-                        <div class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-r from-gray-900 via-deepNavy to-gray-900 border border-white/10 shadow-md h-22 md:h-24 flex items-center group">
-                            <!-- Scrolling track container -->
-                            <div class="overflow-hidden w-full h-full relative flex items-center">
-                                <div id="accommodation-ads-ticker" class="animate-slow-marquee h-full flex items-center gap-6 px-4">
-                                    <!-- Populated dynamically -->
-                                    <div class="text-xs text-gray-400">Loading sponsored notices...</div>
-                                </div>
-                            </div>
-                            <!-- Sound Control Button -->
-                            <button onclick="toggleAdsTickerAudio()" id="ads-ticker-audio-btn" class="absolute bottom-2 right-3 z-30 bg-black/60 hover:bg-black text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md transition flex items-center gap-1.5 border border-white/20 shadow-sm">
-                                <i class="fa-solid fa-volume-xmark text-yellow-400 text-xs" id="ads-ticker-speaker-icon"></i> <span id="ads-ticker-audio-text">Listen</span>
-                            </button>
-                        </div>
-
-                        <!-- Stretched Edge-to-Edge Search Bar -->
-                        <div class="relative group w-full glass-search rounded-[2rem] overflow-hidden">
+                    <!-- SEARCH SECTION -->
+                    <div class="mb-12 px-2">
+                        <div class="relative group max-w-4xl mx-auto glass-search rounded-[2rem] overflow-hidden">
                             <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                                 <i class="fa-solid fa-magnifying-glass text-blue-500 transition-transform group-focus-within:scale-110"></i>
                             </div>
@@ -1482,52 +1398,34 @@
                 </div>
 
                 <div id="section-marketplace" class="hidden w-full max-w-7xl mx-auto">
-                   <!-- Modernized Slim Marketplace Dashboard -->
-                    <div class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#0B1B3D] to-[#1E3A8A] dark:from-navy-900 dark:to-gray-900 shadow-lg mb-6 py-6 px-6 md:px-10 flex items-center group border border-white/10">
+                    <!-- Modernized Compact Marketplace Dashboard -->
+                    <div class="relative w-full rounded-[2rem] overflow-hidden bg-gradient-to-br from-[#0B1B3D] to-[#1E3A8A] dark:from-navy-900 dark:to-gray-900 shadow-lg mb-8 px-6 py-8 flex flex-col md:flex-row items-center justify-between text-white group border border-white/10">
                         <div class="absolute right-[-2%] top-[-10%] opacity-10 pointer-events-none group-hover:scale-105 transition-transform duration-700">
-                            <i class="fa-solid fa-shopping-bag text-[160px]"></i>
+                            <i class="fa-solid fa-shopping-bag text-[200px]"></i>
                         </div>
                         
-                        <div class="relative z-10 w-full text-center md:text-left">
-                            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                                <div class="max-w-2xl">
-                                    <span class="bg-academicGold text-deepNavy text-[9px] font-black px-2.5 py-1 rounded-full mb-2 uppercase tracking-widest inline-block shadow-sm">UDS Hub Marketplace</span>
-                                    <h2 class="text-2xl md:text-3xl font-black text-white mb-2 leading-tight tracking-tight">Everything Student. <span class="text-transparent bg-clip-text bg-gradient-to-r from-academicGold to-yellow-200">In One Place.</span></h2>
-                                    
-                                    <!-- Dynamic Info Side-Show -->
-                                    <div id="mkt-info-slideshow" class="h-6 overflow-hidden max-w-lg mx-auto md:mx-0">
-                                        <div class="transition-all duration-700 ease-in-out transform translate-y-0 slide-item flex items-center justify-center md:justify-start gap-2">
-                                            <i class="fa-solid fa-box-open text-academicGold text-xs"></i>
-                                            <p class="text-xs font-light text-white/90">Sell physical products & items to fellow students.</p>
-                                        </div>
-                                        <div class="transition-all duration-700 ease-in-out transform translate-y-full slide-item flex items-center justify-center md:justify-start gap-2 hidden">
-                                            <i class="fa-solid fa-handshake-angle text-green-400 text-xs"></i>
-                                            <p class="text-xs font-light text-white/90">Offer professional services and skills on campus.</p>
-                                        </div>
-                                        <div class="transition-all duration-700 ease-in-out transform translate-y-full slide-item flex items-center justify-center md:justify-start gap-2 hidden">
-                                            <i class="fa-solid fa-clipboard-question text-purple-400 text-xs"></i>
-                                            <p class="text-xs font-light text-white/90">Post help requests or jobs for the community.</p>
-                                        </div>
-                                    </div>
+                        <div class="flex flex-col items-start max-w-xl z-10">
+                            <span class="bg-academicGold text-deepNavy text-[9px] font-black px-3 py-1.5 rounded-full mb-3 uppercase tracking-widest shadow-sm">UDS Hub Marketplace</span>
+                            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-3 leading-tight tracking-tighter">Everything Student.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-academicGold to-yellow-200">In One Place.</span></h2>
+                            
+                            <!-- Dynamic Info Side-Show -->
+                            <div id="mkt-info-slideshow" class="h-10 overflow-hidden mb-6">
+                                <div class="transition-all duration-700 ease-in-out transform translate-y-0 slide-item flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-academicGold"><i class="fa-solid fa-box-open"></i></div>
+                                    <p class="text-sm font-medium text-white/90">Sell physical products & items to fellow students.</p>
                                 </div>
-
-                                <button onclick="openListingChoiceModal()" class="shrink-0 bg-white text-academicPurple hover:bg-lightGray px-6 py-3 rounded-xl font-bold text-xs md:text-sm shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2">
-                                    <i class="fa-solid fa-plus-circle"></i> Create New Listing
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MARKETPLACE EDGE-TO-EDGE ADS & VIDEOS TICKER BAR -->
-                    <div class="mb-8 px-2 space-y-3 w-full">
-                        <div class="relative w-full rounded-2xl overflow-hidden bg-gradient-to-r from-gray-900 via-deepNavy to-gray-900 border border-white/10 shadow-md h-20 md:h-22 flex items-center group">
-                            <div class="overflow-hidden w-full h-full relative flex items-center">
-                                <div id="marketplace-ads-ticker" class="animate-slow-marquee h-full flex items-center gap-6 px-4">
-                                    <div class="text-xs text-gray-400">Loading marketplace sponsored ads...</div>
+                                <div class="transition-all duration-700 ease-in-out transform translate-y-full slide-item flex items-center gap-3 hidden">
+                                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-green-400"><i class="fa-solid fa-handshake-angle"></i></div>
+                                    <p class="text-sm font-medium text-white/90">Offer professional services and skills on campus.</p>
+                                </div>
+                                <div class="transition-all duration-700 ease-in-out transform translate-y-full slide-item flex items-center gap-3 hidden">
+                                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-purple-400"><i class="fa-solid fa-clipboard-question"></i></div>
+                                    <p class="text-sm font-medium text-white/90">Post help requests or jobs for the community.</p>
                                 </div>
                             </div>
-                            <button onclick="toggleMarketplaceAdsAudio()" id="mkt-ads-audio-btn" class="absolute bottom-2 right-3 z-30 bg-black/60 hover:bg-black text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md transition flex items-center gap-1.5 border border-white/20 shadow-sm">
-                                <i class="fa-solid fa-volume-xmark text-yellow-400 text-xs" id="mkt-ads-speaker-icon"></i> <span id="mkt-ads-audio-text">Listen</span>
+
+                            <button onclick="openListingChoiceModal()" class="bg-white text-academicPurple hover:bg-lightGray px-8 py-3 rounded-2xl font-bold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3">
+                                <i class="fa-solid fa-plus-circle"></i> Create New Listing
                             </button>
                         </div>
                     </div>
@@ -1716,9 +1614,6 @@
                         <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
                         <input type="password" id="login-pass" required placeholder="Password" class="auth-input w-full pl-10 pr-4 py-3.5 rounded-2xl text-sm outline-none dark:text-white border border-transparent focus:border-academicGold/50">
                     </div>
-                    <div class="flex justify-end -mt-1 mb-2">
-                        <button type="button" onclick="window.triggerForgotPassword()" class="text-[10px] text-blue-500 hover:text-blue-700 font-bold uppercase tracking-wider transition">Forgot Password?</button>
-                    </div>
                     <button type="submit" class="w-full py-3.5 bg-deepNavy dark:bg-academicGold text-white dark:text-deepNavy font-bold text-[11px] uppercase tracking-widest rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all mt-2">
                         Authorize Entry <i class="fa-solid fa-arrow-right-to-bracket ml-1.5"></i>
                     </button>
@@ -1730,11 +1625,8 @@
                         <input type="text" id="reg-name" required placeholder="Full Name" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
                         <input type="text" id="reg-index" required placeholder="Index No." class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
                     </div>
-                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input type="email" id="reg-email" placeholder="School Email (Optional)" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
-                        <input type="email" id="reg-recovery-email" required placeholder="Recovery Gmail" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white border-l-4 border-l-blue-500">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 mt-4">
+                    <input type="email" id="reg-email" placeholder="Email (Optional)" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
+                    <div class="grid grid-cols-2 gap-3">
                         <input type="text" id="reg-dept" required placeholder="Dept (e.g. ICT)" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
                         <select id="reg-level" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white cursor-pointer">
                             <option value="100">Level 100</option><option value="200">Level 200</option><option value="300">Level 300</option><option value="400">Level 400</option>
@@ -3149,15 +3041,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-       import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, verifyBeforeUpdateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDXS37SUTMwr_8zaTsgW4PApzqWqrCbYvY", authDomain: "uds-data-base.firebaseapp.com", projectId: "uds-data-base", storageBucket: "uds-data-base.firebasestorage.app", messagingSenderId: "511461186280", appId: "1:511461186280:web:6e55e4030440dfc5cc475d", measurementId: "G-W7KYCT8F3K" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-      window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseGetDoc = getDoc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc; window.firebaseUpdateDoc = updateDoc; window.firebaseArrayUnion = arrayUnion; window.firebaseArrayRemove = arrayRemove;
-       window.firebaseSendEmailVerification = sendEmailVerification; window.firebaseSendPasswordResetEmail = sendPasswordResetEmail; window.firebaseVerifyBeforeUpdateEmail = verifyBeforeUpdateEmail;
+       window.firebaseDb = db; window.firebaseAuth = auth; window.firebaseSignOut = signOut; window.firebaseSignIn = signInWithEmailAndPassword; window.firebaseCreateUser = createUserWithEmailAndPassword; window.firebaseSetDoc = setDoc; window.firebaseDoc = doc; window.firebaseGetDoc = getDoc; window.firebaseAddDoc = addDoc; window.firebaseCollection = collection; window.firebaseDeleteDoc = deleteDoc; window.firebaseUpdateDoc = updateDoc; window.firebaseArrayUnion = arrayUnion; window.firebaseArrayRemove = arrayRemove;
 
         let currentUserProfile = null; 
         let globalMaterialsCache = [];
@@ -3451,7 +3342,30 @@
             }
         });
 
-       // Old Slideshow listener removed to prevent conflict with System Portal Flyers
+        onSnapshot(collection(db, "slideshow"), (snapshot) => {
+            window.slideshowData = [];
+            const adminList = document.getElementById('admin-flyer-list');
+            if(adminList) adminList.innerHTML = '';
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                window.slideshowData.push({ id: doc.id, ...data });
+
+                if(adminList) {
+                    adminList.innerHTML += `
+                        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
+                            <div class="flex items-center gap-3 truncate pr-2 w-full">
+                                <img src="${data.url}" class="w-10 h-10 object-cover rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                <a href="${data.url}" target="_blank" class="truncate text-blue-500 hover:underline flex-grow text-xs">${data.url}</a>
+                            </div>
+                            <button onclick="deleteFlyer('${doc.id}')" class="text-red-500 hover:text-red-700 shrink-0 px-2 bg-red-50 dark:bg-red-900/20 rounded-lg py-1.5"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                }
+            });
+            window.renderSlideshow();
+        });
+
         // LANDING SLIDESHOW LISTENER REMOVED - REPLACED BY DISCOVERY GALLERY ENGINE
     </script>
 
@@ -3520,7 +3434,7 @@
             }
         };
 
-       window.toggleAdminDashboard = function() { 
+        window.toggleAdminDashboard = function() { 
             const el = document.getElementById('admin-dashboard-panel'); 
             el.classList.contains('hidden') ? el.classList.remove('hidden') : el.classList.add('hidden'); 
             if(!el.classList.contains('hidden')) { 
@@ -3532,54 +3446,6 @@
             }
         };
         window.lockAdminSession = function() { document.getElementById('admin-dashboard-panel').classList.add('hidden'); };
-
-        window.adminFactoryResetAds = async function() {
-            if(!window.isAdmin) return;
-            if(!confirm("⚠️ DANGER ZONE: This will instantly wipe ALL old/corrupted Landing Page Banners, Dashboard Flyers, Accommodation Ads, and Marketplace Ads from the database. Are you sure you want to start fresh?")) return;
-            
-            try {
-                // 1. Wipe Landing Banners
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "landing_banners"), { urls: [], lastUpdated: Date.now() });
-                localStorage.setItem('uds_landing_banners', "[]");
-                
-                // 2. Wipe Portal Flyers
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "portal_flyers"), { urls: [], lastUpdated: Date.now() });
-                localStorage.setItem('uds_portal_flyers', "[]");
-                
-                // 3. Wipe Accommodation Ads
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "accommodation_ads"), { ads: [], lastUpdated: Date.now() });
-                localStorage.setItem('uds_accommodation_ads', "[]");
-                
-                // 4. Wipe Marketplace Ads
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "marketplace_ads"), { ads: [], lastUpdated: Date.now() });
-                localStorage.setItem('uds_marketplace_ads', "[]");
-                
-                // 5. Nuke the old ghost "slideshow" collection that caused the bug initially
-                const { getDocs } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                const oldSlides = await getDocs(window.firebaseCollection(window.firebaseDb, "slideshow"));
-                oldSlides.forEach(async (d) => { await window.firebaseDeleteDoc(d.ref); });
-
-                window.showToast("Successfully wiped all old ads & banners!", "success");
-                
-                // Refresh the memory variables
-                if (typeof globalLandingFlyers !== 'undefined') globalLandingFlyers = [];
-                if (typeof globalPortalFlyers !== 'undefined') globalPortalFlyers = [];
-                if (typeof globalAccommodationAds !== 'undefined') globalAccommodationAds = [];
-                if (typeof globalMarketplaceAds !== 'undefined') globalMarketplaceAds = [];
-                
-                // Visually clear the screens
-                if(typeof renderLandingFlyers === 'function') renderLandingFlyers([]);
-                if(typeof renderPortalFlyers === 'function') renderPortalFlyers([]);
-                if(typeof renderAccommodationAdsTicker === 'function') renderAccommodationAdsTicker([]);
-                if(typeof renderAdminAccommodationAdsList === 'function') renderAdminAccommodationAdsList([]);
-                if(typeof renderMarketplaceAdsTicker === 'function') renderMarketplaceAdsTicker([]);
-                if(typeof renderAdminMarketplaceAdsList === 'function') renderAdminMarketplaceAdsList([]);
-                
-            } catch(e) {
-                console.error(e);
-                window.showToast("Failed to wipe database. Check console.", "error");
-            }
-        };
         
         window.openDocument = function(title, url) { 
             const modal = document.getElementById('google-document-reader-modal');
@@ -4368,7 +4234,8 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
         };
 
-        // Conflicting handleAddFlyer and deleteFlyer methods removed here to respect the primary system.
+        window.handleAddFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Flyer Added Successfully!", "success"); document.getElementById('admin-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add flyer.", "error"); } };
+        window.deleteFlyer = async function(id) { if(confirm("Delete this flyer?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "slideshow", id)); window.showToast("Flyer Removed", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
@@ -4489,55 +4356,8 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             } catch(err) {} 
         };
 
-       window.executeImmediateLogin = async function(e) { 
-            e.preventDefault(); 
-            let originalId = document.getElementById('login-identifier').value.trim().toLowerCase(); 
-            const pass = document.getElementById('login-pass').value; 
-            try {
-                let idToTry = originalId;
-                if(!idToTry.includes('@')) idToTry = `${originalId}@uds.edu.gh`;
-                let success = false;
-                try {
-                    await window.firebaseSignIn(window.firebaseAuth, idToTry, pass);
-                    success = true;
-                } catch(err1) {
-                    const { getDocs, query, where, limit } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                    const usersRef = window.firebaseCollection(window.firebaseDb, "users");
-                    const qIndex = query(usersRef, where("indexNumber", "==", originalId), limit(1));
-                    const snapIndex = await getDocs(qIndex);
-                    if (!snapIndex.empty && snapIndex.docs[0].data().recoveryEmail) {
-                        await window.firebaseSignIn(window.firebaseAuth, snapIndex.docs[0].data().recoveryEmail, pass);
-                        success = true;
-                    }
-                }
-                if(success) window.closeAuthModal(); 
-                else window.showToast("Invalid credentials.", "error");
-            } catch(err) { window.showToast("Invalid credentials.", "error"); } 
-        };
-
-        window.executeImmediateRegistration = async function(e) { 
-            e.preventDefault(); 
-            const name = document.getElementById('reg-name').value; 
-            const index = document.getElementById('reg-index').value.trim(); 
-            const origEmail = document.getElementById('reg-email').value.trim(); 
-            const recoveryEmail = document.getElementById('reg-recovery-email').value.trim();
-            const dept = document.getElementById('reg-dept').value; 
-            const level = document.getElementById('reg-level').value; 
-            const pass = document.getElementById('reg-pass').value; 
-            let authEmail = recoveryEmail || origEmail || `${index}@uds.edu.gh`; 
-            try { 
-                const cred = await window.firebaseCreateUser(window.firebaseAuth, authEmail, pass); 
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { 
-                    name, indexNumber: index, department: dept, level, 
-                    email: origEmail || `${index}@uds.edu.gh`,
-                    recoveryEmail: recoveryEmail, recoveryEmailVerified: false
-                }); 
-                if(recoveryEmail) {
-                    try { await window.firebaseSendEmailVerification(cred.user); window.showToast("Verification link sent to recovery email.", "success"); } catch(err){}
-                }
-                window.closeAuthModal(); 
-            } catch(err) { window.showToast(err.message || "Registration Error.", "error"); } 
-        };
+        window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
+        window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
 
         /* Academic Tools */
         window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
@@ -7246,346 +7066,9 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             `).join('');
         }
 
-      window.switchGalleryImage = function(imgElementId, newUrl) {
+        window.switchGalleryImage = function(imgElementId, newUrl) {
             document.getElementById(imgElementId).src = newUrl;
         };
-
-       // --- ACCOMMODATION ADS & VIDEOS TICKER ENGINE ---
-        let globalAccommodationAds = [];
-        let currentAdIndex = 0;
-        let adTickerInterval = null;
-        let isAdsAudioMuted = true;
-
-        async function loadAccommodationAds() {
-            try {
-                if (window.firebaseGetDoc && window.firebaseDb) {
-                    // Changed to _v2 to instantly wipe out old corrupted data
-                    const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "system", "accommodation_ads_v2"));
-                    if (docSnap.exists()) {
-                        globalAccommodationAds = docSnap.data().ads || [];
-                    }
-                }
-            } catch (err) {
-                console.log("Loading local ads cache...");
-            }
-            if (!globalAccommodationAds.length) {
-                globalAccommodationAds = JSON.parse(localStorage.getItem('uds_accommodation_ads_v2') || "[]");
-            }
-            renderAccommodationAdsTicker(globalAccommodationAds);
-            if(window.isAdmin) renderAdminAccommodationAdsList(globalAccommodationAds);
-        }
-
-       function renderAccommodationAdsTicker(ads) {
-            const container = document.getElementById('accommodation-ads-ticker');
-            if (!container) return;
-
-            if (!ads || ads.length === 0) {
-                container.innerHTML = `
-                    <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs px-4 text-center">
-                        <span>📢 Sponsored ads & promotional videos will appear here. Managed in Admin Terminal.</span>
-                    </div>`;
-                return;
-            }
-
-            // Build single card template generator
-            const createCardHtml = (ad) => {
-                let mediaTag = ad.type === 'video' 
-                    ? `<video src="${ad.url}" autoplay muted loop playsinline class="w-24 h-14 md:w-32 md:h-16 object-cover rounded-lg shrink-0 shadow" id="ticker-active-video" onplay="updateTickerAudioState()"></video>`
-                    : `<div class="w-24 h-14 md:w-32 md:h-16 bg-cover bg-center rounded-lg shrink-0 shadow" style="background-image: url('${ad.url}');"></div>`;
-
-                return `
-                    <div class="flex items-center gap-3 bg-white/5 hover:bg-white/10 transition border border-white/10 px-4 py-2 rounded-xl shrink-0 cursor-pointer shadow-sm min-w-[240px] md:min-w-[280px]">
-                        ${mediaTag}
-                        <div class="flex flex-col min-w-0 text-left">
-                            <span class="text-[8px] uppercase font-black text-academicGold tracking-widest bg-academicGold/10 px-1.5 py-0.2 rounded w-max mb-0.5">Ad</span>
-                            <h4 class="text-white text-xs font-bold truncate max-w-[140px]">${ad.title || 'UDS Partner'}</h4>
-                            <p class="text-[9px] text-gray-300 truncate max-w-[140px]">Verified Offer</p>
-                        </div>
-                    </div>
-                `;
-            };
-
-            // Duplicate the items array to create an infinite, smooth looping effect
-            const cardsHtml = ads.map(createCardHtml).join('');
-            container.innerHTML = cardsHtml + cardsHtml; 
-        }
-
-        window.toggleAdsTickerAudio = function() {
-            isAdsAudioMuted = !isAdsAudioMuted;
-            const videoEl = document.getElementById('ticker-active-video');
-            const iconEl = document.getElementById('ads-ticker-speaker-icon');
-            const textEl = document.getElementById('ads-ticker-audio-text');
-
-            if (videoEl) {
-                videoEl.muted = isAdsAudioMuted;
-            }
-
-            if (isAdsAudioMuted) {
-                iconEl.className = "fa-solid fa-volume-xmark text-yellow-400";
-                textEl.innerText = "Tap to Listen";
-            } else {
-                iconEl.className = "fa-solid fa-volume-high text-green-400";
-                textEl.innerText = "Audio Playing";
-                if(videoEl) videoEl.play().catch(e => console.log("Audio play prevented:", e));
-            }
-        };
-
-        function updateTickerAudioState() {
-            const videoEl = document.getElementById('ticker-active-video');
-            if (videoEl) videoEl.muted = isAdsAudioMuted;
-        }
-
-       window.handleAddAccommodationAd = async function(event) {
-            if (event) event.preventDefault();
-            const titleInput = document.getElementById('admin-ad-title-input');
-            const typeInput = document.getElementById('admin-ad-type-input');
-            const urlInput = document.getElementById('admin-ad-url-input');
-
-            const title = titleInput ? titleInput.value.trim() : "Sponsored Ad";
-            const type = typeInput ? typeInput.value : "image";
-            const url = urlInput ? urlInput.value.trim() : "";
-
-            if (!url) {
-                alert("Please provide an image or video link first!");
-                return;
-            }
-
-            globalAccommodationAds.push({ title, type, url, timestamp: Date.now() });
-            localStorage.setItem('uds_accommodation_ads_v2', JSON.stringify(globalAccommodationAds));
-            
-            if (titleInput) titleInput.value = "";
-            if (urlInput) urlInput.value = "";
-
-            try {
-                if (window.firebaseSetDoc && window.firebaseDb) {
-                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "accommodation_ads_v2"), {
-                        ads: globalAccommodationAds,
-                        lastUpdated: Date.now()
-                    });
-                }
-                alert("Ad/Video published successfully to Accommodation Finder!");
-            } catch (err) {
-                alert("Saved locally!");
-            }
-            renderAccommodationAdsTicker(globalAccommodationAds);
-            renderAdminAccommodationAdsList(globalAccommodationAds);
-        };
-
-       function renderAdminAccommodationAdsList(ads) {
-            const adminList = document.getElementById('admin-accommodation-ads-list');
-            if (!adminList) return;
-
-            if (!ads || ads.length === 0) {
-                adminList.innerHTML = '<p class="text-xs text-gray-500 p-2">No ads or videos published yet.</p>';
-                return;
-            }
-
-            adminList.innerHTML = ads.map((ad, i) => {
-                let mediaPreview = ad.type === 'video' 
-                    ? `<video src="${ad.url}" class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 shrink-0" muted></video>`
-                    : `<img src="${ad.url}" class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 shrink-0">`;
-                
-                return `
-                <div class="flex items-center justify-between bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-4">
-                    <div class="flex items-center gap-3 min-w-0 flex-grow">
-                        ${mediaPreview}
-                        <div class="flex flex-col min-w-0">
-                            <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase w-max mb-1">${ad.type}</span>
-                            <span class="font-bold text-xs text-gray-800 dark:text-gray-200 truncate">${ad.title}</span>
-                            <a href="${ad.url}" target="_blank" class="truncate text-[10px] font-mono text-blue-500 hover:underline">${ad.url}</a>
-                        </div>
-                    </div>
-                    <button onclick="handleDeleteAccommodationAd(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg transition"><i class="fa-solid fa-trash"></i> Delete</button>
-                </div>
-                `;
-            }).join('');
-        }
-
-       window.handleDeleteAccommodationAd = async function(index) {
-            globalAccommodationAds.splice(index, 1);
-            localStorage.setItem('uds_accommodation_ads_v2', JSON.stringify(globalAccommodationAds));
-
-            try {
-                if (window.firebaseSetDoc && window.firebaseDb) {
-                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "accommodation_ads_v2"), {
-                        ads: globalAccommodationAds,
-                        lastUpdated: Date.now()
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-            }
-            renderAccommodationAdsTicker(globalAccommodationAds);
-            renderAdminAccommodationAdsList(globalAccommodationAds);
-        };
-
-      // --- MARKETPLACE ADS & VIDEOS TICKER ENGINE ---
-        let globalMarketplaceAds = [];
-        let isMktAdsAudioMuted = true;
-
-        async function loadMarketplaceAds() {
-            try {
-                if (window.firebaseGetDoc && window.firebaseDb) {
-                    // Changed to _v2 to instantly wipe out old corrupted data
-                    const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "system", "marketplace_ads_v2"));
-                    if (docSnap.exists()) {
-                        globalMarketplaceAds = docSnap.data().ads || [];
-                    }
-                }
-            } catch (err) {
-                console.log("Loading local marketplace ads cache...");
-            }
-            if (!globalMarketplaceAds.length) {
-                globalMarketplaceAds = JSON.parse(localStorage.getItem('uds_marketplace_ads_v2') || "[]");
-            }
-            renderMarketplaceAdsTicker(globalMarketplaceAds);
-            if(window.isAdmin) renderAdminMarketplaceAdsList(globalMarketplaceAds);
-        }
-
-        function renderMarketplaceAdsTicker(ads) {
-            const container = document.getElementById('marketplace-ads-ticker');
-            if (!container) return;
-
-            if (!ads || ads.length === 0) {
-                container.innerHTML = `
-                    <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs px-4 text-center">
-                        <span>🛍️ Marketplace sponsored ads & vendor promos will appear here. Managed in Admin Terminal.</span>
-                    </div>`;
-                return;
-            }
-
-            const createCardHtml = (ad) => {
-                let mediaTag = ad.type === 'video' 
-                    ? `<video src="${ad.url}" autoplay muted loop playsinline class="w-24 h-14 md:w-32 md:h-16 object-cover rounded-lg shrink-0 shadow" id="mkt-ticker-active-video" onplay="updateMktTickerAudioState()"></video>`
-                    : `<div class="w-24 h-14 md:w-32 md:h-16 bg-cover bg-center rounded-lg shrink-0 shadow" style="background-image: url('${ad.url}');"></div>`;
-
-                return `
-                    <div class="flex items-center gap-3 bg-white/5 hover:bg-white/10 transition border border-white/10 px-4 py-2 rounded-xl shrink-0 cursor-pointer shadow-sm min-w-[240px] md:min-w-[280px]">
-                        ${mediaTag}
-                        <div class="flex flex-col min-w-0 text-left">
-                            <span class="text-[8px] uppercase font-black text-orange-400 tracking-widest bg-orange-400/10 px-1.5 py-0.2 rounded w-max mb-0.5">Promo</span>
-                            <h4 class="text-white text-xs font-bold truncate max-w-[140px]">${ad.title || 'Marketplace Offer'}</h4>
-                            <p class="text-[9px] text-gray-300 truncate max-w-[140px]">Student Deal</p>
-                        </div>
-                    </div>
-                `;
-            };
-
-            const cardsHtml = ads.map(createCardHtml).join('');
-            container.innerHTML = cardsHtml + cardsHtml; 
-        }
-
-        window.toggleMarketplaceAdsAudio = function() {
-            isMktAdsAudioMuted = !isMktAdsAudioMuted;
-            const videoEl = document.getElementById('mkt-ticker-active-video');
-            const iconEl = document.getElementById('mkt-ads-speaker-icon');
-            const textEl = document.getElementById('mkt-ads-audio-text');
-
-            if (videoEl) videoEl.muted = isMktAdsAudioMuted;
-
-            if (isMktAdsAudioMuted) {
-                iconEl.className = "fa-solid fa-volume-xmark text-yellow-400";
-                textEl.innerText = "Listen";
-            } else {
-                iconEl.className = "fa-solid fa-volume-high text-green-400";
-                textEl.innerText = "Audio On";
-                if(videoEl) videoEl.play().catch(e => console.log("Audio play prevented:", e));
-            }
-        };
-
-        function updateMktTickerAudioState() {
-            const videoEl = document.getElementById('mkt-ticker-active-video');
-            if (videoEl) videoEl.muted = isMktAdsAudioMuted;
-        }
-
-       window.handleAddMarketplaceAd = async function(event) {
-            if (event) event.preventDefault();
-            const titleInput = document.getElementById('admin-mkt-ad-title-input');
-            const typeInput = document.getElementById('admin-mkt-ad-type-input');
-            const urlInput = document.getElementById('admin-mkt-ad-url-input');
-
-            const title = titleInput ? titleInput.value.trim() : "Marketplace Promo";
-            const type = typeInput ? typeInput.value : "image";
-            const url = urlInput ? urlInput.value.trim() : "";
-
-            if (!url) {
-                alert("Please provide an image or video link first!");
-                return;
-            }
-
-            globalMarketplaceAds.push({ title, type, url, timestamp: Date.now() });
-            localStorage.setItem('uds_marketplace_ads_v2', JSON.stringify(globalMarketplaceAds));
-            
-            if (titleInput) titleInput.value = "";
-            if (urlInput) urlInput.value = "";
-
-            try {
-                if (window.firebaseSetDoc && window.firebaseDb) {
-                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "marketplace_ads_v2"), {
-                        ads: globalMarketplaceAds,
-                        lastUpdated: Date.now()
-                    });
-                }
-                alert("Ad/Video published successfully to Marketplace!");
-            } catch (err) {
-                alert("Saved locally!");
-            }
-            renderMarketplaceAdsTicker(globalMarketplaceAds);
-            renderAdminMarketplaceAdsList(globalMarketplaceAds);
-        };
-
-       function renderAdminMarketplaceAdsList(ads) {
-            const adminList = document.getElementById('admin-marketplace-ads-list');
-            if (!adminList) return;
-
-            if (!ads || ads.length === 0) {
-                adminList.innerHTML = '<p class="text-xs text-gray-500 p-2">No ads or videos published yet.</p>';
-                return;
-            }
-
-            adminList.innerHTML = ads.map((ad, i) => {
-                let mediaPreview = ad.type === 'video' 
-                    ? `<video src="${ad.url}" class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 shrink-0" muted></video>`
-                    : `<img src="${ad.url}" class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600 shrink-0">`;
-
-                return `
-                <div class="flex items-center justify-between bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-4">
-                    <div class="flex items-center gap-3 min-w-0 flex-grow">
-                        ${mediaPreview}
-                        <div class="flex flex-col min-w-0">
-                            <span class="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-bold uppercase w-max mb-1">${ad.type}</span>
-                            <span class="font-bold text-xs text-gray-800 dark:text-gray-200 truncate">${ad.title}</span>
-                            <a href="${ad.url}" target="_blank" class="truncate text-[10px] font-mono text-blue-500 hover:underline">${ad.url}</a>
-                        </div>
-                    </div>
-                    <button onclick="handleDeleteMarketplaceAd(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg transition"><i class="fa-solid fa-trash"></i> Delete</button>
-                </div>
-                `;
-            }).join('');
-        }
-
-       window.handleDeleteMarketplaceAd = async function(index) {
-            globalMarketplaceAds.splice(index, 1);
-            localStorage.setItem('uds_marketplace_ads_v2', JSON.stringify(globalMarketplaceAds));
-
-            try {
-                if (window.firebaseSetDoc && window.firebaseDb) {
-                    await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "marketplace_ads_v2"), {
-                        ads: globalMarketplaceAds,
-                        lastUpdated: Date.now()
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-            }
-            renderMarketplaceAdsTicker(globalMarketplaceAds);
-            renderAdminMarketplaceAdsList(globalMarketplaceAds);
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(loadAccommodationAds, 500);
-            setTimeout(loadMarketplaceAds, 500);
-        });
     </script>
 
 <script>
@@ -7950,187 +7433,8 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             <div id="ai-tutor-chat-feed" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm bg-white dark:bg-geminiSurface">
                 <div class="flex items-start gap-3"><div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-robot text-xs"></i></div><div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 leading-relaxed">Hello! I’m the UDS Companion. Ask me about your studies or how to use UDS Hub.</div></div>
             </div>
-           <div id="ai-tutor-loader" class="hidden p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-geminiBase shrink-0"><p class="text-xs text-purple-600 dark:text-purple-400 font-medium flex items-center gap-2 animate-pulse"><i class="fa-solid fa-circle-notch fa-spin"></i> Thinking...</p></div>
+            <div id="ai-tutor-loader" class="hidden p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-geminiBase shrink-0"><p class="text-xs text-purple-600 dark:text-purple-400 font-medium flex items-center gap-2 animate-pulse"><i class="fa-solid fa-circle-notch fa-spin"></i> Thinking...</p></div>
             <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-geminiSurface shrink-0 flex gap-2"><input type="text" id="ai-tutor-input" placeholder="Ask UDS Companion..." class="flex-grow px-3 py-2 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl text-sm border border-gray-200 dark:border-gray-700 outline-none dark:text-white" onkeypress="if(event.key === 'Enter') submitAiTutorQuestion()"><button onclick="submitAiTutorQuestion()" aria-label="Send message" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button></div>
         </section>
-
-        <!-- Account Security Modal -->
-        <div id="account-security-modal" class="hidden fixed inset-0 z-[500] bg-black/70 flex justify-center items-center p-4 backdrop-blur-sm transition-opacity">
-            <div class="bg-white dark:bg-[#131314] rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 relative border border-gray-100 dark:border-gray-800">
-                <button onclick="document.getElementById('account-security-modal').classList.add('hidden')" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 dark:hover:text-white bg-gray-50 dark:bg-gray-800 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
-                <div class="flex items-center gap-3 mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
-                    <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-shield-halved text-lg"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">Account Security</h2>
-                        <p class="text-[10px] uppercase tracking-wider font-bold text-gray-500">Protection & Recovery</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <!-- Recovery Email Section -->
-                    <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Recovery Email</h3>
-                            <span id="sec-email-status" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-gray-200 text-gray-600">Checking...</span>
-                        </div>
-                        <p id="sec-current-email" class="text-sm font-medium text-gray-900 dark:text-white mb-3">...</p>
-                        
-                        <div class="flex flex-col gap-2" id="sec-email-actions">
-                            <input type="email" id="sec-new-email" placeholder="New Recovery Email" class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl text-sm outline-none dark:text-white">
-                            <div class="flex gap-2">
-                                <button onclick="window.updateRecoveryEmail()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold uppercase tracking-wider py-2.5 rounded-xl transition shadow-sm">Update Email</button>
-                                <button onclick="window.resendVerification()" id="sec-resend-btn" class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white text-[10px] font-bold uppercase tracking-wider py-2.5 rounded-xl transition shadow-sm hidden">Resend Verify</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Password Section -->
-                    <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider mb-1">Password</h3>
-                            <p class="text-xl tracking-widest text-gray-400">••••••••</p>
-                        </div>
-                        <button onclick="window.triggerPasswordChange()" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-xl transition shadow-sm">Change</button>
-                    </div>
-
-                    <!-- MFA Section (Preparation) -->
-                    <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 flex justify-between items-center opacity-70">
-                        <div>
-                            <h3 class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider mb-1">Two-Step Verification</h3>
-                            <p class="text-xs font-medium text-gray-500">Off</p>
-                        </div>
-                        <button onclick="window.showToast('Two-Step Verification will be activated once your institution enables Identity Platform billing.', 'success')" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-xl transition shadow-sm">Enable</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            window.openAccountSecurity = function() {
-                if(!window.currentUserProfile || !window.firebaseAuth.currentUser) {
-                    window.showToast("Sign in required", "error");
-                    return;
-                }
-                
-                if(window.innerWidth < 1024 && !document.getElementById('app-sidebar').classList.contains('-translate-x-full')) {
-                    window.toggleSidebar();
-                }
-
-                const user = window.firebaseAuth.currentUser;
-                const recEmail = window.currentUserProfile.recoveryEmail || user.email;
-                
-                document.getElementById('sec-current-email').innerText = recEmail;
-                
-                const statusBadge = document.getElementById('sec-email-status');
-                const resendBtn = document.getElementById('sec-resend-btn');
-                
-                if(user.emailVerified) {
-                    statusBadge.innerText = '✓ Verified';
-                    statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-                    resendBtn.classList.add('hidden');
-                } else {
-                    statusBadge.innerText = 'Pending Verification';
-                    statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
-                    resendBtn.classList.remove('hidden');
-                }
-
-                document.getElementById('account-security-modal').classList.remove('hidden');
-            };
-
-            window.resendVerification = async function() {
-                try {
-                    const user = window.firebaseAuth.currentUser;
-                    await window.firebaseSendEmailVerification(user);
-                    window.showToast("Verification email sent! Check your inbox.", "success");
-                } catch(e) {
-                    if(e.code === 'auth/too-many-requests') {
-                        window.showToast("Too many requests. Please wait a few minutes.", "error");
-                    } else {
-                        window.showToast("Failed to send verification email.", "error");
-                    }
-                }
-            };
-
-            window.updateRecoveryEmail = async function() {
-                const newEmail = document.getElementById('sec-new-email').value.trim();
-                if(!newEmail || !newEmail.includes('@')) {
-                    window.showToast("Enter a valid email address.", "error");
-                    return;
-                }
-                
-                try {
-                    const user = window.firebaseAuth.currentUser;
-                    await window.firebaseVerifyBeforeUpdateEmail(user, newEmail);
-                    
-                    await window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "users", user.uid), {
-                        recoveryEmail: newEmail,
-                        recoveryEmailVerified: false
-                    });
-                    
-                    window.currentUserProfile.recoveryEmail = newEmail;
-                    document.getElementById('sec-new-email').value = '';
-                    window.showToast("Verification sent to new email. Please verify to complete the update.", "success");
-                    window.openAccountSecurity();
-                    
-                } catch(e) {
-                    if(e.code === 'auth/requires-recent-login') {
-                        window.showToast("Security requires recent login. Please sign out and sign back in to change your email.", "error");
-                    } else {
-                        window.showToast(e.message || "Failed to update email.", "error");
-                    }
-                }
-            };
-
-            window.triggerForgotPassword = async function() {
-                let id = document.getElementById('login-identifier').value.trim().toLowerCase();
-                if(!id) {
-                    window.showToast("Please enter your Index or Email in the login field first.", "error");
-                    return;
-                }
-                
-                try {
-                    const { getDocs, query, where, limit } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                    const usersRef = window.firebaseCollection(window.firebaseDb, "users");
-                    
-                    let qLookup = query(usersRef, where("indexNumber", "==", id), limit(1));
-                    let snapLookup = await getDocs(qLookup);
-                    
-                    if(snapLookup.empty) {
-                        qLookup = query(usersRef, where("email", "==", id), limit(1));
-                        snapLookup = await getDocs(qLookup);
-                    }
-                    if(snapLookup.empty) {
-                        qLookup = query(usersRef, where("recoveryEmail", "==", id), limit(1));
-                        snapLookup = await getDocs(qLookup);
-                    }
-
-                    let targetEmail = id;
-                    if(!snapLookup.empty) {
-                        const userData = snapLookup.docs[0].data();
-                        targetEmail = userData.recoveryEmail || userData.email || id;
-                    } else {
-                        if(!targetEmail.includes('@')) targetEmail = `${targetEmail}@uds.edu.gh`;
-                    }
-
-                    await window.firebaseSendPasswordResetEmail(window.firebaseAuth, targetEmail);
-                    window.showToast("Password reset instructions have been sent to your recovery email.", "success");
-                } catch(e) {
-                    window.showToast("If an account exists, a reset link was sent to the recovery email.", "success");
-                }
-            };
-
-            window.triggerPasswordChange = async function() {
-                if(!window.currentUserProfile || !window.firebaseAuth.currentUser) return;
-                const userEmail = window.firebaseAuth.currentUser.email;
-                try {
-                    await window.firebaseSendPasswordResetEmail(window.firebaseAuth, userEmail);
-                    window.showToast("Password reset link sent to your recovery email.", "success");
-                } catch(e) {
-                    window.showToast("Failed to initiate password change.", "error");
-                }
-            };
-        </script>
     </body>
 </html>
