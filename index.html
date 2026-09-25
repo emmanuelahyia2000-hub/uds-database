@@ -1278,7 +1278,16 @@
                     </div>
                 </section>
 
-                <div id="section-main-search" class="w-full flex flex-col items-center mx-auto">
+               <div id="section-main-search" class="w-full flex flex-col items-center mx-auto">
+                    
+                    <!-- ARCHIVE SELECTOR -->
+                    <div class="w-full max-w-3xl flex justify-center mb-6">
+                        <div class="bg-gray-100 dark:bg-geminiSurface p-1.5 rounded-full flex w-full md:w-auto border border-gray-200 dark:border-gray-800 shadow-sm">
+                            <button id="btn-archive-ug" onclick="switchArchiveScope('undergraduate')" class="flex-1 md:w-48 bg-navy dark:bg-academicGold text-white dark:text-navy px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-md">Undergraduate</button>
+                            <button id="btn-archive-pg" onclick="switchArchiveScope('postgraduate')" class="flex-1 md:w-48 bg-transparent text-gray-600 dark:text-gray-400 hover:text-navy dark:hover:text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all">Postgraduate</button>
+                        </div>
+                    </div>
+
                     <div class="relative w-full max-w-3xl mb-6 group">
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                             <i class="fa-solid fa-magnifying-glass text-academicPurple dark:text-academicGold transition"></i>
@@ -1339,30 +1348,21 @@
                     };
                 </script>
 
-                <div id="section-accommodation" class="hidden w-full max-w-7xl mx-auto">
-                    <!-- Clean Professional Hero Banner -->
-                    <div class="relative w-full rounded-[2rem] overflow-hidden bg-white dark:bg-geminiSurface mb-8 group min-h-[220px] flex items-center shadow-sm border border-gray-100 dark:border-gray-800">
-                        <div class="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent pointer-events-none"></div>
-                        
-                        <div class="relative z-10 px-6 md:px-12 py-8 w-full text-center md:text-left">
-                            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                                <div class="max-w-xl">
-                                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-4 border border-blue-100 dark:border-blue-800/50">
-                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span></span>
-                                        UDS Housing Network
-                                    </div>
-                                    <h2 id="hostel-hero-text" class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight tracking-tight mb-3 hero-text-animate">
-                                        Find Your Safe, <br><span class="text-blue-600 dark:text-academicGold">Perfect Home at UDS.</span>
-                                    </h2>
-                                    <p id="hostel-hero-sub" class="text-gray-500 dark:text-gray-400 text-sm md:text-base max-w-md mx-auto md:mx-0">
-                                        Compare facilities, verified pricing, and student reviews in one professional hub.
-                                    </p>
-                                </div>
-                                <button onclick="openAddHostelModal()" class="shrink-0 bg-gray-900 dark:bg-blue-300 text-white dark:text-navy font-medium px-8 py-3.5 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                                    <i class="fa-solid fa-plus"></i> Contribute Hostel
-                                </button>
+               <div id="section-accommodation" class="hidden w-full max-w-7xl mx-auto">
+                    <!-- Clean Compact Accommodation Bar -->
+                    <div class="w-full rounded-2xl bg-white dark:bg-geminiSurface shadow-sm mb-6 px-5 py-3.5 flex flex-col md:flex-row items-center justify-between border border-gray-100 dark:border-gray-800 gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-building-user text-base"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-gray-900 dark:text-white leading-tight">Find Your Safe, Perfect Home at UDS.</h2>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Compare facilities, verified pricing, and student reviews.</p>
                             </div>
                         </div>
+                        <button onclick="openAddHostelModal()" class="w-full md:w-auto bg-gray-900 dark:bg-blue-300 text-white dark:text-navy font-medium px-5 py-2.5 rounded-xl text-xs shadow-sm hover:opacity-90 transition flex items-center justify-center gap-2 shrink-0">
+                            <i class="fa-solid fa-plus"></i> Contribute Hostel
+                        </button>
                     </div>
 
                    <!-- SEARCH, BUDGET & SMART SORT SECTION -->
@@ -2121,42 +2121,20 @@
                 </script>
 
                <div id="section-marketplace" class="hidden w-full max-w-7xl mx-auto">
-                    <!-- Clean Professional Marketplace Banner -->
-                    <div class="relative w-full rounded-[2rem] overflow-hidden bg-white dark:bg-geminiSurface shadow-sm mb-8 px-6 py-8 flex flex-col md:flex-row items-center justify-between border border-gray-100 dark:border-gray-800 group">
-                        <div class="absolute inset-0 bg-gradient-to-r from-orange-50/50 to-transparent dark:from-orange-900/5 dark:to-transparent pointer-events-none"></div>
-                        
-                        <div class="flex flex-col items-start max-w-xl z-10 w-full text-center md:text-left">
-                            <div class="w-full flex justify-center md:justify-start">
-                                <span class="bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-[10px] font-bold px-3 py-1.5 rounded-full mb-4 uppercase tracking-wider border border-orange-100 dark:border-orange-800/50">UDS Hub Marketplace</span>
+                    <!-- Clean Compact Marketplace Bar -->
+                    <div class="w-full rounded-2xl bg-white dark:bg-geminiSurface shadow-sm mb-6 px-5 py-3.5 flex flex-col md:flex-row items-center justify-between border border-gray-100 dark:border-gray-800 gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-store text-base"></i>
                             </div>
-                            <h2 class="text-3xl md:text-4xl font-black mb-3 leading-tight tracking-tight text-gray-900 dark:text-white w-full">Everything Student.<br><span class="text-orange-500 dark:text-academicGold">In One Place.</span></h2>
-                            
-                            <!-- Dynamic Info Side-Show -->
-                            <div id="mkt-info-slideshow" class="h-8 overflow-hidden mb-6 w-full flex justify-center md:justify-start">
-                                <div class="transition-all duration-700 ease-in-out transform translate-y-0 slide-item flex items-center gap-2">
-                                    <div class="w-6 h-6 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-500"><i class="fa-solid fa-box-open text-[10px]"></i></div>
-                                    <p class="text-xs font-medium text-gray-600 dark:text-gray-300">Sell physical products & items to fellow students.</p>
-                                </div>
-                                <div class="transition-all duration-700 ease-in-out transform translate-y-full slide-item flex items-center gap-2 hidden">
-                                    <div class="w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-500"><i class="fa-solid fa-handshake-angle text-[10px]"></i></div>
-                                    <p class="text-xs font-medium text-gray-600 dark:text-gray-300">Offer professional services and skills on campus.</p>
-                                </div>
-                                <div class="transition-all duration-700 ease-in-out transform translate-y-full slide-item flex items-center gap-2 hidden">
-                                    <div class="w-6 h-6 rounded-md bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-500"><i class="fa-solid fa-clipboard-question text-[10px]"></i></div>
-                                    <p class="text-xs font-medium text-gray-600 dark:text-gray-300">Post help requests or jobs for the community.</p>
-                                </div>
-                            </div>
-
-                            <div class="w-full flex justify-center md:justify-start">
-                                <button onclick="openListingChoiceModal()" class="bg-gray-900 dark:bg-blue-300 text-white dark:text-navy px-8 py-3.5 rounded-xl font-medium text-sm shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                                    <i class="fa-solid fa-plus"></i> Create New Listing
-                                </button>
+                            <div>
+                                <h2 class="text-base font-bold text-gray-900 dark:text-white leading-tight">Everything Student. In One Place.</h2>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Offer professional services and skills on campus.</p>
                             </div>
                         </div>
-                        
-                        <div class="hidden md:block w-48 h-48 opacity-5 dark:opacity-10 pointer-events-none absolute right-8 top-1/2 -translate-y-1/2">
-                            <i class="fa-solid fa-store text-9xl text-gray-900 dark:text-white"></i>
-                        </div>
+                        <button onclick="openListingChoiceModal()" class="w-full md:w-auto bg-gray-900 dark:bg-blue-300 text-white dark:text-navy font-medium px-5 py-2.5 rounded-xl text-xs shadow-sm hover:opacity-90 transition flex items-center justify-center gap-2 shrink-0">
+                            <i class="fa-solid fa-plus"></i> Create New Listing
+                        </button>
                     </div>
 
                     <script>
@@ -2273,7 +2251,7 @@
                             <div id="mkt-services-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
                         </div>
 
-                        <!-- Requests -->
+                       <!-- Requests -->
                         <div id="mkt-requests-container" class="w-full mb-12 px-1 md:px-2 hidden">
                             <div class="flex items-center justify-between mb-4 border-t border-gray-100 dark:border-gray-800 pt-8">
                                 <div>
@@ -2281,8 +2259,8 @@
                                     <p class="text-xs text-gray-500 mt-1">Opportunities and help needed</p>
                                 </div>
                             </div>
-                            <!-- Vertical Feed -->
-                            <div id="mkt-requests-feed" class="flex flex-col gap-4 max-w-3xl mx-auto"></div>
+                            <!-- Grid Feed matching Accommodation size -->
+                            <div id="mkt-requests-feed" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 w-full"></div>
                         </div>
                     </div>
 
@@ -3996,9 +3974,8 @@
                     window.isAdmin = false;
                 }
                 
-                const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+               const combinedMaterials = window.currentArchiveScope === 'postgraduate' ? (window.pgDriveMaterialsCache || []) : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
                 if(combinedMaterials.length > 0) window.renderMaterialsGrid(combinedMaterials);
-                
                 if(window.compileSmartNotices) window.compileSmartNotices();
                 if(window.renderAdminNotices) window.renderAdminNotices();
             } else {
@@ -4175,7 +4152,7 @@
             const items = []; snapshot.forEach(doc => items.push({id: doc.id, ...doc.data()}));
             globalMaterialsCache = items; window.globalMaterialsCache = items; localStorage.setItem('uds_materials_cache', JSON.stringify(items));
             
-            const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+           const combinedMaterials = window.currentArchiveScope === 'postgraduate' ? (window.pgDriveMaterialsCache || []) : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
             
             const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
             if(currentQuery) { window.executeSearchingAI(); } else { window.renderMaterialsGrid(combinedMaterials); }
@@ -5247,7 +5224,7 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
         };
 
         window.searchDebounceTimer = null;
-        window.executeSearchingAI = async function() {
+       window.executeSearchingAI = async function() {
             clearTimeout(window.searchDebounceTimer);
             window.searchDebounceTimer = setTimeout(async () => {
                 const query = document.getElementById('ai-search-bar').value.trim();
@@ -5256,7 +5233,7 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 
                 if (query === '') { 
                     window.lastSearchQuery = "";
-                    const combinedMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])]; 
+                    const combinedMaterials = window.currentArchiveScope === 'postgraduate' ? (window.pgDriveMaterialsCache || []) : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])]; 
                     window.renderMaterialsGrid(combinedMaterials); 
                     return; 
                 }
@@ -5273,8 +5250,8 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                         });
                         window.renderMaterialsGrid(formattedResults);
                     } else { grid.innerHTML = `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><p class="text-gray-500 text-sm font-medium">No documents contain the word "${query}".</p></div>`; }
-                } catch (error) {
-                    const allAvailableMaterials = [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+               } catch (error) {
+                    const allAvailableMaterials = window.currentArchiveScope === 'postgraduate' ? (window.pgDriveMaterialsCache || []) : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
                     const records = allAvailableMaterials.filter(item => (item.title && item.title.toLowerCase().includes(query.toLowerCase())) || (item.keywords && item.keywords.toLowerCase().includes(query.toLowerCase())) || (item.level && item.level.toLowerCase().includes(query.toLowerCase())) || (item.subject && item.subject.toLowerCase().includes(query.toLowerCase())) );
                     window.renderMaterialsGrid(records);
                 }
@@ -5739,13 +5716,23 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }
             score += distScore;
 
-            // 5. AVAILABILITY & TRUST (10%)
+           // 5. AVAILABILITY & TRUST (10%)
             if(hostel.verified) { score += 5; reasons.push("✓ Verified listing"); }
             if(hostel.availability === 'Rooms Available') score += 5;
             
             score = Math.round(score);
 
-            if(score >= 80 && label === "") {
+            // SYSTEM: Automatically classify high-amenities & low-price hostels as "Highly Recommended"
+            const isLowPrice = hostel.price > 0 && hostel.price <= (medianPrice * 0.95);
+            const hasHighAmenities = facScore >= 15; // Represents having at least 3 major amenities
+
+            if(isLowPrice && hasHighAmenities) {
+                label = "Highly Recommended";
+                labelColor = "text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400";
+                labelIcon = "fa-solid fa-star";
+                score += 25; // Massive boost to push it to the very front of the recommendations
+                reasons.unshift("✓ Top Value: High amenities, low price");
+            } else if(score >= 80 && label === "") {
                 label = "Highly Recommended";
                 labelColor = "text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400";
                 labelIcon = "fa-solid fa-star";
@@ -5856,8 +5843,12 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 return;
             }
 
-            // Split into Featured (Top 5 Rated/Verified) and General
-            const featuredData = [...data].filter(h => h.verified || (h.reviews && h.reviews.length > 0)).sort((a, b) => b.timestamp - a.timestamp).slice(0, 6);
+           // Split into Featured (Top Value, Rated, or Verified) and General
+            const featuredData = [...data].filter(h => h.smartScore >= 80 || h.verified || (h.reviews && h.reviews.length > 0)).sort((a, b) => {
+                // Prioritize the Smart Value Score first, then fallback to newest
+                if (b.smartScore !== a.smartScore) return b.smartScore - a.smartScore;
+                return b.timestamp - a.timestamp;
+            }).slice(0, 6);
             
             const scrollBox = document.getElementById('acc-featured-scroll');
             if(featuredData.length > 0) {
@@ -6683,114 +6674,121 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }
         };
 
-     window.buildMktCard = function(item, isFeatured) {
+   window.buildMktCard = function(item, isFeatured) {
             const targetImg = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl;
-            const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto,c_fill/') : '';
+            
+            // Removed c_fill so products are fully visible via object-contain 
+            const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto/') : '';
             
             let totalStars = 0; let validRatingsCount = 0;
             if (item.reviews) item.reviews.forEach(r => { if (r.rating > 0) { totalStars += r.rating; validRatingsCount++; } });
             const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
-            const starHtml = validRatingsCount > 0 
-                ? `<i class="fa-solid fa-star text-yellow-400 text-[9px] mr-0.5"></i><span class="text-[10px] text-gray-600 dark:text-gray-400 font-bold">${avgRating} (${validRatingsCount})</span>` 
-                : `<span class="text-[9px] text-gray-400 font-medium">New</span>`;
 
             const widthClass = isFeatured ? 'w-[150px] md:w-[180px] shrink-0' : 'w-full';
-            const shellClasses = `bg-white dark:bg-[#131314] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col group cursor-pointer relative ${widthClass}`;
+            
+            // Replicating accommodation card dimensions, shapes, and hover lift effects
+            const shellClasses = `bg-[#F2EFE9] dark:bg-[#111827] rounded-[1.25rem] border border-gray-100/50 dark:border-gray-800 overflow-hidden shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_25px_40px_-12px_rgba(79,70,229,0.12),0_15px_20px_-8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_25px_40px_-12px_rgba(0,0,0,0.8),0_0_25px_rgba(245,158,11,0.08)] hover:-translate-y-2 hover:border-indigo-500/15 dark:hover:border-yellow-600/25 transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] flex flex-col group cursor-pointer relative ${widthClass}`;
 
             const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
             const heartClass = (userEmail && (item.likes || []).includes(userEmail)) ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-400 group-hover:text-red-500";
-            const pfp = item.sellerPhoto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.sellerName) + '&background=random';
-
+            
+            // Type indicator badges
+            let typeBadgeHtml = '';
             if (item.type === 'Service') {
-                const serviceImgHtml = targetImg 
-                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/20"><i class="fa-solid fa-briefcase text-2xl text-blue-300 dark:text-blue-700"></i></div>` 
-                    : `<div class="w-full h-full flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/20"><i class="fa-solid fa-briefcase text-2xl text-blue-300 dark:text-blue-700"></i></div>`;
-
-                return `
-                    <div class="${shellClasses}" onclick="if(!window.isDraggingCard) openServiceProfile('${item.id}')">
-                        <div class="h-[100px] md:h-[120px] w-full relative shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 pointer-events-none border-b border-gray-100 dark:border-gray-800">
-                            ${serviceImgHtml}
-                            <span class="absolute top-2 left-2 bg-blue-600/90 text-white text-[8px] px-1.5 py-0.5 rounded shadow-sm uppercase font-bold tracking-wider z-10 backdrop-blur-sm"><i class="fa-solid fa-bolt mr-1"></i>Service</span>
-                        </div>
-                        <div class="p-2.5 flex-grow flex flex-col bg-white dark:bg-[#1A1A1C] pointer-events-none relative">
-                            <img src="${pfp}" class="absolute -top-5 right-2 w-8 h-8 rounded-full object-cover border-2 border-white dark:border-[#1A1A1C] shadow-sm z-20">
-                            <h4 class="font-bold text-gray-900 dark:text-white text-[11px] md:text-xs leading-snug line-clamp-2 mb-1 pr-6">${item.title}</h4>
-                            <div class="text-[9px] text-gray-500 line-clamp-1 mb-1.5">${item.shortIntro || item.description || ''}</div>
-                            <div class="flex items-center gap-1.5 mb-2 mt-auto">
-                                <div class="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 shrink-0"><i class="fa-solid fa-user text-[8px]"></i></div>
-                                <span class="text-[9px] font-medium text-gray-700 dark:text-gray-300 truncate">${item.sellerName}</span>
-                            </div>
-                            <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-2">
-                                <div class="flex items-center gap-1">${starHtml}</div>
-                                <span class="font-black text-blue-600 dark:text-blue-400 text-[11px]">${item.price === 0 ? 'Neg.' : `GH₵${item.price}`}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-           } else if (item.type === 'Request') {
-                const requestImgHtml = targetImg 
-                    ? `<div class="w-full sm:w-[150px] h-[120px] sm:h-auto relative shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 border-b sm:border-b-0 sm:border-r border-orange-100 dark:border-orange-900/30"><img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src=''; this.parentElement.classList.add('hidden');"></div>` 
-                    : ``;
-
-                // Transform Requests to fit a vertical feed on desktop/tablet while staying valid on mobile
-                const requestShellClasses = isFeatured ? shellClasses : `bg-white dark:bg-[#131314] rounded-xl border border-orange-100 dark:border-orange-900/30 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row group cursor-pointer relative w-full bg-orange-50/20 dark:bg-orange-900/10`;
-
-                return `
-                    <div class="${requestShellClasses}" onclick="if(!window.isDraggingCard) openRequestProfile('${item.id}')">
-                        ${requestImgHtml}
-                        <div class="p-4 flex flex-col flex-grow pointer-events-none relative min-w-0">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 text-[9px] px-2 py-1 rounded uppercase font-bold tracking-wider"><i class="fa-solid fa-bullhorn mr-1"></i>Student Request</span>
-                                <span class="text-[10px] text-gray-400 font-medium">${new Date(item.timestamp).toLocaleDateString()}</span>
-                            </div>
-                            <h4 class="font-bold text-gray-900 dark:text-white text-[13px] md:text-sm leading-snug line-clamp-2 mb-2 flex-grow">${item.title}</h4>
-                            <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-3">
-                                <img src="${pfp}" class="w-5 h-5 rounded-full object-cover border border-orange-100 dark:border-orange-900/30">
-                                <span class="truncate font-medium">${item.sellerName}</span>
-                            </div>
-                            <div class="mt-auto pt-3 border-t border-orange-100 dark:border-orange-900/30 flex justify-between items-center">
-                                <span class="text-[10px] text-gray-500 font-medium">Budget:</span>
-                                <span class="text-[13px] font-black ${item.budgetType === 'Fixed Budget' ? 'text-gray-900 dark:text-white' : 'text-orange-500'}">${item.budgetType === 'Fixed Budget' ? `GH₵${item.price.toLocaleString()}` : 'Negotiable'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                let discountHtml = ''; let oldPriceHtml = '';
-                if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
-                    const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
-                    discountHtml = `<span class="absolute top-2 left-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded z-10 shadow-sm">-${discount}%</span>`;
-                    oldPriceHtml = `<span class="line-through text-gray-400 text-[9px] ml-1 font-medium">GH₵${item.oldPrice.toLocaleString()}</span>`;
-                }
-                
-                const storeBadgeHtml = item.listingType === 'external' 
-                    ? `<span class="text-[8px] text-purple-600 bg-purple-50 dark:bg-purple-900/30 dark:text-purple-400 px-1.5 py-0.5 rounded truncate max-w-[80px] font-bold pointer-events-none"><i class="fa-solid fa-link mr-1"></i>${item.storeName}</span>` 
-                    : `<span class="text-[8px] text-gray-500 truncate max-w-[80px] pointer-events-none"><i class="fa-solid fa-store mr-1"></i>${item.sellerName.split(' ')[0]}</span>`;
-
-                const productImgHtml = targetImg 
-                    ? `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800"><i class="fa-solid fa-image text-xl text-gray-300"></i></div>` 
-                    : `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800"><i class="fa-solid fa-image text-xl text-gray-300"></i></div>`;
-
-                return `
-                    <div class="${shellClasses}" onclick="if(!window.isDraggingCard) openMarketplaceDetails('${item.id}')">
-                        <div class="h-[120px] md:h-[135px] w-full relative shrink-0 overflow-hidden bg-white flex items-center justify-center p-2 pointer-events-none border-b border-gray-100 dark:border-gray-800">
-                            ${productImgHtml} ${discountHtml}
-                            <button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition pointer-events-auto"><i class="${heartClass} text-[10px]"></i></button>
-                        </div>
-                        <div class="p-2 flex-grow flex flex-col min-w-0 bg-white dark:bg-[#1A1A1C] pointer-events-none">
-                            <h4 class="font-medium text-gray-800 dark:text-gray-200 text-[11px] md:text-[12px] mb-1 line-clamp-2 leading-snug">${item.title}</h4>
-                            <div class="flex items-center gap-1 mb-1.5 h-3">${starHtml}</div>
-                            <div class="mt-auto">
-                                <div class="flex items-baseline flex-wrap">
-                                    <span class="font-black text-gray-900 dark:text-white text-[13px] md:text-[14px]">${item.price === 0 ? 'Neg.' : `GH₵${item.price.toLocaleString()}`}</span>
-                                    ${oldPriceHtml}
-                                </div>
-                                <div class="flex justify-between items-center mt-2">${storeBadgeHtml}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                typeBadgeHtml = `<div class="absolute top-0 left-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-blue-600/90"><i class="fa-solid fa-bolt mr-1"></i>Service</span></div>`;
+            } else if (item.type === 'Request') {
+                typeBadgeHtml = `<div class="absolute top-0 left-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-orange-600/90"><i class="fa-solid fa-bullhorn mr-1"></i>Request</span></div>`;
+            } else if (item.condition === 'Brand New' || item.condition === 'New') {
+                typeBadgeHtml = `<div class="absolute top-0 left-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-green-600/90"><i class="fa-solid fa-sparkles mr-1"></i>New</span></div>`;
             }
+
+            // Image handling: object-contain with p-2 ensures nothing is hidden or cut off. If request has no photo, display a neat matching placeholder.
+            let imgHtml = '';
+            if (targetImg) {
+                imgHtml = `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-contain p-2 transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-105" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"><i class="fa-solid fa-image text-2xl text-gray-300"></i></div>`;
+            } else if (item.type === 'Request') {
+                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-orange-50/70 dark:bg-orange-950/20"><i class="fa-solid fa-bullhorn text-3xl text-orange-400 dark:text-orange-500 opacity-60"></i></div>`;
+            } else {
+                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"><i class="fa-solid fa-image text-2xl text-gray-300"></i></div>`;
+            }
+
+            let discountHtml = ''; let oldPriceHtml = '';
+            if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
+                const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
+                discountHtml = `<div class="absolute top-0 right-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-red-500">-${discount}%</span></div>`;
+                oldPriceHtml = `<span class="line-through text-gray-400 text-[9px] ml-1 font-medium">GH₵${item.oldPrice.toLocaleString()}</span>`;
+            }
+
+            const displayPrice = item.type === 'Request'
+                ? (item.budgetType === 'Fixed Budget' ? `GH₵${Number(item.price).toLocaleString()}` : (item.budgetType || 'Negotiable'))
+                : (item.price === 0 ? 'Negotiable' : `GH₵${Number(item.price).toLocaleString()}`);
+                
+            const locationText = item.location || 'Campus Area';
+            const viewsText = item.views ? `${item.views} views` : 'New';
+            
+            const storeBadgeHtml = item.listingType === 'external' 
+                ? `<span class="text-[8px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-1.5 py-0.5 rounded truncate max-w-[80px] shadow-sm"><i class="fa-solid fa-link mr-1"></i>${item.storeName || 'External'}</span>` 
+                : `<span class="text-[8px] font-bold text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded truncate max-w-[80px] shadow-sm"><i class="fa-solid fa-store mr-1"></i>${item.sellerName ? item.sellerName.split(' ')[0] : 'Seller'}</span>`;
+
+            const onClickAction = item.type === 'Service' ? `openServiceProfile('${item.id}')` : (item.type === 'Request' ? `openRequestProfile('${item.id}')` : `openMarketplaceDetails('${item.id}')`);
+
+            const middleDetailsHtml = item.type === 'Request'
+                ? `
+                    <ul class="text-[8px] text-gray-500 mt-1.5 space-y-0.5 pointer-events-none hidden md:block">
+                        <li class="truncate">✓ Needs: ${item.category || 'Assistance'}</li>
+                        <li class="truncate">✓ Urgency: ${item.urgency || 'Normal'}</li>
+                        <li class="truncate">✓ By: ${item.sellerName || 'Student'}</li>
+                    </ul>
+                `
+                : `
+                    <ul class="text-[8px] text-gray-500 mt-1.5 space-y-0.5 pointer-events-none hidden md:block">
+                        <li class="truncate">✓ Type: ${item.category || item.type || 'General'}</li>
+                        <li class="truncate">✓ Condition: ${item.condition || 'Good Condition'}</li>
+                        <li class="truncate">✓ By: ${item.sellerName || 'Student'}</li>
+                    </ul>
+                `;
+
+            const bottomTagHtml = item.type === 'Request'
+                ? `<span class="text-[9px] font-black text-orange-600 dark:text-orange-400 tracking-wide">${item.urgency || 'Open'}</span>`
+                : `<span class="text-[9px] font-black ${item.verified ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'} tracking-wide">${item.verified ? '<i class="fa-solid fa-shield-check"></i> Verified' : 'Available'}</span>`;
+
+            return `
+                <div class="${shellClasses}" onclick="if(!window.isDraggingCard) ${onClickAction}">
+                    <div class="relative h-[120px] md:h-[135px] overflow-hidden shrink-0 bg-white dark:bg-gray-900 pointer-events-none border-b border-gray-100 dark:border-gray-800">
+                        ${typeBadgeHtml}
+                        ${discountHtml}
+                        ${imgHtml}
+                        ${item.type !== 'Request' ? `<button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="absolute bottom-2 right-2 w-7 h-7 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition pointer-events-auto"><i class="${heartClass} text-[10px]"></i></button>` : ''}
+                    </div>
+                    <div class="p-2 flex flex-col flex-grow min-w-0 bg-[#F2EFE9] dark:bg-[#111827] pointer-events-none">
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-medium text-gray-800 dark:text-gray-200 text-[11px] md:text-[12px] line-clamp-1 leading-snug flex-grow pr-1">${item.title}</h4>
+                            <div class="text-[9px] font-bold text-yellow-500 flex items-center gap-0.5 shrink-0 bg-yellow-50 dark:bg-yellow-900/20 px-1 py-0.5 rounded">
+                                <i class="fa-solid fa-star"></i> ${avgRating > 0 ? avgRating : 'New'}
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-[9px] text-gray-500 mb-1.5 h-3">
+                            <div class="flex items-center gap-1 truncate max-w-[65%]">
+                                <i class="fa-solid fa-location-dot text-blue-500"></i> 
+                                <span class="truncate">${locationText}</span>
+                            </div>
+                            <span class="shrink-0 font-medium"><i class="fa-regular fa-eye mr-0.5"></i>${viewsText}</span>
+                        </div>
+                        
+                        <div class="text-[13px] md:text-[14px] font-black text-gray-900 dark:text-white">
+                            ${displayPrice} ${oldPriceHtml}
+                        </div>
+                        
+                        ${middleDetailsHtml}
+
+                        <div class="mt-auto flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-800/50">
+                            ${storeBadgeHtml}
+                            ${bottomTagHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
         };
 
        window.renderMarketplace = function() {
@@ -8114,28 +8112,72 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             }
         };
 
-        // --- GOOGLE DRIVE API INTEGRATION Unchanged ---
-        async function loadGoogleDriveMaterials() {
+       // --- GOOGLE DRIVE API INTEGRATION (Dual Archive) ---
+        window.currentArchiveScope = 'undergraduate';
+        window.pgDriveMaterialsCache = null;
+
+        window.switchArchiveScope = function(scope) {
+            if (window.currentArchiveScope === scope) return;
+            window.currentArchiveScope = scope;
+
+            const ugBtn = document.getElementById('btn-archive-ug');
+            const pgBtn = document.getElementById('btn-archive-pg');
+
+            if (scope === 'postgraduate') {
+                ugBtn.classList.remove('bg-navy', 'dark:bg-academicGold', 'text-white', 'dark:text-navy', 'shadow-md');
+                ugBtn.classList.add('bg-transparent', 'text-gray-600', 'dark:text-gray-400');
+                pgBtn.classList.remove('bg-transparent', 'text-gray-600', 'dark:text-gray-400');
+                pgBtn.classList.add('bg-navy', 'dark:bg-academicGold', 'text-white', 'dark:text-navy', 'shadow-md');
+
+                if (!window.pgDriveMaterialsCache) {
+                    document.getElementById('smart-materials-grid').innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-academicPurple dark:text-academicGold mb-3"></i><p class="text-sm font-medium text-gray-500 mt-2">Loading Postgraduate Archive...</p></div>';
+                    loadGoogleDriveMaterials('postgraduate');
+                } else {
+                    const currentQuery = document.getElementById('ai-search-bar').value;
+                    if (currentQuery) window.executeSearchingAI();
+                    else window.renderMaterialsGrid(window.pgDriveMaterialsCache);
+                }
+            } else {
+                pgBtn.classList.remove('bg-navy', 'dark:bg-academicGold', 'text-white', 'dark:text-navy', 'shadow-md');
+                pgBtn.classList.add('bg-transparent', 'text-gray-600', 'dark:text-gray-400');
+                ugBtn.classList.remove('bg-transparent', 'text-gray-600', 'dark:text-gray-400');
+                ugBtn.classList.add('bg-navy', 'dark:bg-academicGold', 'text-white', 'dark:text-navy', 'shadow-md');
+
+                const currentQuery = document.getElementById('ai-search-bar').value;
+                if (currentQuery) window.executeSearchingAI();
+                else window.renderMaterialsGrid([...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])]);
+            }
+        };
+
+        async function loadGoogleDriveMaterials(scope = 'undergraduate') {
             try {
-                const response = await fetch('/api/materials');
+                const response = await fetch(`/api/materials?archive=${scope}`);
                 const files = await response.json();
 
-                window.driveMaterialsCache = files.map(file => {
+                const mappedFiles = files.map(file => {
                     let embedUrl = file.webViewLink;
                     if (file.mimeType === 'application/vnd.google-apps.folder') { const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/); if (folderIdMatch) { embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`; } } 
                     else { embedUrl = file.webViewLink.replace('/view', '/preview'); }
 
-                    return { id: file.id, title: file.name, driveUrl: embedUrl, subject: 'Google Drive', level: 'Cloud', keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document' };
+                    return { id: file.id, title: file.name, driveUrl: embedUrl, subject: 'Google Drive', level: scope === 'postgraduate' ? 'Postgrad' : 'Cloud', keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document' };
                 });
 
-                const combinedMaterials = [...(window.globalMaterialsCache || []), ...window.driveMaterialsCache];
-                const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
-                if(!currentQuery) { window.renderMaterialsGrid(combinedMaterials); }
+                if (scope === 'postgraduate') {
+                    window.pgDriveMaterialsCache = mappedFiles;
+                } else {
+                    window.driveMaterialsCache = mappedFiles;
+                }
+
+                if (window.currentArchiveScope === scope) {
+                    const combinedMaterials = scope === 'postgraduate' ? window.pgDriveMaterialsCache : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+                    const currentQuery = (document.getElementById('ai-search-bar')?.value || '').toLowerCase().trim();
+                    if(!currentQuery) { window.renderMaterialsGrid(combinedMaterials); }
+                }
                 if(window.compileSmartNotices) window.compileSmartNotices();
             } catch (error) { console.error('Google Drive Load Error:', error); }
         }
 
-        document.addEventListener('DOMContentLoaded', () => { loadGoogleDriveMaterials(); });
+        document.addEventListener('DOMContentLoaded', () => { loadGoogleDriveMaterials('undergraduate'); });
         
         // --- SMART NOTICE CENTER LOGIC ---
         window.currentUpdateVersion = 1.2; // Bumped version for Marketplace feature
