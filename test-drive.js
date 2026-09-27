@@ -11,7 +11,7 @@ async function listFiles() {
     auth,
   });
 
- const folderId = "1GSGdZWH2aPJYEcvHIZPokK_oTq4Afyj9";
+const folderId = "1GSGdZWH2aPJYEcvHIZPokK_oTq4Afyj9";
 
   const response = await drive.files.list({
     q: `'${folderId}' in parents`,

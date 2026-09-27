@@ -5283,8 +5283,20 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             } catch(err) {} 
         };
 
-        window.executeImmediateLogin = async function(e) { e.preventDefault(); let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } };
-        window.executeImmediateRegistration = async function(e) { e.preventDefault(); const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } };
+        // WhatsApp-style connection listeners
+        window.addEventListener('offline', () => { window.showToast("You are offline. Showing saved app state.", "error"); });
+        window.addEventListener('online', () => { window.showToast("Back online! Reconnecting...", "success"); });
+
+        window.executeImmediateLogin = async function(e) { 
+            e.preventDefault(); 
+            if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to sign in for security reasons.", "error"); return; }
+            let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } 
+        };
+        window.executeImmediateRegistration = async function(e) { 
+            e.preventDefault(); 
+            if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to register.", "error"); return; }
+            const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } 
+        };
 
         /* Academic Tools */
         window.openGpaModal = function() { document.getElementById('gpa-calculator-modal').classList.remove('hidden'); if(document.getElementById('gpa-rows-stack').children.length===0) { window.addCourseGpaRow(); window.addCourseGpaRow(); } };
@@ -8770,14 +8782,36 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     };
 
-    window.addEventListener('load', () => {
+   window.addEventListener('load', () => {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').then(reg => {
                 // Background Sync / Notification Permission
                 if ("Notification" in window) {
                     Notification.requestPermission();
                 }
+                
+                // Force check for updates every time the app opens
+                reg.update();
+                
+                // Automatically apply new updates if detected
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'activated') {
+                            window.location.reload(); // Refresh to show new version
+                        }
+                    });
+                });
             }).catch(err => console.error('SW Error:', err));
+            
+            // Listen for the controlling service worker changing to ensure smooth handover
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
         }
         
         // If already installed or explicitly dismissed by the user, obliterate the banner
