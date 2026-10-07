@@ -1452,9 +1452,9 @@
                         <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-deepNavy border border-academicPurple/30 dark:border-academicGold/30 rounded-full text-base shadow-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-academicGold placeholder-gray-400">
                     </div>
 
-                    <div class="w-full max-w-3xl text-sm text-gray-500 mb-6 px-2 flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-2">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">Scholarly Articles & Records</span>
-                        <span class="text-xs font-medium">About <span id="material-count-badge">0</span> results</span>
+                    <div class="w-full max-w-3xl text-sm text-gray-500 mb-4 px-2 flex justify-between items-center">
+                        <span>Cloud Archive Documents</span>
+                        <span class="bg-gray-100 dark:bg-geminiSurface px-2 py-1 rounded-full text-xs font-medium"><span id="material-count-badge">0</span> items</span>
                     </div>
 
                   <div id="smart-materials-grid" class="flex flex-col gap-3 w-full max-w-3xl pb-8"></div>
@@ -6935,14 +6935,14 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             if (window.lastSearchQuery && window.lastSearchQuery !== "") {
                 const passSlidesUrl = `https://passslides.com/?s=${encodeURIComponent(window.lastSearchQuery)}`;
                 grid.innerHTML += `
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-8 flex items-center justify-between group cursor-pointer border border-white/10" onclick="window.open('${passSlidesUrl}', '_blank')">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-2 flex items-center justify-between group cursor-pointer border border-white/10" onclick="window.open('${passSlidesUrl}', '_blank')">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white text-2xl shadow-inner">
                                 <i class="fa-solid fa-globe animate-pulse"></i>
                             </div>
                             <div>
-                                <h3 class="text-white font-bold text-sm">External Academic Web Search</h3>
-                                <p class="text-blue-100 text-[11px] leading-tight">We found more academic slides & documents matching <br><b>"${window.lastSearchQuery}"</b></p>
+                                <h3 class="text-white font-bold text-sm">PassSlides Web Discovery</h3>
+                                <p class="text-blue-100 text-[11px] leading-tight">We found more slides on the web matching <br><b>"${window.lastSearchQuery}"</b></p>
                             </div>
                         </div>
                         <div class="bg-white/10 group-hover:bg-white/20 p-2 rounded-lg text-white transition">
@@ -6953,73 +6953,29 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }
 
             if(!items || items.length === 0) { 
-                grid.innerHTML += `<div class="py-12 text-center"><i class="fa-solid fa-book-open-reader text-4xl mb-4 text-gray-300 dark:text-gray-600"></i><p class="text-gray-500 text-sm font-medium">Your search - <b>${window.lastSearchQuery || ''}</b> - did not match any academic records.</p><p class="text-xs text-gray-400 mt-2">Try adjusting your terms or check the web discovery result above.</p></div>`; 
+                grid.innerHTML += `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-regular fa-folder-open text-4xl mb-3 text-gray-300 dark:text-gray-600"></i><p class="text-gray-500 text-sm font-medium">No internal files found for "${window.lastSearchQuery || ''}". Check the web result above.</p></div>`; 
                 return; 
             }
             
             items.forEach(item => {
-                let deleteBtnHtml = window.isAdmin ? `<button onclick="event.stopPropagation(); deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-4 text-xs font-medium transition"><i class="fa-solid fa-trash mr-1"></i>Remove</button>` : '';
+                let deleteBtnHtml = window.isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-3 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash"></i></button>` : '';
+                let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-10 h-10 object-contain" alt="File">';
+                const titleLower = (item.title || '').toLowerCase(); const keywordsLower = (item.keywords || '').toLowerCase();
                 
-                // Extract unique ID securely to fetch the AI-generated snippet
-                let fileId = null;
-                const fileIdMatch = (item.driveUrl || '').match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-                if (fileIdMatch) fileId = fileIdMatch[1];
-                
-                // Fetch snippet/summary from local index cache if it has been indexed by the companion
-                let snippet = "Abstract and full-text available upon accessing the document. This scholarly record contains verified academic materials, lecture notes, or research data relevant to the selected UDS curriculum.";
-                let isIndexed = false;
-                if (fileId && window.globalDocumentIndexCache) {
-                    const indexedData = window.globalDocumentIndexCache.find(idx => idx.documentId === fileId);
-                    if (indexedData && indexedData.summary) {
-                        snippet = indexedData.summary;
-                        isIndexed = true;
-                    }
-                }
-
-                // Format Metadata (Scholar Green text)
-                const author = item.contributorName || item.author || "UDS Contributor";
-                const category = item.subject || item.keywords || "General Academic Resource";
-                const level = item.level ? `Level ${item.level}` : "";
-                const year = item.timestamp ? new Date(item.timestamp).getFullYear() : new Date().getFullYear();
-                
-                const metaString = [author, category, level, year].filter(Boolean).join(" - ");
-                
-                // File Type Indicator
-                const titleLower = (item.title || '').toLowerCase();
-                const keywordsLower = (item.keywords || '').toLowerCase();
-                let typeIndicator = "[PDF]";
-                if (keywordsLower.includes('folder')) typeIndicator = "[DIR]";
-                else if (titleLower.includes('.doc') || keywordsLower.includes('word')) typeIndicator = "[DOC]";
-                else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) typeIndicator = "[PPT]";
-
-                // Clean title (remove ugly extensions for a scholarly look)
-                const cleanTitle = item.title.replace(/\.[^/.]+$/, "");
+                if (keywordsLower.includes('folder')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Drive_Folder_Icon_%282020%29.svg" class="w-10 h-10 object-contain" alt="Folder">'; } 
+                else if (titleLower.includes('.pdf') || keywordsLower.includes('pdf')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" class="w-10 h-10 object-contain" alt="PDF">'; } 
+                else if (titleLower.includes('.doc') || keywordsLower.includes('word')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-10 h-10 object-contain" alt="DOCX">'; } 
+                else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-10 h-10 object-contain" alt="PPT">'; }
 
                 grid.innerHTML += `
-                    <div class="mb-8 relative group">
-                        <div class="flex items-start gap-1">
-                            <h3 class="font-medium text-[#1a0dab] dark:text-[#8ab4f8] text-lg cursor-pointer hover:underline leading-snug" onclick="openDocument('${item.title.replace(/'/g, "\\'")}', '${item.driveUrl}')">
-                                <span class="text-gray-500 dark:text-gray-400 text-sm font-normal mr-1.5">${typeIndicator}</span>${cleanTitle}
-                            </h3>
-                        </div>
-                        
-                        <div class="text-[#006621] dark:text-[#81c995] text-sm mt-1 mb-2 flex items-center gap-2">
-                            ${metaString}
-                        </div>
-                        
-                        <p class="text-[#4d5156] dark:text-[#bdc1c6] text-sm leading-[1.6] line-clamp-2 mb-2">
-                            ${snippet}
-                        </p>
-                        
-                        <div class="flex items-center text-xs text-[#70757a] dark:text-[#9aa0a6] gap-5">
-                            <button onclick="openDocument('${item.title.replace(/'/g, "\\'")}', '${item.driveUrl}')" class="hover:text-gray-900 dark:hover:text-gray-200 transition font-medium flex items-center gap-1.5">
-                                <i class="fa-solid fa-book-open"></i> View full text
-                            </button>
-                            <button onclick="window.showToast('Citation copied to clipboard.', 'success')" class="hover:text-gray-900 dark:hover:text-gray-200 transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-quote-right"></i> Cite
-                            </button>
-                            ${isIndexed ? '<span class="flex items-center gap-1.5 text-purple-600 dark:text-purple-400" title="Analyzed by UDS Companion"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Indexed</span>' : ''}
-                            ${deleteBtnHtml}
+                    <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex items-center gap-4 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">
+                        <div class="flex-shrink-0 bg-gray-50 dark:bg-geminiBase p-2 rounded-xl">${iconHtml}</div>
+                        <div class="flex-grow min-w-0 flex flex-col justify-center">
+                            <h3 class="font-medium text-gray-800 dark:text-gray-100 text-sm md:text-base mb-1 truncate">${item.title}</h3>
+                            <div class="flex items-center">
+                                <span class="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider font-medium">View File</span>
+                                ${deleteBtnHtml}
+                            </div>
                         </div>
                     </div>`;
             });
@@ -7060,9 +7016,9 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }, 500); 
         };
 
-       window.triggerDriveSync = async function(btn) { btn.innerText = "Scanning Institutional Archive... Please wait."; btn.disabled = true; try { const response = await fetch('/api/sync', { method: 'POST' }); const data = await response.json(); if (data.success) { window.showToast(`Success! Found and added ${data.synced} new academic records.`, "success"); } else { window.showToast("Sync failed. Check Vercel logs.", "error"); } } catch (err) { window.showToast("Network pipeline issue.", "error"); } finally { btn.innerText = "Start Deep Sync"; btn.disabled = false; } };
+        window.triggerDriveSync = async function(btn) { btn.innerText = "Scanning Google Drive... Please wait."; btn.disabled = true; try { const response = await fetch('/api/sync', { method: 'POST' }); const data = await response.json(); if (data.success) { window.showToast(`Success! Found and added ${data.synced} new files.`, "success"); } else { window.showToast("Sync failed. Check Vercel logs.", "error"); } } catch (err) { window.showToast("Network pipeline issue.", "error"); } finally { btn.innerText = "Start Deep Sync"; btn.disabled = false; } };
 
-       window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Resource URL", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
+        window.handleSecureUpload = async function(e) { e.preventDefault(); const btn = document.getElementById('adm-upload-btn'); btn.innerText = "Syncing..."; const levelValue = document.getElementById('adm-level').value; const linkInput = document.getElementById('adm-drive-link').value.trim(); const manualTitle = document.getElementById('adm-resource-title').value.trim(); const searchTags = document.getElementById('adm-search-tags').value.trim(); if(!linkInput) { window.showToast("Provide a valid Drive Link", "error"); btn.innerText = "Publish"; return; } let viewableLink = linkInput; const driveIdMatch = linkInput.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/); if(driveIdMatch && driveIdMatch[1]) { viewableLink = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`; } try { const finalTitle = manualTitle || `Level ${levelValue} Academic Resource`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "materials"), { title: finalTitle, keywords: searchTags, level: levelValue, driveUrl: viewableLink, timestamp: new Date().getTime() }); window.showToast("Saved!", "success"); document.getElementById('adm-drive-link').value = ''; document.getElementById('adm-resource-title').value = ''; document.getElementById('adm-search-tags').value = ''; } catch(error) { window.showToast("Error.", "error"); } finally { btn.innerText = "Publish"; } };
         window.deleteFileFromDatabase = async function(fileId) { if(confirm("Permanently delete?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "materials", fileId)); window.showToast("Deleted", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
         window.filterAdminFiles = function() { const container = document.getElementById('admin-file-list'); if(!container || !window.globalMaterialsCache) return; const query = (document.getElementById('admin-file-search')?.value || '').toLowerCase().trim(); container.innerHTML = ''; const records = window.globalMaterialsCache.filter(item => (item.title && item.title.toLowerCase().includes(query)) || (item.keywords && item.keywords.toLowerCase().includes(query)) ); records.forEach(item => { container.innerHTML += ` <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2"> <div class="flex flex-col min-w-0 pr-2"> <span class="font-medium truncate text-gray-800 dark:text-gray-200">${item.title}</span> <span class="text-[9px] text-gray-500 truncate uppercase tracking-wider">${item.keywords || item.subject || 'No tags'} • Lvl ${item.level || 'Custom'}</span> </div> <button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 shrink-0 bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg"><i class="fa-solid fa-trash"></i></button> </div>`; }); };
         window.handleCalendarUpdate = async function(e) { e.preventDefault(); const targetDate = document.getElementById('set-exam-date').value; const eventTitle = document.getElementById('set-event-title').value; if(!targetDate) return; try { await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "deadlines"), { targetDate: targetDate, eventTitle: eventTitle }); window.showToast("Countdown event set!", "success"); } catch(err) {} };
@@ -10033,7 +9989,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     if (file.mimeType === 'application/vnd.google-apps.folder') { const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/); if (folderIdMatch) { embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`; } } 
                     else { embedUrl = file.webViewLink.replace('/view', '/preview'); }
 
-                   return { id: file.id, title: file.name, driveUrl: embedUrl, subject: 'Institutional Repository', level: scope === 'postgraduate' ? 'Postgrad' : 'Undergrad', keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Directory' : 'Document' };
+                    return { id: file.id, title: file.name, driveUrl: embedUrl, subject: 'Google Drive', level: scope === 'postgraduate' ? 'Postgrad' : 'Cloud', keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document' };
                 });
 
                 if (scope === 'postgraduate') {
@@ -10572,11 +10528,9 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 const bar = uiElement.querySelector('.progress-bar');
                 const status = uiElement.querySelector('.status-text');
 
-               const reader = new FileReader();
+                const reader = new FileReader();
                 reader.onload = function() {
-                    // FIX 1: Split to remove the "data:mimetype;base64," prefix so Google Apps Script doesn't crash
-                    const base64Data = reader.result.split(',')[1];
-                    
+                    const base64Data = reader.result;
                     const payload = JSON.stringify({
                         base64: base64Data,
                         name: file.name,
@@ -10585,9 +10539,6 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
 
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', WEB_APP_URL, true);
-                    
-                    // FIX 2: Set header to text/plain to bypass browser CORS preflight blocks
-                    xhr.setRequestHeader('Content-Type', 'text/plain;charset=utf-8');
 
                     // Track Network Upload Progress
                     xhr.upload.onprogress = function(e) {
