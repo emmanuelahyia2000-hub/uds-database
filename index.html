@@ -299,7 +299,7 @@
         }
         .hero-text-animate { animation: fadeSlideUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         
-        @keyframes shimmer-gold {
+       @keyframes shimmer-gold {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
@@ -307,6 +307,36 @@
             background: linear-gradient(90deg, rgba(245,158,11,0.05) 25%, rgba(245,158,11,0.15) 50%, rgba(245,158,11,0.05) 75%);
             background-size: 200% 100%;
             animation: shimmer-gold 4s infinite linear;
+        }
+
+        /* Dynamic Marketplace Animations */
+        @keyframes pan-bg {
+            0% { background-position: 0% 50%; background-size: 200% 200%; }
+            50% { background-position: 100% 50%; background-size: 250% 250%; }
+            100% { background-position: 0% 50%; background-size: 200% 200%; }
+        }
+        @keyframes float-shape {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.1; }
+            50% { transform: translateY(-20px) rotate(10deg) scale(1.1); opacity: 0.3; }
+            100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.1; }
+        }
+        .mkt-animated-bg {
+            background: linear-gradient(-45deg, #d96807, #f68b1f, #ffb347, #ff7b00);
+            background-size: 400% 400%;
+            animation: pan-bg 15s ease infinite;
+        }
+        .mkt-animated-bg-dark {
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #12304A);
+            background-size: 400% 400%;
+            animation: pan-bg 18s ease infinite;
+        }
+        .mkt-shape {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            animation: float-shape 8s ease-in-out infinite;
+            pointer-events: none;
         }
 
         .glass-search {
@@ -513,27 +543,27 @@
 </head>
 <body class="h-screen w-full flex flex-col selection:bg-academicGold selection:text-deepNavy bg-lightGray text-deepNavy dark:bg-deepNavy dark:text-white transition-colors duration-300 overflow-x-hidden">
 
-    <!-- UDS HUB GLOBAL INITIAL LOADER -->
-    <div id="uds-global-loader" class="fixed inset-0 z-[9999] bg-lightGray dark:bg-deepNavy flex flex-col items-center justify-center transition-opacity duration-500" aria-busy="true">
-        <div class="relative flex flex-col items-center">
-            <!-- Pulsing Ambient Glow -->
-            <div class="absolute w-40 h-40 bg-academicPurple/20 dark:bg-academicGold/20 rounded-full blur-3xl animate-pulse"></div>
-            <!-- Core App Icon -->
-            <div class="w-20 h-20 bg-gradient-to-br from-academicPurple to-deepNavy dark:from-academicGold dark:to-yellow-600 text-white dark:text-deepNavy rounded-3xl flex items-center justify-center shadow-2xl relative z-10">
-                <i class="fa-solid fa-graduation-cap text-4xl animate-bounce" style="animation-duration: 2s;"></i>
+    <!-- Global Initial App Loader -->
+    <div id="uds-global-loader" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-lightGray dark:bg-deepNavy transition-opacity duration-500 ease-in-out">
+        <div class="relative flex flex-col items-center" aria-busy="true" aria-live="polite">
+            <!-- Glowing effect behind logo -->
+            <div class="absolute inset-0 bg-academicPurple dark:bg-academicGold blur-3xl opacity-20 rounded-full w-32 h-32 mx-auto animate-pulse"></div>
+            
+            <div class="relative w-20 h-20 bg-gradient-to-br from-academicPurple to-deepNavy dark:from-academicGold dark:to-yellow-600 text-white dark:text-deepNavy rounded-2xl flex items-center justify-center shadow-2xl mb-6">
+                <i class="fa-solid fa-graduation-cap text-4xl"></i>
             </div>
-            <!-- Status Text -->
-            <div class="mt-8 flex flex-col items-center relative z-10">
-                <h1 class="text-2xl font-black tracking-tight text-deepNavy dark:text-white mb-2">UDS<span class="text-academicPurple dark:text-academicGold">Hub</span></h1>
-                <div class="flex items-center gap-2.5 bg-white/50 dark:bg-black/20 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
-                    <i class="fa-solid fa-circle-notch fa-spin text-academicPurple dark:text-academicGold text-sm"></i>
-                    <span class="text-[10px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest">Initializing Workspace...</span>
-                </div>
+            
+            <h2 class="text-3xl font-black text-deepNavy dark:text-white tracking-tight mb-4">UDS<span class="text-academicPurple dark:text-academicGold">Hub</span></h2>
+            
+            <div class="flex items-center gap-2.5 px-4 py-2 bg-white/60 dark:bg-black/20 backdrop-blur-sm rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                <i class="fa-solid fa-circle-notch fa-spin text-academicPurple dark:text-academicGold text-sm"></i>
+                <span class="text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-300">Securing Workspace</span>
             </div>
         </div>
     </div>
 
     <div id="smart-notification-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 transform -translate-y-[150%] opacity-0 flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-lg px-6 py-3 rounded-full pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
             <i class="fa-solid fa-bell animate-bounce"></i>
         </div>
         <span id="smart-notification-text" class="text-sm font-medium text-gray-800 dark:text-gray-200"></span>
@@ -1377,13 +1407,18 @@
                                     </div>
                                 </div>
 
-                                <!-- Announcement -->
+                               <!-- Announcement -->
                                 <div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
                                     <label class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2 uppercase tracking-wider">
                                         <input type="checkbox" id="admin-mkt-ann-active" class="cursor-pointer"> Marketplace Announcement
                                     </label>
                                     <input type="text" id="admin-mkt-ann-title" placeholder="Announcement Title" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none shadow-sm">
                                     <textarea id="admin-mkt-ann-msg" placeholder="Announcement Message" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none resize-none shadow-sm"></textarea>
+                                    <div class="flex gap-2">
+                                        <input type="url" id="admin-mkt-ann-img" placeholder="Background Image/GIF URL (Optional)" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none shadow-sm">
+                                        <button type="button" onclick="triggerAdminCloudinary('admin-mkt-ann-img')" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 rounded-xl text-xs transition"><i class="fa-solid fa-upload"></i></button>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500">Leave image URL empty to use the default animated marketplace background.</p>
                                 </div>
 
                                 <button onclick="saveAdminMktMerchandising()" class="w-full py-3 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-sm">Save Merchandising Configuration</button>
@@ -1472,9 +1507,10 @@
                         </div>
 
                         <form id="student-upload-form" class="space-y-4">
-                            <div>
+                           <div>
                                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Select Files (PDF, Word, or PPT)</label>
-                                <input type="file" id="upload-file" accept=".pdf,.doc,.docx,.ppt,.pptx" required multiple
+                                <!-- Added "multiple" attribute -->
+                                <input type="file" id="upload-file" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple required
                                     class="block w-full text-sm text-gray-500 dark:text-gray-400
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-full file:border-0
@@ -1483,11 +1519,12 @@
                                     hover:file:bg-gray-200 dark:hover:file:bg-gray-700 transition-colors cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-2 bg-gray-50 dark:bg-geminiBase outline-none focus:ring-2 focus:ring-blue-100">
                             </div>
 
-                            <div id="upload-progress-list" class="space-y-3 hidden max-h-48 overflow-y-auto pr-1"></div>
+                            <!-- Real-time upload queue tracker -->
+                            <div id="upload-queue-container" class="hidden flex-col gap-2 mt-2 max-h-48 overflow-y-auto pr-1"></div>
 
                             <button type="submit" id="upload-submit-btn" 
-                                class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2 flex justify-center items-center gap-2">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> <span>Submit Files</span>
+                                class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2 flex items-center justify-center gap-2">
+                                Submit Contributions
                             </button>
                             
                             <div id="upload-status" class="text-center font-medium text-sm hidden"></div>
@@ -2280,81 +2317,83 @@
                 </script>
 
                <div id="section-marketplace" class="hidden w-full max-w-7xl mx-auto">
-                    <!-- Clean Compact Marketplace Bar -->
-                    <div class="w-full rounded-2xl bg-white dark:bg-geminiSurface shadow-sm mb-6 px-5 py-3.5 flex flex-col md:flex-row items-center justify-between border border-gray-100 dark:border-gray-800 gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-store text-base"></i>
+                   <!-- Unified Professional Marketplace Header Dashboard -->
+                    <div class="w-full bg-white dark:bg-[#1A1A1C] rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 mb-10 px-4 md:px-6 py-5 md:py-6 flex flex-col gap-5">
+                        
+                        <!-- Top Row: Title and CTA -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center shrink-0 shadow-inner">
+                                    <i class="fa-solid fa-store text-xl"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl md:text-2xl font-black text-gray-900 dark:text-white leading-tight tracking-tight">Campus Marketplace</h2>
+                                    <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Everything student. Buy, sell, or offer professional services.</p>
+                                </div>
                             </div>
-                            <div>
-                                <h2 class="text-base font-bold text-gray-900 dark:text-white leading-tight">Everything Student. In One Place.</h2>
-                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Offer professional services and skills on campus.</p>
+                            <button onclick="openListingChoiceModal()" class="w-full sm:w-auto bg-gray-900 dark:bg-blue-300 text-white dark:text-navy font-bold px-6 py-3 rounded-xl text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 shrink-0">
+                                <i class="fa-solid fa-plus"></i> Create Listing
+                            </button>
+                        </div>
+
+                        <!-- Middle Row: Search & Filters -->
+                        <div class="flex flex-col lg:flex-row gap-3">
+                            <div class="relative flex-grow group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-magnifying-glass text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                </div>
+                                <input type="text" id="marketplace-search-input" onkeyup="filterMarketplace()" placeholder="Search products, services, or requests..." class="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-600 dark:text-white transition-all shadow-sm">
+                            </div>
+                            
+                            <div class="flex gap-3 w-full lg:w-auto shrink-0">
+                                <div class="relative w-1/2 lg:w-40">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fa-solid fa-layer-group text-gray-400 text-xs"></i>
+                                    </div>
+                                    <select id="marketplace-type-filter" onchange="filterMarketplace()" class="w-full pl-8 pr-8 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-600 dark:text-white cursor-pointer font-medium shadow-sm appearance-none">
+                                        <option value="">All Types</option>
+                                        <option value="Product">Products</option>
+                                        <option value="Service">Services</option>
+                                        <option value="Request">Requests</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="relative w-1/2 lg:w-48">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fa-solid fa-tags text-gray-400 text-xs"></i>
+                                    </div>
+                                    <select id="marketplace-category-filter" onchange="filterMarketplace()" class="w-full pl-8 pr-8 py-3.5 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-600 dark:text-white cursor-pointer font-medium shadow-sm appearance-none">
+                                        <option value="">All Categories</option>
+                                        <option value="Books">Books</option>
+                                        <option value="Laptops">Laptops</option>
+                                        <option value="Phones">Phones</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Graphic Design">Design Services</option>
+                                        <option value="Web Development">Web Dev</option>
+                                        <option value="Fashion">Fashion</option>
+                                        <option value="Accommodation Services">Accommodation</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button onclick="openListingChoiceModal()" class="w-full md:w-auto bg-gray-900 dark:bg-blue-300 text-white dark:text-navy font-medium px-5 py-2.5 rounded-xl text-xs shadow-sm hover:opacity-90 transition flex items-center justify-center gap-2 shrink-0">
-                            <i class="fa-solid fa-plus"></i> Create New Listing
-                        </button>
-                    </div>
 
-                    <script>
-                        (function() {
-                            let currentMktSlide = 0;
-                            const slides = document.querySelectorAll('#mkt-info-slideshow .slide-item');
-                            setInterval(() => {
-                                slides[currentMktSlide].classList.add('hidden');
-                                currentMktSlide = (currentMktSlide + 1) % slides.length;
-                                slides[currentMktSlide].classList.remove('hidden');
-                                slides[currentMktSlide].style.animation = 'fadeSlideUp 0.6s ease-out forwards';
-                            }, 4000);
-                        })();
-                    </script>
-
-                    <!-- Search and Filter Panel -->
-                    <div class="bg-white dark:bg-geminiSurface border border-gray-100 dark:border-gray-800 rounded-3xl p-4 mb-6 shadow-sm flex flex-col md:flex-row gap-3 items-center">
-                        <div class="relative flex-grow w-full">
-                            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                            </div>
-                            <input type="text" id="marketplace-search-input" onkeyup="filterMarketplace()" placeholder="Search products, services, or requests..." class="w-full pl-12 pr-5 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white transition shadow-inner">
+                        <!-- Bottom Row: Quick Categories Pills -->
+                        <div class="overflow-x-auto whitespace-nowrap hide-scroll flex gap-2 w-full pt-1">
+                            <button onclick="document.getElementById('marketplace-category-filter').value=''; filterMarketplace();" class="px-5 py-2 bg-gray-900 dark:bg-white text-white dark:text-deepNavy rounded-lg text-xs font-bold transition shadow-sm hover:-translate-y-0.5">Browse All</button>
+                            <button onclick="document.getElementById('marketplace-category-filter').value='Laptops'; filterMarketplace();" class="px-4 py-2 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-laptop text-blue-500"></i> Laptops</button>
+                            <button onclick="document.getElementById('marketplace-category-filter').value='Phones'; filterMarketplace();" class="px-4 py-2 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen text-green-500"></i> Phones</button>
+                            <button onclick="document.getElementById('marketplace-category-filter').value='Books'; filterMarketplace();" class="px-4 py-2 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-book text-academicGold"></i> Books</button>
+                            <button onclick="document.getElementById('marketplace-category-filter').value='Graphic Design'; filterMarketplace();" class="px-4 py-2 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-pen-nib text-purple-500"></i> Design</button>
+                            <button onclick="document.getElementById('marketplace-category-filter').value='Fashion'; filterMarketplace();" class="px-4 py-2 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-shirt text-pink-500"></i> Fashion</button>
+                            <button onclick="document.getElementById('marketplace-category-filter').value='Electronics'; filterMarketplace();" class="px-4 py-2 bg-gray-50 dark:bg-[#131314] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"><i class="fa-solid fa-plug text-indigo-500"></i> Electronics</button>
                         </div>
-                        <div class="flex gap-3 w-full md:w-auto">
-                            <select id="marketplace-type-filter" onchange="filterMarketplace()" class="px-5 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white w-1/2 md:w-40 cursor-pointer font-medium shadow-inner">
-                                <option value="">All Types</option>
-                                <option value="Product">Products</option>
-                                <option value="Service">Services</option>
-                                <option value="Request">Requests</option>
-                            </select>
-                            <select id="marketplace-category-filter" onchange="filterMarketplace()" class="px-5 py-3.5 bg-gray-50 dark:bg-geminiBase border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-gray-700 dark:text-white w-1/2 md:w-48 cursor-pointer font-medium shadow-inner">
-                                <option value="">All Categories</option>
-                                <option value="Books">Books</option>
-                                <option value="Laptops">Laptops</option>
-                                <option value="Phones">Phones</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Graphic Design">Graphic Design</option>
-                                <option value="Web Development">Web Development</option>
-                                <option value="Statistics Services">Statistics Services</option>
-                                <option value="Photography">Photography</option>
-                                <option value="Video Editing">Video Editing</option>
-                                <option value="Fashion">Fashion</option>
-                                <option value="Tailoring">Tailoring</option>
-                                <option value="Accommodation Services">Accommodation Services</option>
-                                <option value="Printing">Printing</option>
-                                <option value="Academic Services">Academic Services</option>
-                                <option value="Repairs">Repairs</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Quick Categories (Horizontal Scrolling Navigation) -->
-                    <div class="mb-10 px-2 overflow-x-auto whitespace-nowrap pb-4 hide-scroll flex gap-3 w-full border-b border-gray-100 dark:border-gray-800">
-                        <button onclick="document.getElementById('marketplace-category-filter').value=''; filterMarketplace();" class="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-deepNavy rounded-full text-sm font-medium transition shadow-sm hover:scale-105">Browse All</button>
-                        <button onclick="document.getElementById('marketplace-category-filter').value='Laptops'; filterMarketplace();" class="px-5 py-2.5 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition flex items-center gap-2 hover:border-blue-300"><i class="fa-solid fa-laptop text-blue-500"></i> Laptops</button>
-                        <button onclick="document.getElementById('marketplace-category-filter').value='Phones'; filterMarketplace();" class="px-5 py-2.5 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition flex items-center gap-2 hover:border-green-400"><i class="fa-solid fa-mobile-screen text-green-500"></i> Phones</button>
-                        <button onclick="document.getElementById('marketplace-category-filter').value='Books'; filterMarketplace();" class="px-5 py-2.5 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition flex items-center gap-2 hover:border-yellow-400"><i class="fa-solid fa-book text-academicGold"></i> Books</button>
-                        <button onclick="document.getElementById('marketplace-category-filter').value='Graphic Design'; filterMarketplace();" class="px-5 py-2.5 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition flex items-center gap-2 hover:border-purple-300"><i class="fa-solid fa-pen-nib text-purple-500"></i> Design Services</button>
-                        <button onclick="document.getElementById('marketplace-category-filter').value='Fashion'; filterMarketplace();" class="px-5 py-2.5 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition flex items-center gap-2 hover:border-pink-300"><i class="fa-solid fa-shirt text-pink-500"></i> Fashion</button>
-                        <button onclick="document.getElementById('marketplace-category-filter').value='Electronics'; filterMarketplace();" class="px-5 py-2.5 bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-sm font-medium transition flex items-center gap-2 hover:border-indigo-300"><i class="fa-solid fa-plug text-indigo-500"></i> Electronics</button>
                     </div>
 
                    <!-- Marketplace Content Zones -->
@@ -2399,27 +2438,36 @@
                             <!-- Placeholder for future admin featured services -->
                         </div>
 
-                       <!-- Services -->
+                      <!-- Services (Jumia Flash Sales Wrapper Style) -->
                         <div id="mkt-services-container" class="w-full mb-12 px-1 md:px-2 hidden">
-                            <div class="flex items-center justify-between mb-4 border-t border-gray-100 dark:border-gray-800 pt-8">
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2"><i class="fa-solid fa-briefcase text-purple-500"></i> Campus Services</h3>
-                                    <p class="text-xs text-gray-500 mt-1">Professional skills and student freelancers</p>
+                            <div class="bg-[#B91C1C] dark:bg-[#7F1D1D] rounded-2xl p-4 md:p-6 shadow-lg">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-xl font-black text-white flex items-center gap-2 tracking-tight"><i class="fa-solid fa-briefcase text-red-200"></i> Campus Services</h3>
+                                        <p class="text-xs text-red-100 mt-1 font-medium">Professional skills and student freelancers</p>
+                                    </div>
+                                    <div class="hidden md:flex items-center text-white text-xs font-bold bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-md">
+                                        Swipe to view <i class="fa-solid fa-arrow-right ml-2"></i>
+                                    </div>
                                 </div>
+                                <div id="mkt-services-grid" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-2 cursor-grab w-full"></div>
                             </div>
-                            <div id="mkt-services-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"></div>
                         </div>
 
-                       <!-- Requests -->
+                       <!-- Requests (Jumia Essentials Wrapper Style) -->
                         <div id="mkt-requests-container" class="w-full mb-12 px-1 md:px-2 hidden">
-                            <div class="flex items-center justify-between mb-4 border-t border-gray-100 dark:border-gray-800 pt-8">
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2"><i class="fa-solid fa-bullhorn text-orange-500"></i> Student Requests</h3>
-                                    <p class="text-xs text-gray-500 mt-1">Opportunities and help needed</p>
+                            <div class="bg-[#e6f2ff] dark:bg-[#12243e] rounded-2xl p-4 md:p-6 shadow-sm border border-[#cce4ff] dark:border-[#1e3a5f]">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-xl font-black text-[#0056b3] dark:text-[#66b3ff] flex items-center gap-2 tracking-tight"><i class="fa-solid fa-bullhorn"></i> Student Requests</h3>
+                                        <p class="text-xs text-[#004085] dark:text-[#99ccff] mt-1 font-medium">Opportunities and help needed</p>
+                                    </div>
+                                    <div class="hidden md:flex items-center text-[#0056b3] dark:text-[#66b3ff] text-xs font-bold">
+                                        See All <i class="fa-solid fa-arrow-right ml-1"></i>
+                                    </div>
                                 </div>
+                                <div id="mkt-requests-feed" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-2 cursor-grab w-full"></div>
                             </div>
-                            <!-- Grid Feed matching Accommodation size -->
-                            <div id="mkt-requests-feed" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 w-full"></div>
                         </div>
                     </div>
 
@@ -2984,8 +3032,8 @@
                         <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
                         <input type="password" id="login-pass" required placeholder="Password" class="auth-input w-full pl-10 pr-4 py-3.5 rounded-2xl text-sm outline-none dark:text-white border border-transparent focus:border-academicGold/50">
                     </div>
-                   <button type="submit" id="login-submit-btn" class="w-full py-3.5 bg-deepNavy dark:bg-academicGold text-white dark:text-deepNavy font-bold text-[11px] uppercase tracking-widest rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all mt-2 flex justify-center items-center gap-2">
-                        <span>Authorize Entry</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <button type="submit" class="w-full py-3.5 bg-deepNavy dark:bg-academicGold text-white dark:text-deepNavy font-bold text-[11px] uppercase tracking-widest rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all mt-2">
+                        Authorize Entry <i class="fa-solid fa-arrow-right-to-bracket ml-1.5"></i>
                     </button>
                     
                     <!-- Passkey Sign-in Foundation -->
@@ -3014,8 +3062,8 @@
                         </select>
                     </div>
                     <input type="password" id="reg-pass" required placeholder="Create Password" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
-                    <button type="submit" id="register-submit-btn" class="w-full py-4 bg-academicPurple dark:bg-white text-white dark:text-deepNavy font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all mt-4 flex justify-center items-center gap-2">
-                        <span>Initialize Profile</span> <i class="fa-solid fa-user-plus"></i>
+                    <button type="submit" class="w-full py-4 bg-academicPurple dark:bg-white text-white dark:text-deepNavy font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                        Initialize Profile <i class="fa-solid fa-user-plus ml-2"></i>
                     </button>
                 </form>
             </div>
@@ -4633,17 +4681,20 @@
                 document.getElementById('auth-action-btn').innerText = "Sign In";
                 document.getElementById('admin-panel-btn').classList.add('hidden');
                 document.getElementById('nav-notification-bell').classList.add('hidden');
-              document.getElementById('nav-notification-bell').classList.remove('flex');
+               document.getElementById('nav-notification-bell').classList.remove('flex');
                 window.hasShownQuote = false; 
                 if(window.renderAccountSettings) window.renderAccountSettings();
             }
             window.currentUserProfile = currentUserProfile; 
             
-            // Dismiss Global App Loader instantly when Auth State is resolved
+            // Cleanly dismiss the global loading UI once auth state is fully verified
             const globalLoader = document.getElementById('uds-global-loader');
             if (globalLoader && !globalLoader.classList.contains('hidden')) {
                 globalLoader.classList.add('opacity-0');
-                setTimeout(() => { globalLoader.classList.add('hidden'); }, 500); // Wait for CSS fade transition
+                setTimeout(() => {
+                    globalLoader.classList.add('hidden');
+                    globalLoader.classList.remove('flex');
+                }, 500);
             }
         });
 
@@ -6926,7 +6977,7 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
         document.addEventListener('DOMContentLoaded', () => {
         });
 
-        window.renderMaterialsGrid = function(items) {
+      window.renderMaterialsGrid = function(items) {
             const grid = document.getElementById('smart-materials-grid'); 
             document.getElementById('material-count-badge').innerText = items ? items.length : '0'; 
             grid.innerHTML = '';
@@ -6935,14 +6986,14 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             if (window.lastSearchQuery && window.lastSearchQuery !== "") {
                 const passSlidesUrl = `https://passslides.com/?s=${encodeURIComponent(window.lastSearchQuery)}`;
                 grid.innerHTML += `
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-2 flex items-center justify-between group cursor-pointer border border-white/10" onclick="window.open('${passSlidesUrl}', '_blank')">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-sm mb-4 flex items-center justify-between group cursor-pointer border border-white/10" onclick="window.open('${passSlidesUrl}', '_blank')">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white text-2xl shadow-inner">
                                 <i class="fa-solid fa-globe animate-pulse"></i>
                             </div>
                             <div>
-                                <h3 class="text-white font-bold text-sm">PassSlides Web Discovery</h3>
-                                <p class="text-blue-100 text-[11px] leading-tight">We found more slides on the web matching <br><b>"${window.lastSearchQuery}"</b></p>
+                                <h3 class="text-white font-bold text-sm">External Academic Search</h3>
+                                <p class="text-blue-100 text-[11px] leading-tight">Search external repositories for <br><b>"${window.lastSearchQuery}"</b></p>
                             </div>
                         </div>
                         <div class="bg-white/10 group-hover:bg-white/20 p-2 rounded-lg text-white transition">
@@ -6953,41 +7004,119 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }
 
             if(!items || items.length === 0) { 
-                grid.innerHTML += `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-regular fa-folder-open text-4xl mb-3 text-gray-300 dark:text-gray-600"></i><p class="text-gray-500 text-sm font-medium">No internal files found for "${window.lastSearchQuery || ''}". Check the web result above.</p></div>`; 
+                grid.innerHTML += `
+                    <div class="bg-white dark:bg-geminiSurface rounded-2xl p-10 text-center border border-gray-200 dark:border-gray-800 shadow-sm my-4">
+                        <div class="w-16 h-16 bg-gray-50 dark:bg-[#131314] rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-gray-800">
+                            <i class="fa-regular fa-folder-open text-2xl text-gray-400 dark:text-gray-500"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">No academic materials found</h3>
+                        <p class="text-gray-500 text-sm font-medium">Try another course, keyword, department, or document title.</p>
+                    </div>`; 
                 return; 
             }
             
             items.forEach(item => {
-                let deleteBtnHtml = window.isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-3 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash"></i></button>` : '';
-                let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-10 h-10 object-contain" alt="File">';
-                const titleLower = (item.title || '').toLowerCase(); const keywordsLower = (item.keywords || '').toLowerCase();
+                const escapedTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                let deleteBtnHtml = window.isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider transition bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-trash"></i> Remove</button>` : '';
                 
-                if (keywordsLower.includes('folder')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Drive_Folder_Icon_%282020%29.svg" class="w-10 h-10 object-contain" alt="Folder">'; } 
-                else if (titleLower.includes('.pdf') || keywordsLower.includes('pdf')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" class="w-10 h-10 object-contain" alt="PDF">'; } 
-                else if (titleLower.includes('.doc') || keywordsLower.includes('word')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-10 h-10 object-contain" alt="DOCX">'; } 
-                else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-10 h-10 object-contain" alt="PPT">'; }
+                const titleLower = (item.title || '').toLowerCase(); 
+                const keywordsLower = (item.keywords || '').toLowerCase();
+                
+                let docTypeBadge = '<span class="text-gray-500 border border-gray-300 dark:border-gray-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest mr-2 align-middle">FILE</span>';
+                
+                if (keywordsLower.includes('folder')) { 
+                    docTypeBadge = '<span class="text-blue-500 border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest mr-2 align-middle">FOLDER</span>'; 
+                } 
+                else if (titleLower.includes('.pdf') || keywordsLower.includes('pdf')) { 
+                    docTypeBadge = '<span class="text-red-500 border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest mr-2 align-middle">PDF</span>'; 
+                } 
+                else if (titleLower.includes('.doc') || keywordsLower.includes('word')) { 
+                    docTypeBadge = '<span class="text-blue-600 border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest mr-2 align-middle">DOC</span>'; 
+                } 
+                else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) { 
+                    docTypeBadge = '<span class="text-orange-500 border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/20 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest mr-2 align-middle">PPT</span>'; 
+                }
+
+                // Extract valid metadata to show without hallucinating
+                const subjectText = item.subject && item.subject !== 'Google Drive' && item.subject !== 'DEEP MATCH' ? item.subject : '';
+                const levelText = item.level && item.level !== 'Cloud' ? (item.level.toLowerCase().includes('level') || item.level.toLowerCase().includes('postgrad') ? item.level : `Level ${item.level}`) : '';
+                
+                let academicHierarchyRow = '';
+                if(subjectText || levelText) {
+                    const parts = [subjectText, levelText].filter(Boolean);
+                    academicHierarchyRow = `<div class="text-xs md:text-[13px] text-[#0F766E] dark:text-teal-400 font-medium mb-3 flex items-center flex-wrap gap-2">
+                        ${parts.join(' <span class="text-gray-400 text-[10px]">•</span> ')}
+                    </div>`;
+                }
+
+                let tagsRow = '';
+                if (item.keywords && item.keywords !== 'Document' && item.keywords !== 'Folder') {
+                    const tags = item.keywords.split(',').map(k => k.trim()).filter(Boolean);
+                    if (tags.length > 0) {
+                        tagsRow = `<div class="mt-3.5 flex flex-wrap items-center gap-2">
+                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest pt-0.5">Topics:</span>
+                            ${tags.map(t => `<span class="text-[10px] md:text-[11px] font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700">${t}</span>`).join('')}
+                        </div>`;
+                    }
+                }
+
+                // Phase 2: Dynamic Real Snippet vs Extraction Preview
+                let snippetHtml = '';
+                if (item.snippet) {
+                    // Inject honest snippet directly generated by our search engine mapping
+                    snippetHtml = `<div class="mt-2 p-3 bg-yellow-50 dark:bg-yellow-900/10 border-l-2 border-yellow-400 rounded-r-lg text-sm text-gray-800 dark:text-gray-200 font-serif leading-relaxed italic">"${item.snippet}"</div>`;
+                } else {
+                    // Verify actual extraction status from the background index
+                    const fileIdMatch = item.driveUrl ? item.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/) : null;
+                    let indexedDoc = null;
+                    if (fileIdMatch && window.globalDocumentIndexCache) {
+                        indexedDoc = window.globalDocumentIndexCache.find(d => d.documentId === fileIdMatch[1]);
+                    }
+                    
+                    if (indexedDoc && indexedDoc.status === 'indexed' && indexedDoc.fullText) {
+                        const safePreview = indexedDoc.fullText.substring(0, 160).replace(/\n/g, ' ').trim() + '...';
+                        snippetHtml = `<p class="text-[13px] md:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed font-serif">${safePreview}</p>`;
+                    } else if (indexedDoc && indexedDoc.status === 'failed') {
+                        snippetHtml = `<p class="text-[12px] text-red-500 dark:text-red-400 italic"><i class="fa-solid fa-triangle-exclamation"></i> Text preview currently unavailable</p>`;
+                    } else {
+                        snippetHtml = `<p class="text-[13px] md:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">Official academic resource available in the UDS Hub Cloud Archive. Select to read.</p>`;
+                    }
+                }
 
                 grid.innerHTML += `
-                    <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex items-center gap-4 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">
-                        <div class="flex-shrink-0 bg-gray-50 dark:bg-geminiBase p-2 rounded-xl">${iconHtml}</div>
-                        <div class="flex-grow min-w-0 flex flex-col justify-center">
-                            <h3 class="font-medium text-gray-800 dark:text-gray-100 text-sm md:text-base mb-1 truncate">${item.title}</h3>
-                            <div class="flex items-center">
-                                <span class="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider font-medium">View File</span>
-                                ${deleteBtnHtml}
+                    <div class="bg-white dark:bg-[#131314] p-5 md:p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-[#0F766E]/50 dark:hover:border-teal-500/50 shadow-sm hover:shadow transition-all group flex flex-col mb-1 relative">
+                        <div class="flex-grow min-w-0">
+                            <h3 class="font-serif text-lg md:text-xl font-medium text-[#12304A] dark:text-white leading-snug group-hover:text-[#0F766E] dark:group-hover:text-teal-400 transition-colors cursor-pointer break-words mb-2" onclick="openDocument('${escapedTitle}', '${item.driveUrl}')">
+                                ${docTypeBadge}${item.title}
+                            </h3>
+                            
+                            ${academicHierarchyRow}
+                            
+                            ${snippetHtml}
+                            
+                            ${tagsRow}
+                        </div>
+                        
+                        <div class="flex items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-100 dark:border-gray-800/60">
+                            <div class="flex items-center gap-4">
+                                <button onclick="openDocument('${escapedTitle}', '${item.driveUrl}')" class="flex items-center gap-2 text-xs md:text-sm font-bold text-white bg-[#12304A] dark:bg-white dark:text-navy hover:bg-[#0F766E] dark:hover:bg-gray-200 px-5 py-2 rounded-lg transition shadow-sm">
+                                    <i class="fa-solid fa-book-open"></i> Read Document
+                                </button>
                             </div>
+                            ${deleteBtnHtml}
                         </div>
                     </div>`;
             });
         };
 
         window.searchDebounceTimer = null;
-       window.executeSearchingAI = async function() {
+      window.executeSearchingAI = async function() {
             clearTimeout(window.searchDebounceTimer);
             window.searchDebounceTimer = setTimeout(async () => {
                 const query = document.getElementById('ai-search-bar').value.trim();
                 window.lastSearchQuery = query; // Save the query for external linking
-                window.navigateTo('dashboard'); const grid = document.getElementById('smart-materials-grid');
+                window.navigateTo('dashboard'); 
+                const grid = document.getElementById('smart-materials-grid');
                 
                 if (query === '') { 
                     window.lastSearchQuery = "";
@@ -6995,23 +7124,92 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                     window.renderMaterialsGrid(combinedMaterials); 
                     return; 
                 }
+                
                 grid.innerHTML = `<div class="bg-blue-50 dark:bg-blue-900/10 rounded-3xl p-6 text-center border border-blue-100 dark:border-blue-900/30"><p class="text-blue-600 dark:text-blue-400 text-sm font-medium flex items-center justify-center gap-2 animate-pulse"><i class="fa-solid fa-microchip"></i> Deep scanning inside documents...</p></div>`;
                 
-                try {
-                    const response = await fetch('/api/search', { method: 'POST', body: JSON.stringify({ query: query }) }); const data = await response.json();
-                    if (data.results && data.results.length > 0) {
-                        const formattedResults = data.results.map(file => {
-                            let embedUrl = file.webViewLink;
-                            if (file.mimeType === 'application/vnd.google-apps.folder') { const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/); if (folderIdMatch) embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`; } 
-                            else { embedUrl = file.webViewLink.replace('/view', '/preview'); }
-                            return { id: file.id, title: file.name, subject: 'DEEP MATCH', driveUrl: embedUrl, keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document' };
-                        });
-                        window.renderMaterialsGrid(formattedResults);
-                    } else { grid.innerHTML = `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><p class="text-gray-500 text-sm font-medium">No documents contain the word "${query}".</p></div>`; }
-               } catch (error) {
-                    const allAvailableMaterials = window.currentArchiveScope === 'postgraduate' ? (window.pgDriveMaterialsCache || []) : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
-                    const records = allAvailableMaterials.filter(item => (item.title && item.title.toLowerCase().includes(query.toLowerCase())) || (item.keywords && item.keywords.toLowerCase().includes(query.toLowerCase())) || (item.level && item.level.toLowerCase().includes(query.toLowerCase())) || (item.subject && item.subject.toLowerCase().includes(query.toLowerCase())) );
-                    window.renderMaterialsGrid(records);
+                const allAvailableMaterials = window.currentArchiveScope === 'postgraduate' ? (window.pgDriveMaterialsCache || []) : [...(window.globalMaterialsCache || []), ...(window.driveMaterialsCache || [])];
+                const lowerQuery = query.toLowerCase();
+
+                // 1. Basic Metadata Match
+                let matchedRecords = allAvailableMaterials.filter(item => 
+                    (item.title && item.title.toLowerCase().includes(lowerQuery)) || 
+                    (item.keywords && item.keywords.toLowerCase().includes(lowerQuery)) || 
+                    (item.level && item.level.toLowerCase().includes(lowerQuery)) || 
+                    (item.subject && item.subject.toLowerCase().includes(lowerQuery))
+                );
+
+                // 2. PHASE 2: Deep Content Search using the extracted Index (globalDocumentIndexCache)
+                if (window.globalDocumentIndexCache && window.globalDocumentIndexCache.length > 0) {
+                    window.globalDocumentIndexCache.forEach(indexedDoc => {
+                        // Avoid duplicates if metadata already caught it
+                        if (matchedRecords.some(m => m.driveUrl && m.driveUrl.includes(indexedDoc.documentId))) return;
+                        
+                        if (indexedDoc.status === 'indexed' && indexedDoc.fullText && indexedDoc.fullText.toLowerCase().includes(lowerQuery)) {
+                            // Link back to original material record to get the UI data
+                            const originalMat = allAvailableMaterials.find(m => m.driveUrl && m.driveUrl.includes(indexedDoc.documentId));
+                            if (originalMat) {
+                                // Extract an honest snippet
+                                const textLower = indexedDoc.fullText.toLowerCase();
+                                const matchIndex = textLower.indexOf(lowerQuery);
+                                
+                                let start = Math.max(0, matchIndex - 60);
+                                let end = Math.min(indexedDoc.fullText.length, matchIndex + query.length + 80);
+                                
+                                let snippetRaw = indexedDoc.fullText.substring(start, end).replace(/\n/g, ' ').trim();
+                                if (start > 0) snippetRaw = "... " + snippetRaw;
+                                if (end < indexedDoc.fullText.length) snippetRaw = snippetRaw + " ...";
+                                
+                                // Highlight exact matches in the snippet securely without breaking HTML
+                                const safeRegex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                                const highlightedSnippet = snippetRaw.replace(safeRegex, '<strong class="bg-yellow-200 dark:bg-yellow-900/50 text-gray-900 dark:text-yellow-100 px-1 rounded">$1</strong>');
+
+                                matchedRecords.push({
+                                    ...originalMat,
+                                    snippet: highlightedSnippet
+                                });
+                            }
+                        }
+                    });
+                }
+
+                // Render if we have matches (either Metadata or Deep Content)
+                if (matchedRecords.length > 0) {
+                    window.renderMaterialsGrid(matchedRecords);
+                } else {
+                    // Fallback to legacy API if absolutely no matches found
+                    try {
+                        const response = await fetch('/api/search', { method: 'POST', body: JSON.stringify({ query: query }) }); 
+                        const data = await response.json();
+                        if (data.results && data.results.length > 0) {
+                            const formattedResults = data.results.map(file => {
+                                let embedUrl = file.webViewLink;
+                                if (file.mimeType === 'application/vnd.google-apps.folder') { 
+                                    const folderIdMatch = file.webViewLink.match(/folders\/([a-zA-Z0-9-_]+)/); 
+                                    if (folderIdMatch) embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`; 
+                                } else { 
+                                    embedUrl = file.webViewLink.replace('/view', '/preview'); 
+                                }
+                                return { id: file.id, title: file.name, subject: 'DEEP MATCH', driveUrl: embedUrl, keywords: file.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : 'Document' };
+                            });
+                            window.renderMaterialsGrid(formattedResults);
+                        } else { 
+                            grid.innerHTML = `<div class="bg-white dark:bg-geminiSurface rounded-2xl p-10 text-center border border-gray-200 dark:border-gray-800 shadow-sm my-4">
+                                <div class="w-16 h-16 bg-gray-50 dark:bg-[#131314] rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-gray-800">
+                                    <i class="fa-solid fa-magnifying-glass-minus text-2xl text-gray-400 dark:text-gray-500"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">No documents found</h3>
+                                <p class="text-gray-500 text-sm font-medium">No documents contain the word "${query}".</p>
+                            </div>`; 
+                        }
+                   } catch (error) {
+                       grid.innerHTML = `<div class="bg-white dark:bg-geminiSurface rounded-2xl p-10 text-center border border-gray-200 dark:border-gray-800 shadow-sm my-4">
+                            <div class="w-16 h-16 bg-gray-50 dark:bg-[#131314] rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-gray-800">
+                                <i class="fa-solid fa-magnifying-glass-minus text-2xl text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">No documents found</h3>
+                            <p class="text-gray-500 text-sm font-medium">No documents contain the word "${query}".</p>
+                        </div>`;
+                   }
                 }
             }, 500); 
         };
@@ -7047,13 +7245,13 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
 
        window.executeImmediateLogin = async function(e) { 
             e.preventDefault(); 
-            if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to sign in.", "error"); return; }
+            if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to sign in for security reasons.", "error"); return; }
             
-            const btn = document.getElementById('login-submit-btn');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Authenticating...</span>`;
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalBtnHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2 text-sm"></i> Authorizing...';
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
 
             let id = document.getElementById('login-identifier').value.trim(); 
             const pass = document.getElementById('login-pass').value; 
@@ -7062,43 +7260,50 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             try { 
                 await window.firebaseSignIn(window.firebaseAuth, id, pass); 
                 window.closeAuthModal(); 
+                
+                // Allow success state to linger briefly before reset
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Success';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                }, 1000);
             } catch(err) { 
-                window.showToast("Invalid credentials. Please try again.", "error"); 
-            } finally {
-                btn.innerHTML = originalContent;
+                window.showToast("Invalid credentials.", "error"); 
                 btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
-            }
+                btn.innerHTML = originalBtnHtml;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            } 
         };
        window.executeImmediateRegistration = async function(e) { 
             e.preventDefault(); 
             if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to register.", "error"); return; }
             
-            const btn = document.getElementById('register-submit-btn');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Creating Profile...</span>`;
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalBtnHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2 text-sm"></i> Initializing...';
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
 
-            const name = document.getElementById('reg-name').value; 
-            const index = document.getElementById('reg-index').value.trim(); 
-            let email = document.getElementById('reg-email').value.trim(); 
-            const dept = document.getElementById('reg-dept').value; 
-            const level = document.getElementById('reg-level').value; 
-            const pass = document.getElementById('reg-pass').value; 
-            if(!email) email = `${index}@uds.edu.gh`; 
+            const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; 
             
             try { 
                 const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); 
                 await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); 
                 window.closeAuthModal(); 
+                
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Created';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                }, 1000);
             } catch(err) { 
-                window.showToast("Error creating account. Check details and try again.", "error"); 
-            } finally {
-                btn.innerHTML = originalContent;
+                window.showToast("Error during registration.", "error"); 
                 btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
-            }
+                btn.innerHTML = originalBtnHtml;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            } 
         };
 
         /* Academic Tools */
@@ -8489,124 +8694,132 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }
         };
 
-   window.buildMktCard = function(item, isFeatured) {
+  window.buildMktCard = function(item, isFeatured) {
             const targetImg = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl;
-            
-            // Removed c_fill so products are fully visible via object-contain 
             const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto/') : '';
             
             let totalStars = 0; let validRatingsCount = 0;
             if (item.reviews) item.reviews.forEach(r => { if (r.rating > 0) { totalStars += r.rating; validRatingsCount++; } });
             const avgRating = validRatingsCount > 0 ? (totalStars / validRatingsCount).toFixed(1) : 0;
 
-            const widthClass = isFeatured ? 'w-[150px] md:w-[180px] shrink-0' : 'w-full';
-            
-            // Replicating accommodation card dimensions, shapes, and hover lift effects
-            const shellClasses = `bg-[#F2EFE9] dark:bg-[#111827] rounded-[1.25rem] border border-gray-100/50 dark:border-gray-800 overflow-hidden shadow-[0_4px_12px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_25px_40px_-12px_rgba(79,70,229,0.12),0_15px_20px_-8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_25px_40px_-12px_rgba(0,0,0,0.8),0_0_25px_rgba(245,158,11,0.08)] hover:-translate-y-2 hover:border-indigo-500/15 dark:hover:border-yellow-600/25 transition-all duration-400 ease-[cubic-bezier(0.2,0.8,0.2,1)] flex flex-col group cursor-pointer relative ${widthClass}`;
-
+            const widthClass = isFeatured ? 'w-[160px] md:w-[180px] shrink-0' : 'w-full';
             const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
-            const heartClass = (userEmail && (item.likes || []).includes(userEmail)) ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-400 group-hover:text-red-500";
+            const heartClass = (userEmail && (item.likes || []).includes(userEmail)) ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-400 hover:text-red-500";
             
-            // Type indicator badges
-            let typeBadgeHtml = '';
-            if (item.type === 'Service') {
-                typeBadgeHtml = `<div class="absolute top-0 left-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-blue-600/90"><i class="fa-solid fa-bolt mr-1"></i>Service</span></div>`;
-            } else if (item.type === 'Request') {
-                typeBadgeHtml = `<div class="absolute top-0 left-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-orange-600/90"><i class="fa-solid fa-bullhorn mr-1"></i>Request</span></div>`;
-            } else if (item.condition === 'Brand New' || item.condition === 'New') {
-                typeBadgeHtml = `<div class="absolute top-0 left-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-green-600/90"><i class="fa-solid fa-sparkles mr-1"></i>New</span></div>`;
+            const onClickAction = item.type === 'Service' ? `openServiceProfile('${item.id}')` : (item.type === 'Request' ? `openRequestProfile('${item.id}')` : `openMarketplaceDetails('${item.id}')`);
+
+            // ----------------------------------------------------
+            // REQUEST CARD (Jumia 'Essentials / Category' Style)
+            // ----------------------------------------------------
+            if (item.type === 'Request') {
+                // Generate a consistent pseudo-random gradient background for requests
+                const gradients = [
+                    'from-[#ff9a44] to-[#fc6076]', // Orange-Red
+                    'from-[#00c6ff] to-[#0072ff]', // Cyan-Blue
+                    'from-[#f83600] to-[#f9d423]', // Sunset
+                    'from-[#a18cd1] to-[#fbc2eb]', // Purple-Pink
+                    'from-[#0fd850] to-[#f9f047]'  // Green-Yellow
+                ];
+                const gradIndex = (item.title.length + (item.category ? item.category.length : 0)) % gradients.length;
+                const bgGradient = gradients[gradIndex];
+                
+                const displayPrice = item.budgetType === 'Fixed Budget' ? `GH₵ ${Number(item.price).toLocaleString()}` : (item.budgetType || 'Negotiable');
+                const urgencyText = item.urgency || 'Open';
+
+                return `
+                <div class="rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-lg transition-all duration-400 hover:-translate-y-1 relative flex flex-col ${widthClass}" onclick="if(!window.isDraggingCard) ${onClickAction}">
+                    <div class="bg-gradient-to-br ${bgGradient} p-4 flex-grow flex flex-col items-center justify-center min-h-[145px] relative overflow-hidden">
+                        <!-- Decorative subtle shape overlay -->
+                        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/20 rounded-full blur-2xl"></div>
+                        <div class="absolute top-2 left-2 text-white text-[10px] font-bold drop-shadow-sm flex items-center gap-1"><i class="fa-solid fa-bullhorn"></i> Request</div>
+                        
+                        <div class="w-14 h-14 bg-white/30 backdrop-blur-md rounded-2xl flex items-center justify-center mb-3 mt-4 shadow-inner border border-white/40 group-hover:scale-110 transition-transform duration-500">
+                            <i class="fa-solid fa-handshake-angle text-2xl text-white drop-shadow-md"></i>
+                        </div>
+                        <h4 class="text-white font-black text-center text-[13px] md:text-[14px] leading-tight line-clamp-2 drop-shadow-md px-1 z-10 w-full">${item.title}</h4>
+                    </div>
+                    <div class="bg-white dark:bg-[#1A1A1C] p-2.5 flex items-center justify-between border-t border-white/20 dark:border-gray-800 z-10">
+                        <span class="text-[10px] font-black text-gray-800 dark:text-white truncate max-w-[60%]">${displayPrice}</span>
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[9px] px-2.5 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">${urgencyText} <i class="fa-solid fa-arrow-right text-[8px] ml-0.5"></i></span>
+                    </div>
+                </div>`;
             }
 
-           // Image handling: object-contain with p-2 ensures nothing is hidden or cut off. If request has no photo, display a neat matching placeholder.
+            // ----------------------------------------------------
+            // PRODUCT & SERVICE CARD (Jumia 'Flash Sales' Style)
+            // ----------------------------------------------------
+            
+            // Image Area
             let imgHtml = '';
             if (targetImg) {
-                imgHtml = `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-contain p-2 transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-105" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"><i class="fa-solid fa-image text-2xl text-gray-300"></i></div>`;
-            } else if (item.type === 'Request') {
-                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-orange-50/70 dark:bg-orange-950/20"><i class="fa-solid fa-bullhorn text-3xl text-orange-400 dark:text-orange-500 opacity-60"></i></div>`;
+                imgHtml = `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"><i class="fa-solid fa-image text-2xl text-gray-300"></i></div>`;
             } else if (item.type === 'Service') {
-                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-blue-50/70 dark:bg-blue-950/20"><i class="fa-solid fa-briefcase text-3xl text-blue-400 dark:text-blue-500 opacity-60"></i></div>`;
+                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-blue-50 dark:bg-[#131314]"><i class="fa-solid fa-briefcase text-4xl text-blue-200 dark:text-blue-900/50"></i></div>`;
             } else {
-                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"><i class="fa-solid fa-image text-2xl text-gray-300"></i></div>`;
+                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-[#131314]"><i class="fa-solid fa-image text-4xl text-gray-200 dark:text-gray-800"></i></div>`;
             }
+
+            // Discount & Verification Badges
             let discountHtml = ''; let oldPriceHtml = '';
             if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
                 const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
-                discountHtml = `<div class="absolute top-0 right-0 m-1.5 z-20"><span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded shadow-sm backdrop-blur-md text-white bg-red-500">-${discount}%</span></div>`;
-                oldPriceHtml = `<span class="line-through text-gray-400 text-[9px] ml-1 font-medium">GH₵${item.oldPrice.toLocaleString()}</span>`;
+                discountHtml = `<div class="absolute top-2 right-2 z-20"><span class="px-1.5 py-0.5 text-[10px] font-black rounded text-[#071827] dark:text-[#f8f9fa] bg-[#25D366] shadow-sm">-${discount}%</span></div>`;
+                oldPriceHtml = `<span class="line-through text-gray-400 text-[10px] font-medium ml-1">GH₵ ${item.oldPrice.toLocaleString()}</span>`;
             }
 
-            const displayPrice = item.type === 'Request'
-                ? (item.budgetType === 'Fixed Budget' ? `GH₵${Number(item.price).toLocaleString()}` : (item.budgetType || 'Negotiable'))
-                : (item.price === 0 ? 'Negotiable' : `GH₵${Number(item.price).toLocaleString()}`);
-                
-            const locationText = item.location || 'Campus Area';
-            const viewsText = item.views ? `${item.views} views` : 'New';
+            let verifiedBadgeHtml = '';
+            if (item.verified) {
+                verifiedBadgeHtml = `<div class="absolute top-2 left-2 z-20"><span class="w-5 h-5 flex items-center justify-center bg-blue-500 text-white rounded-full shadow-md text-[10px]" title="Verified Seller"><i class="fa-solid fa-check"></i></span></div>`;
+            }
+
+            // Jumia "Items in stock" themed Bar
+            let stockBarHtml = '';
+            if (item.type === 'Service') {
+                stockBarHtml = `<div class="absolute bottom-0 left-0 right-0 bg-[#fff5e1] dark:bg-[#4a3514] text-[#d97706] dark:text-[#fcd34d] text-[10px] font-bold text-center py-1 border-t border-[#fde68a] dark:border-[#78350f]">Available to book</div>`;
+            } else {
+                const stockLeft = item.stock || 1;
+                stockBarHtml = `<div class="absolute bottom-0 left-0 right-0 bg-[#fff5e1] dark:bg-[#4a3514] text-[#d97706] dark:text-[#fcd34d] text-[10px] font-bold text-center py-1 border-t border-[#fde68a] dark:border-[#78350f]">${stockLeft} item${stockLeft>1?'s':''} in stock</div>`;
+            }
+
+            // Pricing Format
+            const displayPrice = item.price === 0 ? 'Negotiable' : `GH₵ ${Number(item.price).toLocaleString()}`;
             
-            const storeBadgeHtml = item.listingType === 'external' 
-                ? `<span class="text-[8px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 px-1.5 py-0.5 rounded truncate max-w-[80px] shadow-sm"><i class="fa-solid fa-link mr-1"></i>${item.storeName || 'External'}</span>` 
-                : `<span class="text-[8px] font-bold text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-1.5 py-0.5 rounded truncate max-w-[80px] shadow-sm"><i class="fa-solid fa-store mr-1"></i>${item.sellerName ? item.sellerName.split(' ')[0] : 'Seller'}</span>`;
-
-            const onClickAction = item.type === 'Service' ? `openServiceProfile('${item.id}')` : (item.type === 'Request' ? `openRequestProfile('${item.id}')` : `openMarketplaceDetails('${item.id}')`);
-
-           const middleDetailsHtml = item.type === 'Request'
-                ? `
-                    <ul class="text-[8px] text-gray-500 mt-1.5 space-y-0.5 pointer-events-none hidden md:block">
-                        <li class="truncate">✓ Needs: ${item.category || 'Assistance'}</li>
-                        <li class="truncate">✓ Urgency: ${item.urgency || 'Normal'}</li>
-                        <li class="truncate">✓ By: ${item.sellerName || 'Student'}</li>
-                    </ul>
-                `
-                : (item.type === 'Service' ? `
-                    <ul class="text-[8px] text-gray-500 mt-1.5 space-y-0.5 pointer-events-none hidden md:block">
-                        <li class="truncate">✓ Service: ${item.category || 'Professional'}</li>
-                        <li class="truncate">✓ Experience: ${item.experience || 'Verified'}</li>
-                        <li class="truncate">✓ By: ${item.sellerName || 'Student'}</li>
-                    </ul>
-                ` : `
-                    <ul class="text-[8px] text-gray-500 mt-1.5 space-y-0.5 pointer-events-none hidden md:block">
-                        <li class="truncate">✓ Type: ${item.category || item.type || 'General'}</li>
-                        <li class="truncate">✓ Condition: ${item.condition || 'Good Condition'}</li>
-                        <li class="truncate">✓ By: ${item.sellerName || 'Student'}</li>
-                    </ul>
-                `);
-
-            const bottomTagHtml = item.type === 'Request'
-                ? `<span class="text-[9px] font-black text-orange-600 dark:text-orange-400 tracking-wide">${item.urgency || 'Open'}</span>`
-                : `<span class="text-[9px] font-black ${item.verified ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'} tracking-wide">${item.verified ? '<i class="fa-solid fa-shield-check"></i> Verified' : 'Available'}</span>`;
-
             return `
-                <div class="${shellClasses}" onclick="if(!window.isDraggingCard) ${onClickAction}">
-                    <div class="relative h-[120px] md:h-[135px] overflow-hidden shrink-0 bg-white dark:bg-gray-900 pointer-events-none border-b border-gray-100 dark:border-gray-800">
-                        ${typeBadgeHtml}
+                <div class="bg-white dark:bg-[#1A1A1C] rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer relative ${widthClass}" onclick="if(!window.isDraggingCard) ${onClickAction}">
+                    
+                    <!-- Top Image & Badges Section -->
+                    <div class="relative h-[140px] md:h-[160px] overflow-hidden shrink-0 bg-gray-50 dark:bg-[#131314] pointer-events-none">
+                        ${verifiedBadgeHtml}
                         ${discountHtml}
                         ${imgHtml}
-                        ${item.type !== 'Request' ? `<button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="absolute bottom-2 right-2 w-7 h-7 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition pointer-events-auto"><i class="${heartClass} text-[10px]"></i></button>` : ''}
+                        ${stockBarHtml}
+                        ${item.type !== 'Request' ? `<button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition pointer-events-auto border border-gray-200 dark:border-gray-700 ${item.oldPrice && item.oldPrice > item.price ? 'mt-6' : ''}"><i class="${heartClass} text-[11px]"></i></button>` : ''}
                     </div>
-                    <div class="p-2 flex flex-col flex-grow min-w-0 bg-[#F2EFE9] dark:bg-[#111827] pointer-events-none">
-                        <div class="flex justify-between items-start mb-1">
-                            <h4 class="font-medium text-gray-800 dark:text-gray-200 text-[11px] md:text-[12px] line-clamp-1 leading-snug flex-grow pr-1">${item.title}</h4>
-                            <div class="text-[9px] font-bold text-yellow-500 flex items-center gap-0.5 shrink-0 bg-yellow-50 dark:bg-yellow-900/20 px-1 py-0.5 rounded">
-                                <i class="fa-solid fa-star"></i> ${avgRating > 0 ? avgRating : 'New'}
+                    
+                    <!-- Bottom Information Section -->
+                    <div class="p-3 flex flex-col flex-grow min-w-0 pointer-events-none bg-white dark:bg-[#1A1A1C]">
+                        <h4 class="font-normal text-gray-800 dark:text-gray-200 text-[11px] md:text-[13px] line-clamp-2 leading-snug mb-1.5">${item.title}</h4>
+                        
+                        <div class="flex items-center gap-1 mb-2 h-3">
+                            <div class="flex text-yellow-400 text-[9px]">
+                                ${[1,2,3,4,5].map(i => i <= Math.round(avgRating) ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star text-gray-300 dark:text-gray-600"></i>').join('')}
                             </div>
+                            <span class="text-[9px] text-gray-500 font-medium">(${validRatingsCount})</span>
                         </div>
                         
-                        <div class="flex items-center justify-between text-[9px] text-gray-500 mb-1.5 h-3">
-                            <div class="flex items-center gap-1 truncate max-w-[65%]">
-                                <i class="fa-solid fa-location-dot text-blue-500"></i> 
-                                <span class="truncate">${locationText}</span>
+                        <div class="mt-auto">
+                            <div class="text-[14px] md:text-[15px] font-black text-gray-900 dark:text-white leading-none mb-1">
+                                ${displayPrice}
                             </div>
-                            <span class="shrink-0 font-medium"><i class="fa-regular fa-eye mr-0.5"></i>${viewsText}</span>
-                        </div>
-                        
-                        <div class="text-[13px] md:text-[14px] font-black text-gray-900 dark:text-white">
-                            ${displayPrice} ${oldPriceHtml}
-                        </div>
-                        
-                        ${middleDetailsHtml}
-
-                        <div class="mt-auto flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-800/50">
-                            ${storeBadgeHtml}
-                            ${bottomTagHtml}
+                            <div class="h-3 mb-1">
+                                ${oldPriceHtml}
+                            </div>
+                            <!-- Jumia style seller identifier or official mark -->
+                            ${item.type === 'Service' ? 
+                              `<span class="text-[9px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider block mt-2 border-t border-gray-100 dark:border-gray-800 pt-2"><i class="fa-solid fa-briefcase mr-1"></i> ${item.category || 'Professional'}</span>` : 
+                              (item.listingType === 'external' ? 
+                              `<span class="text-[9px] text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider block mt-2 border-t border-gray-100 dark:border-gray-800 pt-2"><i class="fa-solid fa-link mr-1"></i> ${item.storeName || 'External Store'}</span>` : 
+                              `<span class="text-[9px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider block mt-2 border-t border-gray-100 dark:border-gray-800 pt-2"><i class="fa-regular fa-user mr-1"></i> ${item.sellerName ? item.sellerName.split(' ')[0] : 'Seller'}</span>`)}
                         </div>
                     </div>
                 </div>
@@ -8656,14 +8869,49 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 return;
             }
 
-            // If active filters exist, show a unified grid. If not, show the beautifully categorized homepage.
+          // If active filters exist, show a unified grid. If not, show the beautifully categorized homepage.
             if (query || typeFilter || catFilter) {
                 categorizedContent.classList.add('hidden');
                 unifiedResults.classList.remove('hidden');
                 unifiedYield.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 w-full";
                 unifiedYield.innerHTML = '';
-                data.forEach(item => {
+                
+                const config = window.mktConfigCache || {};
+                let unifiedAnnouncementHtml = '';
+                if (config.announcement && config.announcement.active) {
+                    const annBgStyle = config.announcement.imageUrl ? `background-image: url('${config.announcement.imageUrl}'); background-size: cover; background-position: center;` : '';
+                    const annBgClass = config.announcement.imageUrl ? '' : 'mkt-animated-bg-dark';
+                
+                    unifiedAnnouncementHtml = `
+                        <div class="col-span-full w-full ${annBgClass} rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden group border border-gray-800/50 my-2" style="${annBgStyle}">
+                            ${!config.announcement.imageUrl ? `
+                            <div class="mkt-shape w-40 h-40 -bottom-10 -right-10 bg-blue-500/20" style="animation-delay: -2s;"></div>
+                            <div class="mkt-shape w-20 h-20 top-10 left-10 bg-purple-500/20" style="animation-delay: -6s;"></div>
+                            ` : ''}
+                            <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none"></div>
+                            
+                            <div class="flex items-center gap-5 relative z-10 w-full md:w-auto">
+                                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-red-600 text-white flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
+                                    <i class="fa-solid fa-bullhorn text-xl animate-pulse"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <span class="text-[10px] uppercase tracking-widest font-black text-orange-400 mb-1 block drop-shadow-md">Official Notice</span>
+                                    <h4 class="font-black text-white text-lg md:text-xl leading-tight mb-1 drop-shadow-md">${config.announcement.title}</h4>
+                                    <p class="text-sm text-gray-200 leading-relaxed max-w-xl drop-shadow-md">${config.announcement.message}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                data.forEach((item, index) => {
                     unifiedYield.innerHTML += window.buildMktCard(item, false);
+                    
+                    // Interleave every 12 items in the filtered view as well
+                    if ((index + 1) % 12 === 0 && unifiedAnnouncementHtml !== '') {
+                        unifiedYield.innerHTML += unifiedAnnouncementHtml;
+                    }
                 });
                 return;
             }
@@ -8712,20 +8960,45 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 promo1.innerHTML = '';
             }
 
-            // 3. Sponsored Products (Carousel)
+          // 3. Sponsored Products (Carousel) - JUMIA STYLE SPECIAL BLOCK WITH ANIMATION
             let sponsoredData = (config.sponsoredProducts || []).map(id => products.find(p => p.id === id)).filter(Boolean);
             let sponsoredContainer = document.getElementById('mkt-sponsored-container');
             if(!sponsoredContainer) {
                 sponsoredContainer = document.createElement('div');
                 sponsoredContainer.id = 'mkt-sponsored-container';
-                sponsoredContainer.className = 'w-full mb-10 px-1 md:px-2 hidden';
+                sponsoredContainer.className = 'w-full mb-12 px-1 md:px-2 hidden';
+                
+                // If promo image exists, use it. Otherwise use CSS animated background.
+                const bgStyle = (config.promotion && config.promotion.imageUrl) ? `background-image: url('${config.promotion.imageUrl}'); background-size: cover; background-position: center;` : '';
+                const bgClass = (config.promotion && config.promotion.imageUrl) ? '' : 'mkt-animated-bg';
+                
                 sponsoredContainer.innerHTML = `
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2"><i class="fa-solid fa-star text-yellow-500"></i> Sponsored Products</h3>
+                    <div class="${bgClass} rounded-[2rem] p-5 md:p-6 shadow-xl relative overflow-hidden group" style="${bgStyle}">
+                        ${!(config.promotion && config.promotion.imageUrl) ? `
+                        <!-- Floating animated shapes for default bg -->
+                        <div class="mkt-shape w-32 h-32 -top-10 -left-10 bg-white/20"></div>
+                        <div class="mkt-shape w-48 h-48 top-20 right-10 bg-yellow-300/20" style="animation-delay: -3s;"></div>
+                        <div class="mkt-shape w-24 h-24 bottom-10 left-1/3 bg-orange-300/20" style="animation-delay: -5s;"></div>
+                        ` : ''}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none"></div>
+                        
+                        <div class="flex items-center justify-between mb-5 relative z-10">
+                            <h3 class="text-xl md:text-2xl font-black text-white flex items-center gap-2 tracking-tight drop-shadow-md"><i class="fa-solid fa-bolt text-yellow-300 animate-pulse"></i> Top Sponsored Deals</h3>
+                            <span class="text-[10px] font-bold text-red-600 bg-white px-3 py-1 rounded-full shadow-sm uppercase tracking-widest hidden md:inline-block">Exclusive Offer</span>
+                        </div>
+                        <div id="mkt-sponsored-scroll" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-2 relative z-10 cursor-grab"></div>
                     </div>
-                    <div id="mkt-sponsored-scroll" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-4 cursor-grab"></div>
                 `;
                 productsContainer.parentNode.insertBefore(sponsoredContainer, productsContainer);
+            } else {
+                // Update dynamic background on re-render if it changed
+                const bgStyle = (config.promotion && config.promotion.imageUrl) ? `background-image: url('${config.promotion.imageUrl}'); background-size: cover; background-position: center;` : '';
+                const bgClass = (config.promotion && config.promotion.imageUrl) ? '' : 'mkt-animated-bg';
+                const wrapper = sponsoredContainer.querySelector('div.relative.overflow-hidden');
+                if(wrapper) {
+                    wrapper.className = `${bgClass} rounded-[2rem] p-5 md:p-6 shadow-xl relative overflow-hidden group`;
+                    wrapper.style.cssText = bgStyle;
+                }
             }
             
             if(sponsoredData.length > 0) {
@@ -8740,35 +9013,63 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 sponsoredContainer.classList.add('hidden');
             }
 
-            // 4. Regular Products (Grid)
-            if(products.length > 0) {
-                productsContainer.classList.remove('hidden');
-                productsGrid.innerHTML = '';
-                products.forEach(item => {
-                    productsGrid.innerHTML += window.buildMktCard(item, false);
-                });
-            } else {
-                productsContainer.classList.add('hidden');
-            }
-
-            // 5. Promo Zone 2 (Announcement)
+          // 4. Regular Products (Grid) & 5. Promo Zone 2 (Announcement) Interleaving
             const promo2 = document.getElementById('mkt-promo-zone-2');
+            
+            // Generate the dynamic Jumia-style announcement HTML with Animations/Image Support
+            let officialAnnouncementHtml = '';
             if (config.announcement && config.announcement.active) {
-                promo2.classList.remove('hidden');
-                promo2.innerHTML = `
-                    <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-[2rem] p-6 flex flex-col md:flex-row md:items-center gap-4 shadow-sm group">
-                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-800/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50">
-                            <i class="fa-solid fa-bullhorn text-lg group-hover:scale-110 transition-transform"></i>
+                const annBgStyle = config.announcement.imageUrl ? `background-image: url('${config.announcement.imageUrl}'); background-size: cover; background-position: center;` : '';
+                const annBgClass = config.announcement.imageUrl ? '' : 'mkt-animated-bg-dark';
+                
+                officialAnnouncementHtml = `
+                    <div class="col-span-full w-full ${annBgClass} rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden group border border-gray-800/50 my-4" style="${annBgStyle}">
+                        ${!config.announcement.imageUrl ? `
+                        <!-- Floating animated shapes for default bg -->
+                        <div class="mkt-shape w-40 h-40 -bottom-10 -right-10 bg-blue-500/20" style="animation-delay: -2s;"></div>
+                        <div class="mkt-shape w-20 h-20 top-10 left-10 bg-purple-500/20" style="animation-delay: -6s;"></div>
+                        ` : ''}
+                        <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none"></div>
+                        
+                        <div class="flex items-center gap-5 relative z-10 w-full md:w-auto">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-600 text-white flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
+                                <i class="fa-solid fa-bullhorn text-2xl animate-pulse"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <span class="text-[10px] uppercase tracking-widest font-black text-orange-400 mb-1 block drop-shadow-md">Official Notice</span>
+                                <h4 class="font-black text-white text-xl md:text-2xl leading-tight mb-2 drop-shadow-md">${config.announcement.title}</h4>
+                                <p class="text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-md">${config.announcement.message}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-gray-900 dark:text-white text-base md:text-lg mb-1">${config.announcement.title}</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">${config.announcement.message}</p>
-                        </div>
+                        <button onclick="document.getElementById('marketplace-search-input').focus(); window.scrollTo({top:0, behavior:'smooth'})" class="relative z-10 shrink-0 w-full md:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-xl font-black text-xs uppercase tracking-wider transition-colors shadow-[0_4px_14px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:scale-105">Explore Now</button>
                     </div>
                 `;
+            }
+
+            // Set the main top promo zone
+            if (officialAnnouncementHtml !== '') {
+                promo2.classList.remove('hidden');
+                promo2.innerHTML = officialAnnouncementHtml;
             } else {
                 promo2.classList.add('hidden');
                 promo2.innerHTML = '';
+            }
+
+            // Render Products and interleave the announcement every 12 items
+            if(products.length > 0) {
+                productsContainer.classList.remove('hidden');
+                productsGrid.innerHTML = '';
+                products.forEach((item, index) => {
+                    productsGrid.innerHTML += window.buildMktCard(item, false);
+                    
+                    // JUMIA STYLE INTERLEAVING: Inject the announcement banner repeatedly every 12 items!
+                    if ((index + 1) % 12 === 0 && officialAnnouncementHtml !== '') {
+                        productsGrid.innerHTML += officialAnnouncementHtml;
+                    }
+                });
+            } else {
+                productsContainer.classList.add('hidden');
             }
 
             // 6. Featured Services (Carousel)
@@ -8799,30 +9100,28 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 featuredServContainer.classList.add('hidden');
             }
 
-            // 7. Services (Grid)
-            if(featuredServData.length > 0) {
-                servicesContainer.querySelector('.border-t')?.classList.remove('border-t', 'pt-8');
-            } else {
-                servicesContainer.querySelector('.flex.items-center')?.classList.add('border-t', 'pt-8');
-            }
-
+           // 7. Services (Horizontal Scroll Wrapped)
             if(services.length > 0) {
                 servicesContainer.classList.remove('hidden');
                 servicesGrid.innerHTML = '';
                 services.forEach(item => {
-                    servicesGrid.innerHTML += window.buildMktCard(item, false);
+                    // "true" forces the fixed card width for the horizontal scroll
+                    servicesGrid.innerHTML += window.buildMktCard(item, true); 
                 });
+                setTimeout(() => window.attachMouseScroll('mkt-services-grid'), 50);
             } else {
                 servicesContainer.classList.add('hidden');
             }
 
-            // 8. Requests (Vertical Feed)
+            // 8. Requests (Horizontal Scroll Wrapped)
             if(requests.length > 0) {
                 requestsContainer.classList.remove('hidden');
                 requestsFeed.innerHTML = '';
                 requests.forEach(item => {
-                    requestsFeed.innerHTML += window.buildMktCard(item, false);
+                    // "true" forces the fixed card width for the horizontal scroll
+                    requestsFeed.innerHTML += window.buildMktCard(item, true); 
                 });
+                setTimeout(() => window.attachMouseScroll('mkt-requests-feed'), 50);
             } else {
                 requestsContainer.classList.add('hidden');
             }
@@ -9692,10 +9991,11 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     document.getElementById('admin-mkt-promo-btn').value = c.promotion.buttonText || "";
                     document.getElementById('admin-mkt-promo-link').value = c.promotion.buttonLink || "";
                 }
-                if(c.announcement) {
+               if(c.announcement) {
                     document.getElementById('admin-mkt-ann-active').checked = c.announcement.active || false;
                     document.getElementById('admin-mkt-ann-title').value = c.announcement.title || "";
                     document.getElementById('admin-mkt-ann-msg').value = c.announcement.message || "";
+                    document.getElementById('admin-mkt-ann-img').value = c.announcement.imageUrl || "";
                 }
             }
 
@@ -9769,10 +10069,11 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     buttonText: document.getElementById('admin-mkt-promo-btn').value.trim(),
                     buttonLink: document.getElementById('admin-mkt-promo-link').value.trim()
                 },
-                announcement: {
+               announcement: {
                     active: document.getElementById('admin-mkt-ann-active').checked,
                     title: document.getElementById('admin-mkt-ann-title').value.trim(),
-                    message: document.getElementById('admin-mkt-ann-msg').value.trim()
+                    message: document.getElementById('admin-mkt-ann-msg').value.trim(),
+                    imageUrl: document.getElementById('admin-mkt-ann-img').value.trim()
                 },
                 updatedAt: new Date().getTime(),
                 updatedBy: window.currentUserProfile.email
@@ -10512,174 +10813,201 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
     </script>
 
 <script>
-    // PASTE YOUR NEW WEB APP URL HERE INSIDE THE QUOTES
+    // EXISTING WEB APP URL PRESERVED
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBStr9YY6K69eRej7UlbFbESngJ_PJrJoaIiwSR6Y3ReogeITFAIS2NW37t8SB-CJV/exec";
 
     const uploadForm = document.getElementById('student-upload-form');
     const fileInput = document.getElementById('upload-file');
     const submitBtn = document.getElementById('upload-submit-btn');
     const statusText = document.getElementById('upload-status');
-    const progressList = document.getElementById('upload-progress-list');
+    const queueContainer = document.getElementById('upload-queue-container');
+
+    let uploadQueue = [];
+
+    // Helper: Read File to Base64 via Promise
+    const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("File read error"));
+        reader.readAsDataURL(file);
+    });
+
+    // Helper: Generate internal UI state
+    function renderUploadQueue() {
+        if (uploadQueue.length === 0) {
+            queueContainer.classList.add('hidden');
+            queueContainer.classList.remove('flex');
+            return;
+        }
+        
+        queueContainer.classList.remove('hidden');
+        queueContainer.classList.add('flex');
+        queueContainer.innerHTML = '';
+
+        uploadQueue.forEach((item, index) => {
+            let iconHtml = '<i class="fa-regular fa-clock text-gray-400 text-lg"></i>';
+            let statusStyle = 'text-gray-500 dark:text-gray-400';
+            let actionHtml = `<button type="button" onclick="removeQueuedFile('${item.id}')" class="text-red-400 hover:text-red-600 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition"><i class="fa-solid fa-xmark text-sm"></i></button>`;
+
+            if (item.status === 'reading') {
+                iconHtml = '<i class="fa-solid fa-file-import text-blue-500 animate-pulse text-lg"></i>';
+                statusStyle = 'text-blue-600 dark:text-blue-400 font-bold';
+                actionHtml = '';
+            } else if (item.status === 'uploading') {
+                iconHtml = '<i class="fa-solid fa-cloud-arrow-up text-purple-500 animate-bounce text-lg"></i>';
+                statusStyle = 'text-purple-600 dark:text-purple-400 font-bold';
+                actionHtml = '';
+            } else if (item.status === 'success') {
+                iconHtml = '<i class="fa-solid fa-circle-check text-green-500 text-lg"></i>';
+                statusStyle = 'text-green-600 dark:text-green-400 font-bold';
+                actionHtml = '';
+            } else if (item.status === 'error') {
+                iconHtml = '<i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i>';
+                statusStyle = 'text-red-600 dark:text-red-400 font-bold';
+            }
+
+            queueContainer.innerHTML += `
+                <div class="flex items-center justify-between bg-gray-50 dark:bg-[#1A1A1C] p-3 rounded-xl border border-gray-100 dark:border-gray-800 transition-all">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        ${iconHtml}
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-xs font-semibold text-gray-800 dark:text-gray-200 truncate pr-2">${item.file.name}</span>
+                            <span class="text-[10px] ${statusStyle} uppercase tracking-wider">${item.message}</span>
+                        </div>
+                    </div>
+                    ${actionHtml}
+                </div>
+            `;
+        });
+    }
+
+    // Exposed to DOM for the X button
+    window.removeQueuedFile = function(id) {
+        uploadQueue = uploadQueue.filter(f => f.id !== id);
+        
+        // Synchronize actual input files with the array (requires DataTransfer API)
+        const dt = new DataTransfer();
+        uploadQueue.forEach(item => { if(item.status !== 'success') dt.items.add(item.file); });
+        fileInput.files = dt.files;
+        
+        renderUploadQueue();
+    };
 
     if(uploadForm) {
-        
-        function uploadSingleFile(file, uiElement) {
-            return new Promise((resolve, reject) => {
-                const bar = uiElement.querySelector('.progress-bar');
-                const status = uiElement.querySelector('.status-text');
+        // Handle file selection dynamically
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            uploadQueue = []; // Reset queue for new selection
+            
+            files.forEach(file => {
+                const fileName = file.name.toLowerCase();
+                const isAllowed = fileName.endsWith('.pdf') || fileName.endsWith('.doc') || fileName.endsWith('.docx') || fileName.endsWith('.ppt') || fileName.endsWith('.pptx');
 
-                const reader = new FileReader();
-                reader.onload = function() {
-                    const base64Data = reader.result;
-                    const payload = JSON.stringify({
-                        base64: base64Data,
-                        name: file.name,
-                        mimeType: file.type
+                if (isAllowed) {
+                    uploadQueue.push({
+                        id: 'file_' + Math.random().toString(36).substr(2, 9),
+                        file: file,
+                        status: 'pending',
+                        message: 'Waiting'
                     });
-
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', WEB_APP_URL, true);
-
-                    // Track Network Upload Progress
-                    xhr.upload.onprogress = function(e) {
-                        if (e.lengthComputable) {
-                            // Hold at 99% until the server explicitly responds with a 200 Success
-                            const percentComplete = Math.min(Math.round((e.loaded / e.total) * 100), 99);
-                            bar.style.width = percentComplete + '%';
-                            status.innerText = `Uploading... ${percentComplete}%`;
-                        }
-                    };
-
-                    xhr.onload = function() {
-                        if (xhr.status >= 200 && xhr.status < 300) {
-                            try {
-                                const result = JSON.parse(xhr.responseText);
-                                if (result.status === 'success') {
-                                    bar.style.width = '100%';
-                                    bar.classList.replace('bg-blue-500', 'bg-green-500');
-                                    status.classList.replace('text-blue-500', 'text-green-500');
-                                    status.innerText = 'Completed ✓';
-                                    resolve(result);
-                                } else {
-                                    throw new Error(result.message || "Error");
-                                }
-                            } catch(err) {
-                                // GAS sometimes responds with HTML on redirects. If status 200, assume success.
-                                bar.style.width = '100%';
-                                bar.classList.replace('bg-blue-500', 'bg-green-500');
-                                status.classList.replace('text-blue-500', 'text-green-500');
-                                status.innerText = 'Completed ✓';
-                                resolve();
-                            }
-                        } else {
-                            bar.classList.replace('bg-blue-500', 'bg-red-500');
-                            status.classList.replace('text-blue-500', 'text-red-500');
-                            status.innerText = 'Failed ✗';
-                            reject(new Error("Server error"));
-                        }
-                    };
-
-                    xhr.onerror = function() {
-                        bar.classList.replace('bg-blue-500', 'bg-red-500');
-                        status.classList.replace('text-blue-500', 'text-red-500');
-                        status.innerText = 'Failed ✗';
-                        reject(new Error("Network error"));
-                    };
-
-                    xhr.send(payload);
-                };
-
-                reader.onerror = () => {
-                    status.innerText = 'Read Error ✗';
-                    status.classList.replace('text-blue-500', 'text-red-500');
-                    reject(new Error("File read error"));
-                };
-                
-                reader.readAsDataURL(file);
+                } else {
+                    if(window.showToast) window.showToast(`Skipped ${file.name} (Unsupported format)`, "error");
+                }
             });
-        }
+            renderUploadQueue();
+            
+            // Clean up status text if user picks new files
+            statusText.classList.add('hidden');
+        });
 
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const files = Array.from(fileInput.files);
-            if (files.length === 0) return;
-
-            // 1. Strict Frontend File Checking
-            const validFiles = [];
-            const invalidFiles = [];
-            
-            files.forEach(file => {
-                const fileName = file.name.toLowerCase();
-                const isAllowed = fileName.endsWith('.pdf') || fileName.endsWith('.doc') || 
-                                  fileName.endsWith('.docx') || fileName.endsWith('.ppt') || 
-                                  fileName.endsWith('.pptx');
-                if (isAllowed) validFiles.push(file);
-                else invalidFiles.push(file);
-            });
-
-            if (validFiles.length === 0) {
-                statusText.classList.remove('hidden', 'text-blue-500', 'text-green-500');
-                statusText.classList.add('text-red-500', 'mt-2', 'block');
-                statusText.innerText = "No valid files. Please upload PDF, Word, or PowerPoint files.";
+            const pendingFiles = uploadQueue.filter(i => i.status !== 'success');
+            if (pendingFiles.length === 0) {
+                if(window.showToast) window.showToast("No valid files pending upload.", "error");
                 return;
             }
 
-            // 2. Setup Overall Loading State
+            // 1. Global UI Lock
             submitBtn.disabled = true;
             submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
-            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Uploading ${validFiles.length} file(s)...</span>`;
+            statusText.classList.remove('hidden', 'text-red-500', 'text-green-500');
+            statusText.classList.add('text-blue-500', 'mt-2', 'block');
             
-            statusText.classList.add('hidden');
-            progressList.innerHTML = '';
-            progressList.classList.remove('hidden');
+            let successCount = 0;
+            let errorCount = 0;
 
-            if (invalidFiles.length > 0) {
-                progressList.innerHTML += `<div class="text-[11px] text-red-500 mb-2 font-medium"><i class="fa-solid fa-triangle-exclamation"></i> Skipped ${invalidFiles.length} invalid file(s).</div>`;
-            }
-
-            // 3. Generate individual Progress UI elements
-            const uiElements = [];
-            validFiles.forEach(file => {
-                const fileRow = document.createElement('div');
-                fileRow.className = "flex flex-col gap-1 mb-2 bg-gray-50 dark:bg-[#1A1A1C] p-3 rounded-xl border border-gray-100 dark:border-gray-800";
-                fileRow.innerHTML = `
-                    <div class="flex justify-between items-center text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
-                        <span class="truncate pr-2 w-3/4"><i class="fa-regular fa-file mr-1 opacity-50"></i>${file.name}</span>
-                        <span class="status-text text-blue-500 whitespace-nowrap">Waiting...</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-blue-500 h-1.5 rounded-full progress-bar transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                `;
-                progressList.appendChild(fileRow);
-                uiElements.push(fileRow);
-            });
-
-            // 4. Sequential Upload Processing (Prevents Google Apps Script Overload)
-            let successful = 0;
-            
-            for (let i = 0; i < validFiles.length; i++) {
-                try {
-                    await uploadSingleFile(validFiles[i], uiElements[i]);
-                    successful++;
-                } catch (err) {
-                    console.error(`Failed to upload ${validFiles[i].name}`, err);
-                    // Continues to the next file cleanly despite this failure
+            // 2. Process Sequentially to protect Google Apps Script backend from rate-limit throttling
+            for (let i = 0; i < uploadQueue.length; i++) {
+                const item = uploadQueue[i];
+                
+                // Skip already uploaded files if user hit "Retry"
+                if (item.status === 'success') {
+                    successCount++;
+                    continue;
                 }
+
+                try {
+                    // Update Global Status
+                    submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Processing ${i + 1} of ${uploadQueue.length}...`;
+                    
+                    // State: Reading Base64
+                    item.status = 'reading';
+                    item.message = 'Reading local file...';
+                    renderUploadQueue();
+                    
+                    const base64Data = await readFileAsBase64(item.file);
+                    
+                    // State: Transferring
+                    item.status = 'uploading';
+                    item.message = 'Transferring to Drive...';
+                    renderUploadQueue();
+
+                    const payload = { base64: base64Data, name: item.file.name, mimeType: item.file.type };
+
+                    // Send the file securely to GAS
+                    const response = await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        item.status = 'success';
+                        item.message = 'Completed';
+                        successCount++;
+                    } else {
+                        throw new Error(result.message || "Destination rejected upload.");
+                    }
+                } catch (error) {
+                    console.error(`Upload Error [${item.file.name}]:`, error);
+                    item.status = 'error';
+                    item.message = 'Failed - Will retry';
+                    errorCount++;
+                }
+                
+                renderUploadQueue();
             }
 
-            // 5. Restore Global Upload Form State
+            // 3. Finalize Global State
             submitBtn.disabled = false;
             submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Submit Files</span>`;
-            
-            statusText.classList.remove('hidden', 'text-red-500', 'text-blue-500');
-            statusText.classList.add(successful === validFiles.length ? 'text-green-500' : 'text-orange-500', 'mt-3', 'block');
-            statusText.innerHTML = `Finished! <b>${successful} of ${validFiles.length}</b> files successfully submitted.`;
-            
-            if(successful === validFiles.length) {
+
+            if (errorCount === 0) {
+                submitBtn.innerHTML = 'Submit Contributions';
+                statusText.innerText = `Success! ${successCount} document(s) sent for Admin review.`;
+                statusText.classList.replace('text-blue-500', 'text-green-500');
+                
+                // Clear the form cleanly so they don't double submit
                 uploadForm.reset();
+                uploadQueue = [];
+                setTimeout(renderUploadQueue, 2000); 
+            } else {
+                submitBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Retry Failed Files';
+                statusText.innerText = `${successCount} uploaded. ${errorCount} failed. Click retry.`;
+                statusText.classList.replace('text-blue-500', 'text-red-500');
             }
         });
     }
