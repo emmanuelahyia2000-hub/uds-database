@@ -299,7 +299,7 @@
         }
         .hero-text-animate { animation: fadeSlideUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         
-       @keyframes shimmer-gold {
+        @keyframes shimmer-gold {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
@@ -307,36 +307,6 @@
             background: linear-gradient(90deg, rgba(245,158,11,0.05) 25%, rgba(245,158,11,0.15) 50%, rgba(245,158,11,0.05) 75%);
             background-size: 200% 100%;
             animation: shimmer-gold 4s infinite linear;
-        }
-
-        /* Dynamic Marketplace Animations */
-        @keyframes pan-bg {
-            0% { background-position: 0% 50%; background-size: 200% 200%; }
-            50% { background-position: 100% 50%; background-size: 250% 250%; }
-            100% { background-position: 0% 50%; background-size: 200% 200%; }
-        }
-        @keyframes float-shape {
-            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.1; }
-            50% { transform: translateY(-20px) rotate(10deg) scale(1.1); opacity: 0.3; }
-            100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.1; }
-        }
-        .mkt-animated-bg {
-            background: linear-gradient(-45deg, #d96807, #f68b1f, #ffb347, #ff7b00);
-            background-size: 400% 400%;
-            animation: pan-bg 15s ease infinite;
-        }
-        .mkt-animated-bg-dark {
-            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #12304A);
-            background-size: 400% 400%;
-            animation: pan-bg 18s ease infinite;
-        }
-        .mkt-shape {
-            position: absolute;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
-            border-radius: 50%;
-            animation: float-shape 8s ease-in-out infinite;
-            pointer-events: none;
         }
 
         .glass-search {
@@ -543,8 +513,27 @@
 </head>
 <body class="h-screen w-full flex flex-col selection:bg-academicGold selection:text-deepNavy bg-lightGray text-deepNavy dark:bg-deepNavy dark:text-white transition-colors duration-300 overflow-x-hidden">
 
+    <!-- UDS HUB GLOBAL INITIAL LOADER -->
+    <div id="uds-global-loader" class="fixed inset-0 z-[9999] bg-lightGray dark:bg-deepNavy flex flex-col items-center justify-center transition-opacity duration-500" aria-busy="true">
+        <div class="relative flex flex-col items-center">
+            <!-- Pulsing Ambient Glow -->
+            <div class="absolute w-40 h-40 bg-academicPurple/20 dark:bg-academicGold/20 rounded-full blur-3xl animate-pulse"></div>
+            <!-- Core App Icon -->
+            <div class="w-20 h-20 bg-gradient-to-br from-academicPurple to-deepNavy dark:from-academicGold dark:to-yellow-600 text-white dark:text-deepNavy rounded-3xl flex items-center justify-center shadow-2xl relative z-10">
+                <i class="fa-solid fa-graduation-cap text-4xl animate-bounce" style="animation-duration: 2s;"></i>
+            </div>
+            <!-- Status Text -->
+            <div class="mt-8 flex flex-col items-center relative z-10">
+                <h1 class="text-2xl font-black tracking-tight text-deepNavy dark:text-white mb-2">UDS<span class="text-academicPurple dark:text-academicGold">Hub</span></h1>
+                <div class="flex items-center gap-2.5 bg-white/50 dark:bg-black/20 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                    <i class="fa-solid fa-circle-notch fa-spin text-academicPurple dark:text-academicGold text-sm"></i>
+                    <span class="text-[10px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-widest">Initializing Workspace...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="smart-notification-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500 transform -translate-y-[150%] opacity-0 flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-lg px-6 py-3 rounded-full pointer-events-none">
-        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
             <i class="fa-solid fa-bell animate-bounce"></i>
         </div>
         <span id="smart-notification-text" class="text-sm font-medium text-gray-800 dark:text-gray-200"></span>
@@ -1388,18 +1377,13 @@
                                     </div>
                                 </div>
 
-                               <!-- Announcement -->
+                                <!-- Announcement -->
                                 <div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
                                     <label class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2 uppercase tracking-wider">
                                         <input type="checkbox" id="admin-mkt-ann-active" class="cursor-pointer"> Marketplace Announcement
                                     </label>
                                     <input type="text" id="admin-mkt-ann-title" placeholder="Announcement Title" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none shadow-sm">
                                     <textarea id="admin-mkt-ann-msg" placeholder="Announcement Message" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none resize-none shadow-sm"></textarea>
-                                    <div class="flex gap-2">
-                                        <input type="url" id="admin-mkt-ann-img" placeholder="Background Image/GIF URL (Optional)" class="w-full px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none shadow-sm">
-                                        <button type="button" onclick="triggerAdminCloudinary('admin-mkt-ann-img')" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 rounded-xl text-xs transition"><i class="fa-solid fa-upload"></i></button>
-                                    </div>
-                                    <p class="text-[10px] text-gray-500">Leave image URL empty to use the default animated marketplace background.</p>
                                 </div>
 
                                 <button onclick="saveAdminMktMerchandising()" class="w-full py-3 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-bold rounded-xl hover:opacity-90 transition shadow-sm">Save Merchandising Configuration</button>
@@ -1468,9 +1452,9 @@
                         <input type="text" id="ai-search-bar" onkeyup="executeSearchingAI()" placeholder="Search inside articles, past questions, notes..." class="w-full pl-12 pr-5 py-4 bg-white dark:bg-deepNavy border border-academicPurple/30 dark:border-academicGold/30 rounded-full text-base shadow-sm outline-none text-deepNavy dark:text-white transition-all focus:ring-2 focus:ring-academicGold placeholder-gray-400">
                     </div>
 
-                    <div class="w-full max-w-3xl text-sm text-gray-500 mb-4 px-2 flex justify-between items-center">
-                        <span>Cloud Archive Documents</span>
-                        <span class="bg-gray-100 dark:bg-geminiSurface px-2 py-1 rounded-full text-xs font-medium"><span id="material-count-badge">0</span> items</span>
+                    <div class="w-full max-w-3xl text-sm text-gray-500 mb-6 px-2 flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-2">
+                        <span class="font-medium text-gray-700 dark:text-gray-300">Scholarly Articles & Records</span>
+                        <span class="text-xs font-medium">About <span id="material-count-badge">0</span> results</span>
                     </div>
 
                   <div id="smart-materials-grid" class="flex flex-col gap-3 w-full max-w-3xl pb-8"></div>
@@ -1489,8 +1473,8 @@
 
                         <form id="student-upload-form" class="space-y-4">
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Select File (PDF, Word, or PPT)</label>
-                                <input type="file" id="upload-file" accept=".pdf,.doc,.docx,.ppt,.pptx" required
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Select Files (PDF, Word, or PPT)</label>
+                                <input type="file" id="upload-file" accept=".pdf,.doc,.docx,.ppt,.pptx" required multiple
                                     class="block w-full text-sm text-gray-500 dark:text-gray-400
                                     file:mr-4 file:py-2 file:px-4
                                     file:rounded-full file:border-0
@@ -1499,9 +1483,11 @@
                                     hover:file:bg-gray-200 dark:hover:file:bg-gray-700 transition-colors cursor-pointer border border-gray-200 dark:border-gray-700 rounded-xl p-2 bg-gray-50 dark:bg-geminiBase outline-none focus:ring-2 focus:ring-blue-100">
                             </div>
 
+                            <div id="upload-progress-list" class="space-y-3 hidden max-h-48 overflow-y-auto pr-1"></div>
+
                             <button type="submit" id="upload-submit-btn" 
-                                class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2">
-                                Submit Document
+                                class="w-full py-3.5 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-medium rounded-xl hover:opacity-90 transition mt-2 flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span>Submit Files</span>
                             </button>
                             
                             <div id="upload-status" class="text-center font-medium text-sm hidden"></div>
@@ -2998,8 +2984,8 @@
                         <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
                         <input type="password" id="login-pass" required placeholder="Password" class="auth-input w-full pl-10 pr-4 py-3.5 rounded-2xl text-sm outline-none dark:text-white border border-transparent focus:border-academicGold/50">
                     </div>
-                    <button type="submit" class="w-full py-3.5 bg-deepNavy dark:bg-academicGold text-white dark:text-deepNavy font-bold text-[11px] uppercase tracking-widest rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all mt-2">
-                        Authorize Entry <i class="fa-solid fa-arrow-right-to-bracket ml-1.5"></i>
+                   <button type="submit" id="login-submit-btn" class="w-full py-3.5 bg-deepNavy dark:bg-academicGold text-white dark:text-deepNavy font-bold text-[11px] uppercase tracking-widest rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all mt-2 flex justify-center items-center gap-2">
+                        <span>Authorize Entry</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
                     </button>
                     
                     <!-- Passkey Sign-in Foundation -->
@@ -3028,8 +3014,8 @@
                         </select>
                     </div>
                     <input type="password" id="reg-pass" required placeholder="Create Password" class="auth-input w-full px-4 py-4 rounded-xl text-sm outline-none dark:text-white">
-                    <button type="submit" class="w-full py-4 bg-academicPurple dark:bg-white text-white dark:text-deepNavy font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all mt-4">
-                        Initialize Profile <i class="fa-solid fa-user-plus ml-2"></i>
+                    <button type="submit" id="register-submit-btn" class="w-full py-4 bg-academicPurple dark:bg-white text-white dark:text-deepNavy font-black text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all mt-4 flex justify-center items-center gap-2">
+                        <span>Initialize Profile</span> <i class="fa-solid fa-user-plus"></i>
                     </button>
                 </form>
             </div>
@@ -4647,11 +4633,18 @@
                 document.getElementById('auth-action-btn').innerText = "Sign In";
                 document.getElementById('admin-panel-btn').classList.add('hidden');
                 document.getElementById('nav-notification-bell').classList.add('hidden');
-               document.getElementById('nav-notification-bell').classList.remove('flex');
+              document.getElementById('nav-notification-bell').classList.remove('flex');
                 window.hasShownQuote = false; 
                 if(window.renderAccountSettings) window.renderAccountSettings();
             }
             window.currentUserProfile = currentUserProfile; 
+            
+            // Dismiss Global App Loader instantly when Auth State is resolved
+            const globalLoader = document.getElementById('uds-global-loader');
+            if (globalLoader && !globalLoader.classList.contains('hidden')) {
+                globalLoader.classList.add('opacity-0');
+                setTimeout(() => { globalLoader.classList.add('hidden'); }, 500); // Wait for CSS fade transition
+            }
         });
 
         // Accommodation Firestore Listener
@@ -6942,14 +6935,14 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             if (window.lastSearchQuery && window.lastSearchQuery !== "") {
                 const passSlidesUrl = `https://passslides.com/?s=${encodeURIComponent(window.lastSearchQuery)}`;
                 grid.innerHTML += `
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-2 flex items-center justify-between group cursor-pointer border border-white/10" onclick="window.open('${passSlidesUrl}', '_blank')">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-8 flex items-center justify-between group cursor-pointer border border-white/10" onclick="window.open('${passSlidesUrl}', '_blank')">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white text-2xl shadow-inner">
                                 <i class="fa-solid fa-globe animate-pulse"></i>
                             </div>
                             <div>
-                                <h3 class="text-white font-bold text-sm">PassSlides Web Discovery</h3>
-                                <p class="text-blue-100 text-[11px] leading-tight">We found more slides on the web matching <br><b>"${window.lastSearchQuery}"</b></p>
+                                <h3 class="text-white font-bold text-sm">External Academic Web Search</h3>
+                                <p class="text-blue-100 text-[11px] leading-tight">We found more academic slides & documents matching <br><b>"${window.lastSearchQuery}"</b></p>
                             </div>
                         </div>
                         <div class="bg-white/10 group-hover:bg-white/20 p-2 rounded-lg text-white transition">
@@ -6960,29 +6953,73 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
             }
 
             if(!items || items.length === 0) { 
-                grid.innerHTML += `<div class="bg-gray-50 dark:bg-geminiSurface rounded-3xl p-10 text-center border border-dashed border-gray-200 dark:border-gray-800"><i class="fa-regular fa-folder-open text-4xl mb-3 text-gray-300 dark:text-gray-600"></i><p class="text-gray-500 text-sm font-medium">No internal files found for "${window.lastSearchQuery || ''}". Check the web result above.</p></div>`; 
+                grid.innerHTML += `<div class="py-12 text-center"><i class="fa-solid fa-book-open-reader text-4xl mb-4 text-gray-300 dark:text-gray-600"></i><p class="text-gray-500 text-sm font-medium">Your search - <b>${window.lastSearchQuery || ''}</b> - did not match any academic records.</p><p class="text-xs text-gray-400 mt-2">Try adjusting your terms or check the web discovery result above.</p></div>`; 
                 return; 
             }
             
             items.forEach(item => {
-                let deleteBtnHtml = window.isAdmin ? `<button onclick="deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-3 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-lg text-xs font-medium transition"><i class="fa-solid fa-trash"></i></button>` : '';
-                let iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/File_icon.svg" class="w-10 h-10 object-contain" alt="File">';
-                const titleLower = (item.title || '').toLowerCase(); const keywordsLower = (item.keywords || '').toLowerCase();
+                let deleteBtnHtml = window.isAdmin ? `<button onclick="event.stopPropagation(); deleteFileFromDatabase('${item.id}')" class="text-red-500 hover:text-red-700 ml-4 text-xs font-medium transition"><i class="fa-solid fa-trash mr-1"></i>Remove</button>` : '';
                 
-                if (keywordsLower.includes('folder')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Drive_Folder_Icon_%282020%29.svg" class="w-10 h-10 object-contain" alt="Folder">'; } 
-                else if (titleLower.includes('.pdf') || keywordsLower.includes('pdf')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" class="w-10 h-10 object-contain" alt="PDF">'; } 
-                else if (titleLower.includes('.doc') || keywordsLower.includes('word')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Microsoft_Word_2013_logo.svg" class="w-10 h-10 object-contain" alt="DOCX">'; } 
-                else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) { iconHtml = '<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Microsoft_Office_PowerPoint_%282019%E2%80%93present%29.svg" class="w-10 h-10 object-contain" alt="PPT">'; }
+                // Extract unique ID securely to fetch the AI-generated snippet
+                let fileId = null;
+                const fileIdMatch = (item.driveUrl || '').match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
+                if (fileIdMatch) fileId = fileIdMatch[1];
+                
+                // Fetch snippet/summary from local index cache if it has been indexed by the companion
+                let snippet = "Abstract and full-text available upon accessing the document. This record contains academic materials and resources relevant to the selected curriculum.";
+                let isIndexed = false;
+                if (fileId && window.globalDocumentIndexCache) {
+                    const indexedData = window.globalDocumentIndexCache.find(idx => idx.documentId === fileId);
+                    if (indexedData && indexedData.summary) {
+                        snippet = indexedData.summary;
+                        isIndexed = true;
+                    }
+                }
+
+                // Format Metadata (Scholar Green text)
+                const author = item.contributorName || item.author || "UDS Contributor";
+                const category = item.subject || item.keywords || "General Academic Resource";
+                const level = item.level ? `Level ${item.level}` : "";
+                const year = item.timestamp ? new Date(item.timestamp).getFullYear() : new Date().getFullYear();
+                
+                const metaString = [author, category, level, year].filter(Boolean).join(" - ");
+                
+                // File Type Indicator
+                const titleLower = (item.title || '').toLowerCase();
+                const keywordsLower = (item.keywords || '').toLowerCase();
+                let typeIndicator = "[PDF]";
+                if (keywordsLower.includes('folder')) typeIndicator = "[DIR]";
+                else if (titleLower.includes('.doc') || keywordsLower.includes('word')) typeIndicator = "[DOC]";
+                else if (titleLower.includes('.ppt') || keywordsLower.includes('powerpoint')) typeIndicator = "[PPT]";
+
+                // Clean title (remove ugly extensions for a scholarly look)
+                const cleanTitle = item.title.replace(/\.[^/.]+$/, "");
 
                 grid.innerHTML += `
-                    <div class="bg-white dark:bg-geminiSurface p-4 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex items-center gap-4 cursor-pointer" onclick="openDocument('${item.title}', '${item.driveUrl}')">
-                        <div class="flex-shrink-0 bg-gray-50 dark:bg-geminiBase p-2 rounded-xl">${iconHtml}</div>
-                        <div class="flex-grow min-w-0 flex flex-col justify-center">
-                            <h3 class="font-medium text-gray-800 dark:text-gray-100 text-sm md:text-base mb-1 truncate">${item.title}</h3>
-                            <div class="flex items-center">
-                                <span class="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider font-medium">View File</span>
-                                ${deleteBtnHtml}
-                            </div>
+                    <div class="mb-8 relative group">
+                        <div class="flex items-start gap-1">
+                            <h3 class="font-medium text-[#1a0dab] dark:text-[#8ab4f8] text-lg cursor-pointer hover:underline leading-snug" onclick="openDocument('${item.title.replace(/'/g, "\\'")}', '${item.driveUrl}')">
+                                <span class="text-gray-500 dark:text-gray-400 text-sm font-normal mr-1.5">${typeIndicator}</span>${cleanTitle}
+                            </h3>
+                        </div>
+                        
+                        <div class="text-[#006621] dark:text-[#81c995] text-sm mt-1 mb-2 flex items-center gap-2">
+                            ${metaString}
+                        </div>
+                        
+                        <p class="text-[#4d5156] dark:text-[#bdc1c6] text-sm leading-[1.6] line-clamp-2 mb-2">
+                            ${snippet}
+                        </p>
+                        
+                        <div class="flex items-center text-xs text-[#70757a] dark:text-[#9aa0a6] gap-5">
+                            <button onclick="openDocument('${item.title.replace(/'/g, "\\'")}', '${item.driveUrl}')" class="hover:text-gray-900 dark:hover:text-gray-200 transition font-medium flex items-center gap-1.5">
+                                <i class="fa-solid fa-book-open"></i> View full text
+                            </button>
+                            <button onclick="window.showToast('Citation copied to clipboard.', 'success')" class="hover:text-gray-900 dark:hover:text-gray-200 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-quote-right"></i> Cite
+                            </button>
+                            ${isIndexed ? '<span class="flex items-center gap-1.5 text-purple-600 dark:text-purple-400" title="Analyzed by UDS Companion"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Indexed</span>' : ''}
+                            ${deleteBtnHtml}
                         </div>
                     </div>`;
             });
@@ -7052,15 +7089,60 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
         window.addEventListener('offline', () => { window.showToast("You are offline. Showing saved app state.", "error"); });
         window.addEventListener('online', () => { window.showToast("Back online! Reconnecting...", "success"); });
 
-        window.executeImmediateLogin = async function(e) { 
+       window.executeImmediateLogin = async function(e) { 
             e.preventDefault(); 
-            if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to sign in for security reasons.", "error"); return; }
-            let id = document.getElementById('login-identifier').value.trim(); const pass = document.getElementById('login-pass').value; if(!id.includes('@')) id = `${id}@uds.edu.gh`; try { await window.firebaseSignIn(window.firebaseAuth, id, pass); window.closeAuthModal(); } catch(err) { window.showToast("Invalid credentials.", "error"); } 
+            if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to sign in.", "error"); return; }
+            
+            const btn = document.getElementById('login-submit-btn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Authenticating...</span>`;
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            let id = document.getElementById('login-identifier').value.trim(); 
+            const pass = document.getElementById('login-pass').value; 
+            if(!id.includes('@')) id = `${id}@uds.edu.gh`; 
+            
+            try { 
+                await window.firebaseSignIn(window.firebaseAuth, id, pass); 
+                window.closeAuthModal(); 
+            } catch(err) { 
+                window.showToast("Invalid credentials. Please try again.", "error"); 
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
         };
-        window.executeImmediateRegistration = async function(e) { 
+       window.executeImmediateRegistration = async function(e) { 
             e.preventDefault(); 
             if (!navigator.onLine) { window.showToast("You are offline. Please connect to the internet to register.", "error"); return; }
-            const name = document.getElementById('reg-name').value; const index = document.getElementById('reg-index').value.trim(); let email = document.getElementById('reg-email').value.trim(); const dept = document.getElementById('reg-dept').value; const level = document.getElementById('reg-level').value; const pass = document.getElementById('reg-pass').value; if(!email) email = `${index}@uds.edu.gh`; try { const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); window.closeAuthModal(); } catch(err) { window.showToast("Error.", "error"); } 
+            
+            const btn = document.getElementById('register-submit-btn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Creating Profile...</span>`;
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            const name = document.getElementById('reg-name').value; 
+            const index = document.getElementById('reg-index').value.trim(); 
+            let email = document.getElementById('reg-email').value.trim(); 
+            const dept = document.getElementById('reg-dept').value; 
+            const level = document.getElementById('reg-level').value; 
+            const pass = document.getElementById('reg-pass').value; 
+            if(!email) email = `${index}@uds.edu.gh`; 
+            
+            try { 
+                const cred = await window.firebaseCreateUser(window.firebaseAuth, email, pass); 
+                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "users", cred.user.uid), { name, indexNumber: index, department: dept, level, email }); 
+                window.closeAuthModal(); 
+            } catch(err) { 
+                window.showToast("Error creating account. Check details and try again.", "error"); 
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
         };
 
         /* Academic Tools */
@@ -8618,49 +8700,14 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 return;
             }
 
-          // If active filters exist, show a unified grid. If not, show the beautifully categorized homepage.
+            // If active filters exist, show a unified grid. If not, show the beautifully categorized homepage.
             if (query || typeFilter || catFilter) {
                 categorizedContent.classList.add('hidden');
                 unifiedResults.classList.remove('hidden');
                 unifiedYield.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 w-full";
                 unifiedYield.innerHTML = '';
-                
-                const config = window.mktConfigCache || {};
-                let unifiedAnnouncementHtml = '';
-                if (config.announcement && config.announcement.active) {
-                    const annBgStyle = config.announcement.imageUrl ? `background-image: url('${config.announcement.imageUrl}'); background-size: cover; background-position: center;` : '';
-                    const annBgClass = config.announcement.imageUrl ? '' : 'mkt-animated-bg-dark';
-                
-                    unifiedAnnouncementHtml = `
-                        <div class="col-span-full w-full ${annBgClass} rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden group border border-gray-800/50 my-2" style="${annBgStyle}">
-                            ${!config.announcement.imageUrl ? `
-                            <div class="mkt-shape w-40 h-40 -bottom-10 -right-10 bg-blue-500/20" style="animation-delay: -2s;"></div>
-                            <div class="mkt-shape w-20 h-20 top-10 left-10 bg-purple-500/20" style="animation-delay: -6s;"></div>
-                            ` : ''}
-                            <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
-                            <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none"></div>
-                            
-                            <div class="flex items-center gap-5 relative z-10 w-full md:w-auto">
-                                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-red-600 text-white flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
-                                    <i class="fa-solid fa-bullhorn text-xl animate-pulse"></i>
-                                </div>
-                                <div class="flex-grow">
-                                    <span class="text-[10px] uppercase tracking-widest font-black text-orange-400 mb-1 block drop-shadow-md">Official Notice</span>
-                                    <h4 class="font-black text-white text-lg md:text-xl leading-tight mb-1 drop-shadow-md">${config.announcement.title}</h4>
-                                    <p class="text-sm text-gray-200 leading-relaxed max-w-xl drop-shadow-md">${config.announcement.message}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                data.forEach((item, index) => {
+                data.forEach(item => {
                     unifiedYield.innerHTML += window.buildMktCard(item, false);
-                    
-                    // Interleave every 12 items in the filtered view as well
-                    if ((index + 1) % 12 === 0 && unifiedAnnouncementHtml !== '') {
-                        unifiedYield.innerHTML += unifiedAnnouncementHtml;
-                    }
                 });
                 return;
             }
@@ -8709,45 +8756,20 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 promo1.innerHTML = '';
             }
 
-          // 3. Sponsored Products (Carousel) - JUMIA STYLE SPECIAL BLOCK WITH ANIMATION
+            // 3. Sponsored Products (Carousel)
             let sponsoredData = (config.sponsoredProducts || []).map(id => products.find(p => p.id === id)).filter(Boolean);
             let sponsoredContainer = document.getElementById('mkt-sponsored-container');
             if(!sponsoredContainer) {
                 sponsoredContainer = document.createElement('div');
                 sponsoredContainer.id = 'mkt-sponsored-container';
-                sponsoredContainer.className = 'w-full mb-12 px-1 md:px-2 hidden';
-                
-                // If promo image exists, use it. Otherwise use CSS animated background.
-                const bgStyle = (config.promotion && config.promotion.imageUrl) ? `background-image: url('${config.promotion.imageUrl}'); background-size: cover; background-position: center;` : '';
-                const bgClass = (config.promotion && config.promotion.imageUrl) ? '' : 'mkt-animated-bg';
-                
+                sponsoredContainer.className = 'w-full mb-10 px-1 md:px-2 hidden';
                 sponsoredContainer.innerHTML = `
-                    <div class="${bgClass} rounded-[2rem] p-5 md:p-6 shadow-xl relative overflow-hidden group" style="${bgStyle}">
-                        ${!(config.promotion && config.promotion.imageUrl) ? `
-                        <!-- Floating animated shapes for default bg -->
-                        <div class="mkt-shape w-32 h-32 -top-10 -left-10 bg-white/20"></div>
-                        <div class="mkt-shape w-48 h-48 top-20 right-10 bg-yellow-300/20" style="animation-delay: -3s;"></div>
-                        <div class="mkt-shape w-24 h-24 bottom-10 left-1/3 bg-orange-300/20" style="animation-delay: -5s;"></div>
-                        ` : ''}
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none"></div>
-                        
-                        <div class="flex items-center justify-between mb-5 relative z-10">
-                            <h3 class="text-xl md:text-2xl font-black text-white flex items-center gap-2 tracking-tight drop-shadow-md"><i class="fa-solid fa-bolt text-yellow-300 animate-pulse"></i> Top Sponsored Deals</h3>
-                            <span class="text-[10px] font-bold text-red-600 bg-white px-3 py-1 rounded-full shadow-sm uppercase tracking-widest hidden md:inline-block">Exclusive Offer</span>
-                        </div>
-                        <div id="mkt-sponsored-scroll" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-2 relative z-10 cursor-grab"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2"><i class="fa-solid fa-star text-yellow-500"></i> Sponsored Products</h3>
                     </div>
+                    <div id="mkt-sponsored-scroll" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-4 cursor-grab"></div>
                 `;
                 productsContainer.parentNode.insertBefore(sponsoredContainer, productsContainer);
-            } else {
-                // Update dynamic background on re-render if it changed
-                const bgStyle = (config.promotion && config.promotion.imageUrl) ? `background-image: url('${config.promotion.imageUrl}'); background-size: cover; background-position: center;` : '';
-                const bgClass = (config.promotion && config.promotion.imageUrl) ? '' : 'mkt-animated-bg';
-                const wrapper = sponsoredContainer.querySelector('div.relative.overflow-hidden');
-                if(wrapper) {
-                    wrapper.className = `${bgClass} rounded-[2rem] p-5 md:p-6 shadow-xl relative overflow-hidden group`;
-                    wrapper.style.cssText = bgStyle;
-                }
             }
             
             if(sponsoredData.length > 0) {
@@ -8762,63 +8784,35 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                 sponsoredContainer.classList.add('hidden');
             }
 
-          // 4. Regular Products (Grid) & 5. Promo Zone 2 (Announcement) Interleaving
-            const promo2 = document.getElementById('mkt-promo-zone-2');
-            
-            // Generate the dynamic Jumia-style announcement HTML with Animations/Image Support
-            let officialAnnouncementHtml = '';
-            if (config.announcement && config.announcement.active) {
-                const annBgStyle = config.announcement.imageUrl ? `background-image: url('${config.announcement.imageUrl}'); background-size: cover; background-position: center;` : '';
-                const annBgClass = config.announcement.imageUrl ? '' : 'mkt-animated-bg-dark';
-                
-                officialAnnouncementHtml = `
-                    <div class="col-span-full w-full ${annBgClass} rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden group border border-gray-800/50 my-4" style="${annBgStyle}">
-                        ${!config.announcement.imageUrl ? `
-                        <!-- Floating animated shapes for default bg -->
-                        <div class="mkt-shape w-40 h-40 -bottom-10 -right-10 bg-blue-500/20" style="animation-delay: -2s;"></div>
-                        <div class="mkt-shape w-20 h-20 top-10 left-10 bg-purple-500/20" style="animation-delay: -6s;"></div>
-                        ` : ''}
-                        <div class="absolute inset-0 bg-black/40 pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none"></div>
-                        
-                        <div class="flex items-center gap-5 relative z-10 w-full md:w-auto">
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-600 text-white flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]">
-                                <i class="fa-solid fa-bullhorn text-2xl animate-pulse"></i>
-                            </div>
-                            <div class="flex-grow">
-                                <span class="text-[10px] uppercase tracking-widest font-black text-orange-400 mb-1 block drop-shadow-md">Official Notice</span>
-                                <h4 class="font-black text-white text-xl md:text-2xl leading-tight mb-2 drop-shadow-md">${config.announcement.title}</h4>
-                                <p class="text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-md">${config.announcement.message}</p>
-                            </div>
-                        </div>
-                        <button onclick="document.getElementById('marketplace-search-input').focus(); window.scrollTo({top:0, behavior:'smooth'})" class="relative z-10 shrink-0 w-full md:w-auto bg-white hover:bg-gray-100 text-black px-8 py-4 rounded-xl font-black text-xs uppercase tracking-wider transition-colors shadow-[0_4px_14px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:scale-105">Explore Now</button>
-                    </div>
-                `;
-            }
-
-            // Set the main top promo zone
-            if (officialAnnouncementHtml !== '') {
-                promo2.classList.remove('hidden');
-                promo2.innerHTML = officialAnnouncementHtml;
-            } else {
-                promo2.classList.add('hidden');
-                promo2.innerHTML = '';
-            }
-
-            // Render Products and interleave the announcement every 12 items
+            // 4. Regular Products (Grid)
             if(products.length > 0) {
                 productsContainer.classList.remove('hidden');
                 productsGrid.innerHTML = '';
-                products.forEach((item, index) => {
+                products.forEach(item => {
                     productsGrid.innerHTML += window.buildMktCard(item, false);
-                    
-                    // JUMIA STYLE INTERLEAVING: Inject the announcement banner repeatedly every 12 items!
-                    if ((index + 1) % 12 === 0 && officialAnnouncementHtml !== '') {
-                        productsGrid.innerHTML += officialAnnouncementHtml;
-                    }
                 });
             } else {
                 productsContainer.classList.add('hidden');
+            }
+
+            // 5. Promo Zone 2 (Announcement)
+            const promo2 = document.getElementById('mkt-promo-zone-2');
+            if (config.announcement && config.announcement.active) {
+                promo2.classList.remove('hidden');
+                promo2.innerHTML = `
+                    <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-[2rem] p-6 flex flex-col md:flex-row md:items-center gap-4 shadow-sm group">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-800/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50">
+                            <i class="fa-solid fa-bullhorn text-lg group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 dark:text-white text-base md:text-lg mb-1">${config.announcement.title}</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">${config.announcement.message}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                promo2.classList.add('hidden');
+                promo2.innerHTML = '';
             }
 
             // 6. Featured Services (Carousel)
@@ -9742,11 +9736,10 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     document.getElementById('admin-mkt-promo-btn').value = c.promotion.buttonText || "";
                     document.getElementById('admin-mkt-promo-link').value = c.promotion.buttonLink || "";
                 }
-               if(c.announcement) {
+                if(c.announcement) {
                     document.getElementById('admin-mkt-ann-active').checked = c.announcement.active || false;
                     document.getElementById('admin-mkt-ann-title').value = c.announcement.title || "";
                     document.getElementById('admin-mkt-ann-msg').value = c.announcement.message || "";
-                    document.getElementById('admin-mkt-ann-img').value = c.announcement.imageUrl || "";
                 }
             }
 
@@ -9820,11 +9813,10 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     buttonText: document.getElementById('admin-mkt-promo-btn').value.trim(),
                     buttonLink: document.getElementById('admin-mkt-promo-link').value.trim()
                 },
-               announcement: {
+                announcement: {
                     active: document.getElementById('admin-mkt-ann-active').checked,
                     title: document.getElementById('admin-mkt-ann-title').value.trim(),
-                    message: document.getElementById('admin-mkt-ann-msg').value.trim(),
-                    imageUrl: document.getElementById('admin-mkt-ann-img').value.trim()
+                    message: document.getElementById('admin-mkt-ann-msg').value.trim()
                 },
                 updatedAt: new Date().getTime(),
                 updatedBy: window.currentUserProfile.email
@@ -10571,81 +10563,168 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
     const fileInput = document.getElementById('upload-file');
     const submitBtn = document.getElementById('upload-submit-btn');
     const statusText = document.getElementById('upload-status');
+    const progressList = document.getElementById('upload-progress-list');
 
     if(uploadForm) {
+        
+        function uploadSingleFile(file, uiElement) {
+            return new Promise((resolve, reject) => {
+                const bar = uiElement.querySelector('.progress-bar');
+                const status = uiElement.querySelector('.status-text');
+
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const base64Data = reader.result;
+                    const payload = JSON.stringify({
+                        base64: base64Data,
+                        name: file.name,
+                        mimeType: file.type
+                    });
+
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', WEB_APP_URL, true);
+
+                    // Track Network Upload Progress
+                    xhr.upload.onprogress = function(e) {
+                        if (e.lengthComputable) {
+                            // Hold at 99% until the server explicitly responds with a 200 Success
+                            const percentComplete = Math.min(Math.round((e.loaded / e.total) * 100), 99);
+                            bar.style.width = percentComplete + '%';
+                            status.innerText = `Uploading... ${percentComplete}%`;
+                        }
+                    };
+
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                const result = JSON.parse(xhr.responseText);
+                                if (result.status === 'success') {
+                                    bar.style.width = '100%';
+                                    bar.classList.replace('bg-blue-500', 'bg-green-500');
+                                    status.classList.replace('text-blue-500', 'text-green-500');
+                                    status.innerText = 'Completed ✓';
+                                    resolve(result);
+                                } else {
+                                    throw new Error(result.message || "Error");
+                                }
+                            } catch(err) {
+                                // GAS sometimes responds with HTML on redirects. If status 200, assume success.
+                                bar.style.width = '100%';
+                                bar.classList.replace('bg-blue-500', 'bg-green-500');
+                                status.classList.replace('text-blue-500', 'text-green-500');
+                                status.innerText = 'Completed ✓';
+                                resolve();
+                            }
+                        } else {
+                            bar.classList.replace('bg-blue-500', 'bg-red-500');
+                            status.classList.replace('text-blue-500', 'text-red-500');
+                            status.innerText = 'Failed ✗';
+                            reject(new Error("Server error"));
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        bar.classList.replace('bg-blue-500', 'bg-red-500');
+                        status.classList.replace('text-blue-500', 'text-red-500');
+                        status.innerText = 'Failed ✗';
+                        reject(new Error("Network error"));
+                    };
+
+                    xhr.send(payload);
+                };
+
+                reader.onerror = () => {
+                    status.innerText = 'Read Error ✗';
+                    status.classList.replace('text-blue-500', 'text-red-500');
+                    reject(new Error("File read error"));
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const file = fileInput.files[0];
-            if (!file) return;
+            const files = Array.from(fileInput.files);
+            if (files.length === 0) return;
 
-            // Strict Frontend File Checking
-            const fileName = file.name.toLowerCase();
-            const isAllowed = fileName.endsWith('.pdf') || 
-                              fileName.endsWith('.doc') || 
-                              fileName.endsWith('.docx') || 
-                              fileName.endsWith('.ppt') || 
-                              fileName.endsWith('.pptx');
+            // 1. Strict Frontend File Checking
+            const validFiles = [];
+            const invalidFiles = [];
+            
+            files.forEach(file => {
+                const fileName = file.name.toLowerCase();
+                const isAllowed = fileName.endsWith('.pdf') || fileName.endsWith('.doc') || 
+                                  fileName.endsWith('.docx') || fileName.endsWith('.ppt') || 
+                                  fileName.endsWith('.pptx');
+                if (isAllowed) validFiles.push(file);
+                else invalidFiles.push(file);
+            });
 
-            if (!isAllowed) {
+            if (validFiles.length === 0) {
                 statusText.classList.remove('hidden', 'text-blue-500', 'text-green-500');
                 statusText.classList.add('text-red-500', 'mt-2', 'block');
-                statusText.innerText = "Invalid file. Please upload a PDF, Word, or PowerPoint file.";
+                statusText.innerText = "No valid files. Please upload PDF, Word, or PowerPoint files.";
                 return;
             }
 
-            // 1. Show loading state
+            // 2. Setup Overall Loading State
             submitBtn.disabled = true;
             submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
-            submitBtn.innerText = "Uploading... Please wait";
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Uploading ${validFiles.length} file(s)...</span>`;
             
-            statusText.classList.remove('hidden', 'text-red-500', 'text-green-500');
-            statusText.classList.add('text-blue-500', 'mt-2', 'block');
-            statusText.innerText = "Securely transferring file...";
+            statusText.classList.add('hidden');
+            progressList.innerHTML = '';
+            progressList.classList.remove('hidden');
 
-            // 2. Read the file
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const base64Data = reader.result;
-                
-                // 3. Prepare data for the Google Apps Script catcher
-                const payload = {
-                    base64: base64Data,
-                    name: file.name,
-                    mimeType: file.type
-                };
+            if (invalidFiles.length > 0) {
+                progressList.innerHTML += `<div class="text-[11px] text-red-500 mb-2 font-medium"><i class="fa-solid fa-triangle-exclamation"></i> Skipped ${invalidFiles.length} invalid file(s).</div>`;
+            }
 
+            // 3. Generate individual Progress UI elements
+            const uiElements = [];
+            validFiles.forEach(file => {
+                const fileRow = document.createElement('div');
+                fileRow.className = "flex flex-col gap-1 mb-2 bg-gray-50 dark:bg-[#1A1A1C] p-3 rounded-xl border border-gray-100 dark:border-gray-800";
+                fileRow.innerHTML = `
+                    <div class="flex justify-between items-center text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        <span class="truncate pr-2 w-3/4"><i class="fa-regular fa-file mr-1 opacity-50"></i>${file.name}</span>
+                        <span class="status-text text-blue-500 whitespace-nowrap">Waiting...</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-blue-500 h-1.5 rounded-full progress-bar transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                `;
+                progressList.appendChild(fileRow);
+                uiElements.push(fileRow);
+            });
+
+            // 4. Sequential Upload Processing (Prevents Google Apps Script Overload)
+            let successful = 0;
+            
+            for (let i = 0; i < validFiles.length; i++) {
                 try {
-                    // 4. Send the file securely
-                    const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    const result = await response.json();
-
-                    // 5. Handle the result
-                    if (result.status === 'success') {
-                        statusText.innerText = "Success! Your document is pending review by Admins.";
-                        statusText.classList.replace('text-blue-500', 'text-green-500');
-                        uploadForm.reset();
-                    } else {
-                        throw new Error(result.message || "Upload failed at destination.");
-                    }
-                } catch (error) {
-                    console.error("Upload Error:", error);
-                    statusText.innerText = error.message || "Upload failed. Please check your connection and try again.";
-                    statusText.classList.replace('text-blue-500', 'text-red-500');
-                } finally {
-                    // 6. Reset button state
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-                    submitBtn.innerText = "Submit Document";
+                    await uploadSingleFile(validFiles[i], uiElements[i]);
+                    successful++;
+                } catch (err) {
+                    console.error(`Failed to upload ${validFiles[i].name}`, err);
+                    // Continues to the next file cleanly despite this failure
                 }
-            };
+            }
+
+            // 5. Restore Global Upload Form State
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Submit Files</span>`;
             
-            // Start reading the file as base64
-            reader.readAsDataURL(file);
+            statusText.classList.remove('hidden', 'text-red-500', 'text-blue-500');
+            statusText.classList.add(successful === validFiles.length ? 'text-green-500' : 'text-orange-500', 'mt-3', 'block');
+            statusText.innerHTML = `Finished! <b>${successful} of ${validFiles.length}</b> files successfully submitted.`;
+            
+            if(successful === validFiles.length) {
+                uploadForm.reset();
+            }
         });
     }
 </script>
