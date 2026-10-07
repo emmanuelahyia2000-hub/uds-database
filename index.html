@@ -6639,13 +6639,20 @@
         setTimeout(() => window.fetchGlobalIndexCache(), 2000);
 
         // The existing AI endpoint is now presented as the global UDS Companion.
-        window.toggleAiTutorPanel = function() {
+       window.toggleAiTutorPanel = function() {
             const panel = document.getElementById('ai-tutor-panel');
             const openBtn = document.getElementById('ai-tutor-open-btn');
             if (!panel || !openBtn) return;
             const isClosed = panel.classList.contains('hidden');
             panel.classList.toggle('hidden', !isClosed);
             openBtn.classList.toggle('hidden', isClosed);
+            
+            // Clear targeted document mode if the panel is being closed
+            if (!isClosed) {
+                window.targetedAskFileId = null;
+                window.targetedAskTitle = null;
+            }
+            
             if (isClosed) setTimeout(() => document.getElementById('ai-tutor-input')?.focus(), 100);
         };
 
@@ -6771,19 +6778,24 @@ When a student asks about an active UDS Hub feature, give concise, practical gui
             if (destination === 'gpa' && window.openGpaModal) window.openGpaModal();
             else if (destination && window.navigateTo) window.navigateTo(destination);
             
-            let fileId = null;
+           let fileId = window.targetedAskFileId || null;
+            let currentTargetTitle = window.targetedAskTitle || docTitle;
+            
             const fileIdMatch = iframe?.src?.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/);
-            if (fileIdMatch) {
+            if (!fileId && fileIdMatch) {
                 fileId = fileIdMatch[1];
-                
-                // VALIDATION STAGE: Ensure cache exists and contains valid fullText
-                const cacheData = window.documentAnalysisCache[fileId];
+                currentTargetTitle = docTitle;
+            }
+            
+            if (fileId) {
+                // VALIDATION STAGE: Ensure cache exists and contains valid fullText from the indexed DB
+                const cacheData = window.globalDocumentIndexCache ? window.globalDocumentIndexCache.find(d => d.documentId === fileId) : null;
                 const fullTextStr = (cacheData && typeof cacheData.fullText === 'string') ? cacheData.fullText.trim() : "";
                 const wordCount = fullTextStr.split(/\s+/).length;
                 const hasValidFullText = fullTextStr.length > 200 && wordCount > 30; // Robust verification of extraction integrity
 
                 if (hasValidFullText) {
-                    const textToFeed = cacheData.fullText; // SUMMARY FALLBACK COMPLETELY REMOVED
+                    const textToFeed = cacheData.fullText; 
                     
                     // SELF-LEARNING KNOWLEDGE GRAPH: Update local document concepts with current query words to strengthen future search relationships
                     const queryWords = question.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 4);
@@ -6791,22 +6803,17 @@ When a student asks about an active UDS Hub feature, give concise, practical gui
                         try { window.firebaseUpdateDoc(window.firebaseDoc(window.firebaseDb, "document_index", fileId), { concepts: window.firebaseArrayUnion(...queryWords.slice(0, 3)) }); } catch(e){}
                     }
 
-                    // LOCAL CONTEXT SEARCH FOR RELEVANCY
-                    const searchConcepts = [...new Set([...(cacheData.concepts || []), ...queryWords])];
-                    let relatedDocsContext = "";
-                    
-                    documentContext += `
-
-[CURRENT DOCUMENT CONTEXT]
+                    documentContext = `[CURRENT DOCUMENT CONTEXT - TITLE: ${currentTargetTitle}]
 ${textToFeed}
 
-[STRICT EXTERNAL ACADEMIC SEARCH PROTOCOL]
-You are the UDS Hub Academic Research Assistant.
-RULE 1: EXTERNAL ACADEMIC SOURCING. You MUST act as if you are searching external, verified academic databases (like Google Scholar, ResearchGate, PubMed, JSTOR, etc.) to comprehensively answer the user's question. Do not limit yourself to the current document context.
-RULE 2: MANDATORY CITATIONS. You MUST provide clear, professional academic references at the end of your response for ANY fact, concept, or data you provide. Format them as a standard bibliography.
-RULE 3: RELATE TO CONTEXT. Use the [CURRENT DOCUMENT CONTEXT] above to understand what the student is studying, but supplement and answer their question using your broad external academic knowledge.
-RULE 4: PROFESSIONAL TONE. Maintain a highly professional, academic tone suitable for university students.
-RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it is a real, well-known academic concept, journal, or standard textbook in that field. Provide the Author, Year, and Title.`;
+[STRICT ACADEMIC SOURCE-GROUNDED PROTOCOL]
+You are the UDS Hub Document Assistant. 
+RULE 1: SOURCE GROUNDING. You MUST answer the user's question BASED ONLY on the [CURRENT DOCUMENT CONTEXT] provided above.
+RULE 2: NO HALLUCINATION. If the document does not contain the answer, you MUST say "I couldn't find enough information about this in this document." Do not guess or use external general knowledge for document-specific questions.
+RULE 3: CITATION. When you provide an answer, briefly quote or reference the relevant part of the document to prove your answer.
+RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
+                } else {
+                    documentContext = `The user is asking about a document titled "${currentTargetTitle}", but its text could not be extracted securely or is too short. Please inform them that you cannot read the document contents directly and offer general assistance instead.`;
                 }
             }
 
@@ -7060,31 +7067,55 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                     }
                 }
 
-                // Phase 2: Dynamic Real Snippet vs Extraction Preview
+               // Phase 3: Academic Intelligence & Summary Integration
                 let snippetHtml = '';
+                let aiConceptsHtml = '';
+                let askButtonHtml = '';
+                
+                const fileIdMatch = item.driveUrl ? item.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/) : null;
+                const fileId = fileIdMatch ? fileIdMatch[1] : null;
+                let indexedDoc = null;
+                
+                if (fileId && window.globalDocumentIndexCache) {
+                    indexedDoc = window.globalDocumentIndexCache.find(d => d.documentId === fileId);
+                }
+
                 if (item.snippet) {
-                    // Inject honest snippet directly generated by our search engine mapping
+                    // Search Match Snippet
                     snippetHtml = `<div class="mt-2 p-3 bg-yellow-50 dark:bg-yellow-900/10 border-l-2 border-yellow-400 rounded-r-lg text-sm text-gray-800 dark:text-gray-200 font-serif leading-relaxed italic">"${item.snippet}"</div>`;
-                } else {
-                    // Verify actual extraction status from the background index
-                    const fileIdMatch = item.driveUrl ? item.driveUrl.match(/(?:id=|\/d\/)([a-zA-Z0-9-_]+)/) : null;
-                    let indexedDoc = null;
-                    if (fileIdMatch && window.globalDocumentIndexCache) {
-                        indexedDoc = window.globalDocumentIndexCache.find(d => d.documentId === fileIdMatch[1]);
+                } else if (indexedDoc && indexedDoc.status === 'indexed') {
+                    // Phase 3 Generated Summary
+                    const summaryText = indexedDoc.summary || indexedDoc.fullText.substring(0, 200) + '...';
+                    snippetHtml = `
+                        <div class="mt-3">
+                            <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Document Summary</h4>
+                            <p class="text-[13px] md:text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-serif line-clamp-3">${summaryText}</p>
+                        </div>
+                    `;
+                    
+                    // Phase 3 Generated Concepts
+                    if (indexedDoc.concepts && indexedDoc.concepts.length > 0) {
+                        aiConceptsHtml = `
+                            <div class="mt-3.5 flex flex-wrap items-center gap-2">
+                                <span class="text-[9px] font-black text-[#0F766E] dark:text-teal-400 uppercase tracking-widest pt-0.5"><i class="fa-solid fa-lightbulb"></i> Key Concepts:</span>
+                                ${indexedDoc.concepts.slice(0, 5).map(c => `<span class="text-[10px] md:text-[11px] font-medium text-gray-600 dark:text-gray-300 bg-teal-50 dark:bg-teal-900/10 px-2 py-0.5 rounded border border-teal-100 dark:border-teal-800/30">${c}</span>`).join('')}
+                            </div>
+                        `;
                     }
                     
-                    if (indexedDoc && indexedDoc.status === 'indexed' && indexedDoc.fullText) {
-                        const safePreview = indexedDoc.fullText.substring(0, 160).replace(/\n/g, ' ').trim() + '...';
-                        snippetHtml = `<p class="text-[13px] md:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed font-serif">${safePreview}</p>`;
-                    } else if (indexedDoc && indexedDoc.status === 'failed') {
-                        snippetHtml = `<p class="text-[12px] text-red-500 dark:text-red-400 italic"><i class="fa-solid fa-triangle-exclamation"></i> Text preview currently unavailable</p>`;
-                    } else {
-                        snippetHtml = `<p class="text-[13px] md:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">Official academic resource available in the UDS Hub Cloud Archive. Select to read.</p>`;
-                    }
+                    askButtonHtml = `
+                        <button onclick="window.askAboutDocument('${fileId}', '${escapedTitle}')" class="flex items-center gap-2 text-xs md:text-sm font-bold text-[#12304A] dark:text-white bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800/30 px-4 py-2 rounded-lg transition shadow-sm">
+                            <i class="fa-solid fa-robot text-purple-600 dark:text-purple-400"></i> <span class="hidden sm:inline">Ask Question</span><span class="sm:hidden">Ask</span>
+                        </button>
+                    `;
+                } else if (indexedDoc && indexedDoc.status === 'failed') {
+                    snippetHtml = `<p class="text-[12px] text-red-500 dark:text-red-400 italic mt-2"><i class="fa-solid fa-triangle-exclamation"></i> Academic processing unavailable</p>`;
+                } else {
+                    snippetHtml = `<p class="text-[13px] md:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed mt-2">Official academic resource available in the UDS Hub Cloud Archive. Select to read.</p>`;
                 }
 
                 grid.innerHTML += `
-                    <div class="bg-white dark:bg-[#131314] p-5 md:p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-[#0F766E]/50 dark:hover:border-teal-500/50 shadow-sm hover:shadow transition-all group flex flex-col mb-1 relative">
+                    <div class="bg-white dark:bg-[#131314] p-5 md:p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-[#0F766E]/50 dark:hover:border-teal-500/50 shadow-sm hover:shadow transition-all group flex flex-col mb-2 relative">
                         <div class="flex-grow min-w-0">
                             <h3 class="font-serif text-lg md:text-xl font-medium text-[#12304A] dark:text-white leading-snug group-hover:text-[#0F766E] dark:group-hover:text-teal-400 transition-colors cursor-pointer break-words mb-2" onclick="openDocument('${escapedTitle}', '${item.driveUrl}')">
                                 ${docTypeBadge}${item.title}
@@ -7093,20 +7124,49 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                             ${academicHierarchyRow}
                             
                             ${snippetHtml}
-                            
-                            ${tagsRow}
+                            ${aiConceptsHtml}
+                            ${!aiConceptsHtml ? tagsRow : ''}
                         </div>
                         
-                        <div class="flex items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-100 dark:border-gray-800/60">
-                            <div class="flex items-center gap-4">
+                        <div class="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-gray-800/60">
+                            <div class="flex items-center gap-3">
                                 <button onclick="openDocument('${escapedTitle}', '${item.driveUrl}')" class="flex items-center gap-2 text-xs md:text-sm font-bold text-white bg-[#12304A] dark:bg-white dark:text-navy hover:bg-[#0F766E] dark:hover:bg-gray-200 px-5 py-2 rounded-lg transition shadow-sm">
-                                    <i class="fa-solid fa-book-open"></i> Read Document
+                                    <i class="fa-solid fa-book-open"></i> Read
                                 </button>
+                                ${askButtonHtml}
                             </div>
                             ${deleteBtnHtml}
                         </div>
                     </div>`;
             });
+        };
+
+       window.targetedAskFileId = null;
+        window.targetedAskTitle = null;
+
+        window.askAboutDocument = function(fileId, title) {
+            window.targetedAskFileId = fileId;
+            window.targetedAskTitle = title;
+            
+            // Open the AI Tutor panel seamlessly 
+            const panel = document.getElementById('ai-tutor-panel');
+            const openBtn = document.getElementById('ai-tutor-open-btn');
+            panel.classList.remove('hidden');
+            openBtn.classList.add('hidden');
+            
+            const feed = document.getElementById('ai-tutor-chat-feed');
+            feed.innerHTML += `
+                <div class="flex items-start gap-3 mt-4">
+                    <div class="w-8 h-8 shrink-0 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mt-1"><i class="fa-solid fa-file-invoice text-xs"></i></div>
+                    <div class="bg-gray-50 dark:bg-geminiBase p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 max-w-[85%] leading-relaxed shadow-sm">
+                        <span class="text-[10px] font-bold text-purple-600 uppercase tracking-wider block mb-1">Document Selected</span>
+                        I have loaded the knowledge base for <b>${title}</b>. What would you like to know about it?
+                    </div>
+                </div>
+            `;
+            feed.scrollTop = feed.scrollHeight;
+            
+            setTimeout(() => document.getElementById('ai-tutor-input')?.focus(), 100);
         };
 
         window.searchDebounceTimer = null;
@@ -7138,19 +7198,25 @@ RULE 5: NO HALLUCINATION OF FAKE LINKS. If you cite a paper or book, ensure it i
                     (item.subject && item.subject.toLowerCase().includes(lowerQuery))
                 );
 
-                // 2. PHASE 2: Deep Content Search using the extracted Index (globalDocumentIndexCache)
+               // 2. PHASE 2 & 3: Deep Content, Summary, and Concepts Search using the extracted Index
                 if (window.globalDocumentIndexCache && window.globalDocumentIndexCache.length > 0) {
                     window.globalDocumentIndexCache.forEach(indexedDoc => {
                         // Avoid duplicates if metadata already caught it
                         if (matchedRecords.some(m => m.driveUrl && m.driveUrl.includes(indexedDoc.documentId))) return;
                         
-                        if (indexedDoc.status === 'indexed' && indexedDoc.fullText && indexedDoc.fullText.toLowerCase().includes(lowerQuery)) {
+                        const hasFullTextMatch = indexedDoc.fullText && indexedDoc.fullText.toLowerCase().includes(lowerQuery);
+                        const hasSummaryMatch = indexedDoc.summary && indexedDoc.summary.toLowerCase().includes(lowerQuery);
+                        const hasConceptMatch = indexedDoc.concepts && indexedDoc.concepts.some(c => c.toLowerCase().includes(lowerQuery));
+                        
+                        if (indexedDoc.status === 'indexed' && (hasFullTextMatch || hasSummaryMatch || hasConceptMatch)) {
                             // Link back to original material record to get the UI data
                             const originalMat = allAvailableMaterials.find(m => m.driveUrl && m.driveUrl.includes(indexedDoc.documentId));
                             if (originalMat) {
-                                // Extract an honest snippet
-                                const textLower = indexedDoc.fullText.toLowerCase();
-                                const matchIndex = textLower.indexOf(lowerQuery);
+                                // Extract an honest snippet prioritizing summary if match is purely conceptual
+                                const textToSearch = indexedDoc.summary || indexedDoc.fullText;
+                                const textLower = textToSearch.toLowerCase();
+                                let matchIndex = textLower.indexOf(lowerQuery);
+                                if (matchIndex === -1 && hasConceptMatch) matchIndex = 0; // Fallback if match is only in concepts
                                 
                                 let start = Math.max(0, matchIndex - 60);
                                 let end = Math.min(indexedDoc.fullText.length, matchIndex + query.length + 80);
