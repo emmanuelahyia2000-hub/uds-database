@@ -726,10 +726,50 @@
             </aside>
             <div class="w-full flex-grow flex flex-col min-w-0 md:pl-4">
                 
-                <div id="slideshow-panel" class="w-full mb-8 relative rounded-3xl overflow-hidden shadow-sm bg-gray-100 dark:bg-geminiSurface h-48 md:h-72 hidden group mx-auto">
-                    <div id="slideshow-container" class="w-full h-full relative"></div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
-                    <div id="slideshow-indicators" class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10"></div>
+              <style>
+                    @keyframes mediaTickerScroll {
+                        0% { transform: translate3d(100%, 0, 0); }
+                        100% { transform: translate3d(-100%, 0, 0); }
+                    }
+                    .glass-ticker {
+                        background: rgba(18, 48, 74, 0.85);
+                        backdrop-filter: blur(12px);
+                        -webkit-backdrop-filter: blur(12px);
+                        border-top: 1px solid rgba(255,255,255,0.08);
+                    }
+                    html.dark .glass-ticker {
+                        background: rgba(11, 24, 39, 0.85);
+                    }
+                    .media-blur-bg {
+                        filter: blur(20px) brightness(0.5);
+                        transform: scale(1.15);
+                    }
+                </style>
+              <!-- Upgraded Compact Cloud Archive Media Strip -->
+                <div id="slideshow-panel" class="w-full max-w-4xl mb-8 relative rounded-3xl overflow-hidden shadow-xl hidden flex-col mx-auto transition-all duration-300 border border-gray-200/80 dark:border-gray-700/50 bg-gray-900">
+                    <!-- Media Area (Premium Apple-TV Style Contain) -->
+                    <div class="relative w-full h-56 md:h-72 flex items-center justify-center overflow-hidden bg-black">
+                        <div id="slideshow-container" class="w-full h-full flex transition-transform duration-700 ease-in-out"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent pointer-events-none z-0 opacity-80"></div>
+                        <div id="slideshow-indicators" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10"></div>
+                        
+                        <!-- Global Audio Control (visible if video) -->
+                        <button id="media-audio-toggle" onclick="toggleMediaAudio(event)" class="absolute top-3 right-3 z-20 bg-black/50 hover:bg-black/80 text-white w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-all hidden border border-white/10 shadow-lg" title="Toggle Audio">
+                            <i id="media-audio-icon" class="fa-solid fa-volume-xmark text-sm"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Horizontal Announcement Ticker -->
+                    <div id="media-ticker-area" class="w-full glass-ticker text-white px-4 py-2.5 flex items-center overflow-hidden shrink-0 hidden relative z-10">
+                        <div class="flex items-center justify-center bg-blue-500/20 text-blue-300 rounded-full w-6 h-6 shrink-0 mr-3 border border-blue-400/30 shadow-sm">
+                            <i class="fa-solid fa-bullhorn text-[10px] animate-pulse"></i>
+                        </div>
+                        <div class="flex-grow overflow-hidden relative h-5">
+                            <div id="media-ticker-text" class="absolute whitespace-nowrap text-[13px] font-medium font-sans top-0.5 flex animate-[mediaTickerScroll_25s_linear_infinite] hover:[animation-play-state:paused] tracking-wide text-gray-100 drop-shadow-sm">
+                                <!-- Ticker content injected here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <section id="admin-dashboard-panel" class="hidden bg-white dark:bg-geminiSurface rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm mb-8 space-y-6 mx-auto w-full">
@@ -754,31 +794,65 @@
                                 <button type="submit" class="w-full py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition mt-2">Activate Countdown</button>
                             </form>
                         </div>
-                        <!-- 5a. Manage Dashboard Flyers -->
+                      <!-- 5a. Manage Cloud Archive Media Strip -->
                         <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider">5a. Manage Dashboard Flyers (Internal Portal)</span>
-                            <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl space-y-3">
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                    <input type="url" id="admin-flyer-url-input" placeholder="Paste image link here..." class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                    <button type="button" onclick="triggerAdminCloudinary('admin-flyer-url-input')" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-upload mr-1"></i> Upload Image</button>
-                                </div>
-                                <button onclick="handleAddFlyer(event)" class="w-full py-3 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-bold rounded-xl hover:opacity-90 transition">Publish Flyer to Dashboard</button>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider"><i class="fa-solid fa-layer-group text-blue-500 mr-2"></i>5a. Cloud Archive Media Strip</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-1 rounded font-bold uppercase">Compact Layout</span>
                             </div>
-                            <div id="admin-flyer-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2">Upload images or videos (MP4/WebM) to display at the top of the Cloud Archive. Ensure content is professional.</p>
+                            
+                            <div class="bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-gray-700 p-5 rounded-[1.5rem] shadow-sm space-y-5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Media Format</label>
+                                        <select id="admin-media-type" class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" onchange="updateMediaAdminPreview()">
+                                            <option value="image">🖼️ Image / Flyer</option>
+                                            <option value="video">🎥 Video (MP4/WebM)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Display Status</label>
+                                        <select id="admin-media-status" class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                                            <option value="true">🟢 Active (Visible)</option>
+                                            <option value="false">🔴 Inactive (Hidden)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Media Source</label>
+                                    <div class="flex flex-col sm:flex-row gap-2">
+                                        <input type="url" id="admin-flyer-url-input" placeholder="Paste direct link or click upload..." class="flex-grow px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" oninput="updateMediaAdminPreview()">
+                                        <button type="button" onclick="triggerAdminCloudinaryMedia()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors shadow-sm"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Upload File</button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Scrolling Ticker Text (Optional)</label>
+                                    <input type="text" id="admin-media-text-input" placeholder="e.g., Important: Course registration ends this Friday..." class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                                </div>
+
+                                <!-- Admin Preview Area -->
+                                <div id="admin-media-preview-container" class="hidden bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-3 shadow-inner">
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 block flex items-center gap-1"><i class="fa-solid fa-eye text-blue-500"></i> Aspect Ratio Preview</label>
+                                    <div class="relative w-full h-32 bg-gray-900 rounded-xl overflow-hidden shadow-sm flex items-center justify-center group">
+                                        <div id="admin-media-preview-bg" class="absolute inset-0 w-full h-full media-blur-bg opacity-30 pointer-events-none"></div>
+                                        <div id="admin-media-preview" class="relative z-10 w-full h-full flex items-center justify-center overflow-hidden"></div>
+                                    </div>
+                                </div>
+
+                                <button onclick="handleAddFlyer(event)" class="w-full py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold rounded-xl hover:scale-[1.01] transition-transform shadow-md"><i class="fa-solid fa-layer-group mr-2"></i> Add to Media Strip</button>
+                            </div>
+                            
+                            <!-- Published Items List -->
+                            <div class="mt-4">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Currently Published</label>
+                                <div id="admin-flyer-list" class="space-y-2 max-h-48 overflow-y-auto p-1 text-sm dark:text-gray-200 custom-scrollbar border border-transparent"></div>
+                            </div>
                         </div>
 
-                        <!-- 5b. Manage Landing Page Banner -->
-                        <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <span class="text-xs font-medium text-gray-500 dark:text-gray-400 block uppercase tracking-wider"><i class="fa-regular fa-images mr-1"></i> 5b. Manage Landing Page Banner (Guest View)</span>
-                            <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl space-y-3">
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                    <input type="url" id="admin-landing-flyer-url-input" placeholder="Paste image link here..." class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-geminiSurface dark:text-white outline-none">
-                                    <button type="button" onclick="triggerAdminCloudinary('admin-landing-flyer-url-input')" class="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-upload mr-1"></i> Upload Image</button>
-                                </div>
-                                <button onclick="handleAddLandingFlyer(event)" class="w-full py-3 bg-gray-900 dark:bg-blue-300 dark:text-navy text-white text-sm font-bold rounded-xl hover:opacity-90 transition">Publish Banner to Landing Page</button>
-                            </div>
-                            <div id="admin-landing-flyer-list" class="space-y-2 max-h-40 overflow-y-auto p-1 text-sm dark:text-gray-200"></div>
-                        </div>
+                       <!-- Landing Page Banner UI Removed - Replaced by Login Background Picture Engine (5d) -->
 
                         <!-- 5d. Manage Login Page Background Picture Link -->
                         <div class="col-span-1 xl:col-span-2 space-y-3 mt-4 border-t border-gray-100 dark:border-gray-800 pt-6">
@@ -932,215 +1006,187 @@
                                 applyLoginBackground(savedUrl);
                             }
 
-                            // --- FLYER & BANNER CONTROLLER ACTIONS ---
-                            let globalLandingFlyers = [];
+                          // --- FLYER CONTROLLER ACTIONS (UPGRADED CLOUD ARCHIVE MEDIA STRIP) ---
                             let globalPortalFlyers = [];
+                            let activeMediaItems = [];
 
-                            async function loadAllFlyers() {
-                                try {
-                                    if (window.firebaseGetDoc && window.firebaseDb) {
-                                        const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "system", "landing_banners"));
-                                        if (docSnap.exists()) {
-                                            globalLandingFlyers = docSnap.data().urls || [];
-                                        }
-                                    }
-                                } catch (err) {
-                                    console.log("Error loading landing banners from database, checking local...");
-                                }
-                                if (!globalLandingFlyers.length) {
-                                    globalLandingFlyers = JSON.parse(localStorage.getItem('uds_landing_banners') || "[]");
-                                }
-                                renderLandingFlyers(globalLandingFlyers);
-
+                           async function loadAllFlyers() {
+                                let loadedFromDb = false;
                                 try {
                                     if (window.firebaseGetDoc && window.firebaseDb) {
                                         const docSnap = await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDb, "system", "portal_flyers"));
                                         if (docSnap.exists()) {
                                             globalPortalFlyers = docSnap.data().urls || [];
+                                            loadedFromDb = true;
+                                            localStorage.setItem('uds_portal_flyers', JSON.stringify(globalPortalFlyers));
                                         }
                                     }
                                 } catch (err) {
-                                    console.log("Error loading portal flyers from database, checking local...");
+                                    console.log("Error loading media strip from database, checking local...");
                                 }
-                                if (!globalPortalFlyers.length) {
+                                
+                                if (!loadedFromDb) {
                                     globalPortalFlyers = JSON.parse(localStorage.getItem('uds_portal_flyers') || "[]");
                                 }
+                                
+                                // Safely normalize legacy string URLs into objects without destroying existing data
+                                globalPortalFlyers = globalPortalFlyers.map(item => {
+                                    if (typeof item === 'string') {
+                                        return { url: item, type: 'image', text: '', active: true };
+                                    }
+                                    return item;
+                                });
+
                                 renderPortalFlyers(globalPortalFlyers);
                             }
 
-                            window.triggerAdminCloudinary = function(inputId) {
+                            window.triggerAdminCloudinaryMedia = function() {
+                                const typeSel = document.getElementById('admin-media-type');
+                                
                                 const widget = cloudinary.createUploadWidget({
                                     cloudName: "duznet8ti",
                                     uploadPreset: "UDS_HUB_UPLOADS",
                                     sources: ["local", "camera"],
                                     multiple: false,
+                                    resource_type: "auto", // Allow images and videos safely
                                     folder: "uds-hub/banners"
                                 }, (error, result) => {
                                     if (!error && result && result.event === "success") {
-                                        document.getElementById(inputId).value = result.info.secure_url;
+                                        const url = result.info.secure_url;
+                                        document.getElementById('admin-flyer-url-input').value = url;
+                                        
+                                        // Auto-detect format type based on actual Cloudinary upload
+                                        if(result.info.resource_type === 'video') {
+                                            typeSel.value = 'video';
+                                        } else {
+                                            typeSel.value = 'image';
+                                        }
+                                        updateMediaAdminPreview();
                                     }
-                                });
+                               });
                                 widget.open();
                             };
 
-                            let landingSlideIndex = 0;
-                            let landingSlideInterval = null;
-
-                            function renderLandingFlyers(urls) {
-                                const container = document.getElementById('landing-slideshow-container');
-                                const indicators = document.getElementById('landing-slideshow-indicators');
-                                const adminList = document.getElementById('admin-landing-flyer-list');
+                            window.updateMediaAdminPreview = function() {
+                                const url = document.getElementById('admin-flyer-url-input').value.trim();
+                                const type = document.getElementById('admin-media-type').value;
+                                const container = document.getElementById('admin-media-preview-container');
+                                const preview = document.getElementById('admin-media-preview');
                                 
-                                if (!urls || urls.length === 0) {
-                                    if (container) {
-                                        container.innerHTML = `
-                                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-600 text-sm">
-                                                <i class="fa-regular fa-image text-2xl mb-2"></i>
-                                                <span>No banners currently published</span>
-                                            </div>`;
-                                    }
-                                    if (indicators) indicators.innerHTML = '';
-                                    if (adminList) adminList.innerHTML = '<p class="text-xs text-gray-500 p-2">No banners published yet.</p>';
-                                    return;
-                                }
-
-                                if (container) {
-                                    container.innerHTML = urls.map(url => `
-                                        <div class="w-full h-full flex-shrink-0 bg-cover bg-center" style="background-image: url('${url}');"></div>
-                                    `).join('');
-                                }
-
-                                if (indicators) {
-                                    indicators.innerHTML = urls.map((_, i) => `
-                                        <button onclick="setLandingSlide(${i})" class="w-2 h-2 rounded-full bg-white/50 transition-all ${i === 0 ? 'bg-white !w-4' : ''}" id="landing-ind-${i}"></button>
-                                    `).join('');
-                                }
-
-                                if (adminList) {
-                                    adminList.innerHTML = urls.map((url, i) => `
-                                        <div class="flex items-center justify-between bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-4">
-                                            <span class="truncate text-xs font-mono text-gray-600 dark:text-gray-300 flex-grow">${url}</span>
-                                            <button onclick="handleDeleteLandingFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
-                                        </div>
-                                    `).join('');
-                                }
-
-                                if (landingSlideInterval) clearInterval(landingSlideInterval);
-                                landingSlideIndex = 0;
-                                if (container) container.style.transform = `translateX(0%)`;
-                                if (urls.length > 1) {
-                                    landingSlideInterval = setInterval(() => {
-                                        landingSlideIndex = (landingSlideIndex + 1) % urls.length;
-                                        updateLandingSlidePosition(urls.length);
-                                    }, 10000); // Slowed down to 10 seconds for comfortable viewing
-                                }
-                            }
-
-                            function updateLandingSlidePosition(total) {
-                                const container = document.getElementById('landing-slideshow-container');
-                                if (container) {
-                                    container.style.transform = `translateX(-${landingSlideIndex * 100}%)`;
-                                }
-                                for (let i = 0; i < total; i++) {
-                                    const ind = document.getElementById(`landing-ind-${i}`);
-                                    if (ind) {
-                                        if (i === landingSlideIndex) {
-                                            ind.classList.remove('bg-white/50');
-                                            ind.classList.add('bg-white', '!w-4');
-                                        } else {
-                                            ind.classList.add('bg-white/50');
-                                            ind.classList.remove('bg-white', '!w-4');
-                                        }
-                                    }
-                                }
-                            }
-
-                            window.setLandingSlide = function(index) {
-                                landingSlideIndex = index;
-                                const container = document.getElementById('landing-slideshow-container');
-                                updateLandingSlidePosition(container ? container.children.length : 0);
-                            };
-
-                            window.handleAddLandingFlyer = async function(event) {
-                                if (event) event.preventDefault();
-                                const input = document.getElementById('admin-landing-flyer-url-input');
-                                const url = input ? input.value.trim() : "";
                                 if (!url) {
-                                    alert("Please upload a picture or paste an image link first!");
+                                    container.classList.add('hidden');
                                     return;
                                 }
-
-                                globalLandingFlyers.push(url);
-                                localStorage.setItem('uds_landing_banners', JSON.stringify(globalLandingFlyers));
-                                if (input) input.value = "";
-
-                                try {
-                                    if (window.firebaseSetDoc && window.firebaseDb) {
-                                        await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "landing_banners"), {
-                                            urls: globalLandingFlyers,
-                                            lastUpdated: Date.now()
-                                        });
-                                    }
-                                    alert("Banner published successfully to landing page!");
-                                } catch (err) {
-                                    alert("Banner synchronized locally!");
+                                container.classList.remove('hidden');
+                                
+                               const previewBg = document.getElementById('admin-media-preview-bg');
+                                if (type === 'video') {
+                                    if(previewBg) { previewBg.style.backgroundImage = 'none'; previewBg.classList.add('bg-gray-800'); }
+                                    preview.innerHTML = `<video src="${url}" controls muted class="max-w-full max-h-full object-contain shadow-lg"></video>`;
+                                } else {
+                                    if(previewBg) { previewBg.style.backgroundImage = `url('${url}')`; previewBg.classList.remove('bg-gray-800'); }
+                                    preview.innerHTML = `<img src="${url}" class="max-w-full max-h-full object-contain shadow-lg">`;
                                 }
-                                renderLandingFlyers(globalLandingFlyers);
-                            };
-
-                            window.handleDeleteLandingFlyer = async function(index) {
-                                globalLandingFlyers.splice(index, 1);
-                                localStorage.setItem('uds_landing_banners', JSON.stringify(globalLandingFlyers));
-
-                                try {
-                                    if (window.firebaseSetDoc && window.firebaseDb) {
-                                        await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "system", "landing_banners"), {
-                                            urls: globalLandingFlyers,
-                                            lastUpdated: Date.now()
-                                        });
-                                    }
-                                } catch (err) {
-                                    console.error(err);
-                                }
-                                renderLandingFlyers(globalLandingFlyers);
                             };
 
                             let portalSlideIndex = 0;
                             let portalSlideInterval = null;
 
-                            function renderPortalFlyers(urls) {
+                            window.toggleMediaAudio = function(event) {
+                                event.stopPropagation();
+                                const container = document.getElementById('slideshow-container');
+                                if (!container || !container.children[portalSlideIndex]) return;
+                                
+                                const activeSlide = container.children[portalSlideIndex];
+                                const video = activeSlide.querySelector('video');
+                                if (video) {
+                                    video.muted = !video.muted;
+                                    const icon = document.getElementById('media-audio-icon');
+                                    if (video.muted) {
+                                        icon.className = 'fa-solid fa-volume-xmark text-xs';
+                                    } else {
+                                        icon.className = 'fa-solid fa-volume-high text-xs';
+                                    }
+                                }
+                            };
+
+                            function updateAudioControlVisibility() {
+                                const audioBtn = document.getElementById('media-audio-toggle');
+                                if (!audioBtn) return;
+                                
+                                if (activeMediaItems.length > 0 && activeMediaItems[portalSlideIndex].type === 'video') {
+                                    audioBtn.classList.remove('hidden');
+                                    const container = document.getElementById('slideshow-container');
+                                    const video = container.children[portalSlideIndex].querySelector('video');
+                                    const icon = document.getElementById('media-audio-icon');
+                                    if(video && icon) {
+                                        icon.className = video.muted ? 'fa-solid fa-volume-xmark text-xs' : 'fa-solid fa-volume-high text-xs';
+                                    }
+                                } else {
+                                    audioBtn.classList.add('hidden');
+                                }
+                            }
+
+                            function renderPortalFlyers(items) {
                                 const panel = document.getElementById('slideshow-panel');
                                 const container = document.getElementById('slideshow-container');
                                 const indicators = document.getElementById('slideshow-indicators');
                                 const adminList = document.getElementById('admin-flyer-list');
                                 
-                                if (!urls || urls.length === 0) {
+                                // Ensure database arrays are converted locally if modified via UI
+                                const safeItems = items.map(item => typeof item === 'string' ? { url: item, type: 'image', text: '', active: true } : item);
+                                activeMediaItems = safeItems.filter(item => item.active !== false);
+
+                                if (safeItems.length === 0) {
                                     if (panel) panel.classList.add('hidden');
-                                    if (adminList) adminList.innerHTML = '<p class="text-xs text-gray-500 p-2">No flyers published yet.</p>';
+                                    if (adminList) adminList.innerHTML = '<p class="text-xs text-gray-500 p-2">No media published yet.</p>';
                                     return;
                                 }
 
-                                if (panel) {
-                                    panel.classList.remove('hidden');
-                                }
-                                if (container) {
-                                    container.className = "w-full h-full relative flex transition-transform duration-500 ease-in-out";
-                                    container.innerHTML = urls.map(url => `
-                                        <div class="w-full h-full flex-shrink-0 bg-cover bg-center" style="background-image: url('${url}');"></div>
-                                    `).join('');
+                                if (activeMediaItems.length === 0) {
+                                    if (panel) panel.classList.add('hidden');
+                                } else {
+                                    if (panel) panel.classList.remove('hidden');
                                 }
 
-                                if (indicators) {
-                                    indicators.innerHTML = urls.map((_, i) => `
-                                        <button onclick="setPortalSlide(${i})" class="w-2 h-2 rounded-full bg-white/50 transition-all ${i === 0 ? 'bg-white !w-4' : ''}" id="portal-ind-${i}"></button>
-                                    `).join('');
+                              if (container && activeMediaItems.length > 0) {
+                                    container.className = "w-full h-full relative flex transition-transform duration-700 ease-in-out z-0";
+                                    container.innerHTML = activeMediaItems.map((item) => {
+                                        if (item.type === 'video') {
+                                            return `<div class="w-full h-full flex-shrink-0 relative flex items-center justify-center bg-black overflow-hidden group p-2 md:p-4">
+                                                        <div class="absolute inset-0 w-full h-full media-blur-bg bg-gray-900 opacity-80"></div>
+                                                        <video src="${item.url}" class="relative z-10 max-w-full max-h-full object-contain rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10" muted loop playsinline autoplay></video>
+                                                    </div>`;
+                                        } else {
+                                            return `<div class="w-full h-full flex-shrink-0 relative flex items-center justify-center bg-black overflow-hidden group p-2 md:p-4">
+                                                        <div class="absolute inset-0 w-full h-full media-blur-bg bg-cover bg-center opacity-50" style="background-image: url('${item.url}')"></div>
+                                                        <img src="${item.url}" class="relative z-10 max-w-full max-h-full object-contain rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.5)] border border-white/10 transition-transform duration-700 group-hover:scale-[1.02]" alt="Media Strip Image">
+                                                    </div>`;
+                                        }
+                                    }).join('');
+                                }
+                                if (indicators && activeMediaItems.length > 0) {
+                                    if (activeMediaItems.length === 1) {
+                                        indicators.innerHTML = '';
+                                    } else {
+                                        indicators.innerHTML = activeMediaItems.map((_, i) => `
+                                            <button onclick="setPortalSlide(${i})" class="w-1.5 h-1.5 rounded-full bg-white/50 transition-all ${i === 0 ? 'bg-white !w-3' : ''}" id="portal-ind-${i}"></button>
+                                        `).join('');
+                                    }
                                 }
 
                                 if (adminList) {
-                                    adminList.innerHTML = urls.map((url, i) => `
-                                        <div class="flex items-center justify-between bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-4">
-                                            <span class="truncate text-xs font-mono text-gray-600 dark:text-gray-300 flex-grow">${url}</span>
-                                            <button onclick="handleDeleteFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    adminList.innerHTML = safeItems.map((item, i) => `
+                                        <div class="flex flex-col bg-gray-100 dark:bg-geminiBase p-3 rounded-xl border dark:border-gray-700 gap-2 relative">
+                                            <div class="flex items-center justify-between gap-4">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${item.type === 'video' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}">${item.type}</span>
+                                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${item.active !== false ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}">${item.active !== false ? 'Active' : 'Hidden'}</span>
+                                                </div>
+                                                <button onclick="handleDeleteFlyer(${i})" class="text-xs text-red-500 hover:text-red-700 font-medium shrink-0 flex items-center gap-1"><i class="fa-solid fa-trash"></i> Delete</button>
+                                            </div>
+                                            <span class="truncate text-[10px] font-mono text-gray-500 dark:text-gray-400">${item.url}</span>
+                                            ${item.text ? `<span class="text-xs italic text-gray-700 dark:text-gray-300">"${item.text}"</span>` : ''}
                                         </div>
                                     `).join('');
                                 }
@@ -1148,11 +1194,49 @@
                                 if (portalSlideInterval) clearInterval(portalSlideInterval);
                                 portalSlideIndex = 0;
                                 if (container) container.style.transform = `translateX(0%)`;
-                                if (urls.length > 1) {
+                                
+                                updateMediaTicker();
+                                updateAudioControlVisibility();
+
+                                if (activeMediaItems.length > 1) {
                                     portalSlideInterval = setInterval(() => {
-                                        portalSlideIndex = (portalSlideIndex + 1) % urls.length;
-                                        updatePortalSlidePosition(urls.length);
-                                    }, 10000); // Slowed down to 10 seconds for comfortable viewing
+                                        const oldSlide = container.children[portalSlideIndex];
+                                        if (oldSlide) {
+                                            const oldVid = oldSlide.querySelector('video');
+                                            if (oldVid) oldVid.pause();
+                                        }
+
+                                        portalSlideIndex = (portalSlideIndex + 1) % activeMediaItems.length;
+                                        updatePortalSlidePosition(activeMediaItems.length);
+                                        updateMediaTicker();
+                                        updateAudioControlVisibility();
+
+                                        const newSlide = container.children[portalSlideIndex];
+                                        if (newSlide) {
+                                            const newVid = newSlide.querySelector('video');
+                                            if (newVid) {
+                                                // Hard reset video sound during rotation to prevent sudden noise
+                                                newVid.muted = true;
+                                                newVid.play().catch(e => console.log(e));
+                                                const icon = document.getElementById('media-audio-icon');
+                                                if(icon) icon.className = 'fa-solid fa-volume-xmark text-xs';
+                                            }
+                                        }
+                                   }, 18000); // Elegant, slow 18-second rotation to allow video watching and text reading
+                                }
+                            }
+
+                            function updateMediaTicker() {
+                                const tickerArea = document.getElementById('media-ticker-area');
+                                const tickerText = document.getElementById('media-ticker-text');
+                                if (!tickerArea || !tickerText || activeMediaItems.length === 0) return;
+
+                                const currentItem = activeMediaItems[portalSlideIndex];
+                                if (currentItem && currentItem.text && currentItem.text.trim() !== '') {
+                                    tickerArea.classList.remove('hidden');
+                                    tickerText.innerText = currentItem.text;
+                                } else {
+                                    tickerArea.classList.add('hidden');
                                 }
                             }
 
@@ -1166,33 +1250,64 @@
                                     if (ind) {
                                         if (i === portalSlideIndex) {
                                             ind.classList.remove('bg-white/50');
-                                            ind.classList.add('bg-white', '!w-4');
+                                            ind.classList.add('bg-white', '!w-3');
                                         } else {
                                             ind.classList.add('bg-white/50');
-                                            ind.classList.remove('bg-white', '!w-4');
+                                            ind.classList.remove('bg-white', '!w-3');
                                         }
                                     }
                                 }
                             }
 
                             window.setPortalSlide = function(index) {
-                                portalSlideIndex = index;
                                 const container = document.getElementById('slideshow-container');
-                                updatePortalSlidePosition(container ? container.children.length : 0);
+                                if(container) {
+                                    const oldVid = container.children[portalSlideIndex]?.querySelector('video');
+                                    if (oldVid) oldVid.pause();
+                                }
+
+                                portalSlideIndex = index;
+                                updatePortalSlidePosition(activeMediaItems.length);
+                                updateMediaTicker();
+                                updateAudioControlVisibility();
+
+                                if(container) {
+                                    const newVid = container.children[portalSlideIndex]?.querySelector('video');
+                                    if (newVid) {
+                                        newVid.muted = true;
+                                        newVid.play().catch(e => console.log(e));
+                                        const icon = document.getElementById('media-audio-icon');
+                                        if(icon) icon.className = 'fa-solid fa-volume-xmark text-xs';
+                                    }
+                                }
                             };
 
                             window.handleAddFlyer = async function(event) {
                                 if (event) event.preventDefault();
-                                const input = document.getElementById('admin-flyer-url-input');
-                                const url = input ? input.value.trim() : "";
+                                const urlInput = document.getElementById('admin-flyer-url-input');
+                                const typeInput = document.getElementById('admin-media-type');
+                                const statusInput = document.getElementById('admin-media-status');
+                                const textInput = document.getElementById('admin-media-text-input');
+
+                                const url = urlInput ? urlInput.value.trim() : "";
                                 if (!url) {
-                                    alert("Please upload a picture or paste an image link first!");
+                                    alert("Please upload media or paste a link first!");
                                     return;
                                 }
 
-                                globalPortalFlyers.push(url);
+                                const newMedia = {
+                                    url: url,
+                                    type: typeInput ? typeInput.value : 'image',
+                                    active: statusInput ? (statusInput.value === 'true') : true,
+                                    text: textInput ? textInput.value.trim() : ''
+                                };
+
+                                globalPortalFlyers.push(newMedia);
                                 localStorage.setItem('uds_portal_flyers', JSON.stringify(globalPortalFlyers));
-                                if (input) input.value = "";
+                                
+                                if (urlInput) urlInput.value = "";
+                                if (textInput) textInput.value = "";
+                                document.getElementById('admin-media-preview-container')?.classList.add('hidden');
 
                                 try {
                                     if (window.firebaseSetDoc && window.firebaseDb) {
@@ -1201,14 +1316,16 @@
                                             lastUpdated: Date.now()
                                         });
                                     }
-                                    alert("Flyer published successfully to user dashboard!");
+                                    alert("Media successfully added to the Cloud Archive Strip!");
                                 } catch (err) {
-                                    alert("Flyer synchronized locally!");
+                                    alert("Media item synchronized locally!");
                                 }
                                 renderPortalFlyers(globalPortalFlyers);
                             };
 
                             window.handleDeleteFlyer = async function(index) {
+                                if(!confirm("Remove this media item?")) return;
+                                
                                 globalPortalFlyers.splice(index, 1);
                                 localStorage.setItem('uds_portal_flyers', JSON.stringify(globalPortalFlyers));
 
@@ -1361,8 +1478,42 @@
                                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"><i class="fa-solid fa-crown mr-1"></i> 7b. Marketplace Merchandising</span>
                                 <span class="text-[10px] text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">Admin Override</span>
                             </div>
-                            <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl space-y-6">
+                           <div class="bg-gray-50 dark:bg-[#1A1A1C] p-4 rounded-2xl space-y-6">
                                 
+                                <!-- 🔥 FLASH SALE MANAGER -->
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-red-200 dark:border-red-900/50 shadow-sm relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-2 h-full bg-red-500"></div>
+                                    <h4 class="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-wider mb-4 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Flash Sale Manager</h4>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Status</label>
+                                                <label class="flex items-center gap-2 cursor-pointer">
+                                                    <input type="checkbox" id="admin-fs-active" class="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500">
+                                                    <span class="text-sm font-bold text-gray-800 dark:text-gray-200">Enable Flash Sale</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">Title (e.g. Weekend Flash Deals)</label>
+                                                <input type="text" id="admin-fs-title" placeholder="Flash Sale" class="w-full px-3 py-2 border dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-900 dark:text-white outline-none">
+                                            </div>
+                                            <div class="sm:col-span-2">
+                                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">End Date & Time</label>
+                                                <input type="datetime-local" id="admin-fs-end" class="w-full px-3 py-2 border dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-900 dark:text-white outline-none">
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
+                                            <div class="flex justify-between items-center mb-3">
+                                                <label class="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider">Sale Products</label>
+                                                <button type="button" onclick="adminAddFlashSaleItem()" class="text-[10px] bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-3 py-1.5 rounded font-bold transition flex items-center gap-1"><i class="fa-solid fa-plus"></i> Add Product ID</button>
+                                            </div>
+                                            <div id="admin-merch-flash-sale" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Featured Products -->
                                 <div>
                                     <div class="flex justify-between items-center mb-2">
@@ -2407,7 +2558,27 @@
                         <div id="mkt-unified-yield" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"></div>
                     </div>
 
-                    <div id="mkt-categorized-content" class="w-full">
+                   <div id="mkt-categorized-content" class="w-full">
+                        
+                        <!-- 🔥 Flash Sale -->
+                        <div id="mkt-flashsale-container" class="w-full mb-10 px-1 md:px-2 hidden">
+                            <div class="bg-gradient-to-r from-red-600 to-rose-700 dark:from-red-900/90 dark:to-rose-900/90 rounded-[2rem] p-5 md:p-6 shadow-xl relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                                
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 relative z-10 gap-3">
+                                    <h3 class="text-xl md:text-2xl font-black text-white flex items-center gap-2 tracking-tight drop-shadow-md">
+                                        <i class="fa-solid fa-bolt text-yellow-300 animate-pulse"></i> 
+                                        <span id="mkt-fs-title">Flash Sale</span>
+                                    </h3>
+                                    <div class="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2 text-white font-mono font-bold text-xs md:text-sm flex items-center gap-2 shadow-inner">
+                                        <i class="fa-regular fa-clock"></i> <span id="mkt-fs-countdown">Ends in --:--:--</span>
+                                    </div>
+                                </div>
+                                
+                                <div id="mkt-flashsale-scroll" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-2 relative z-10 cursor-grab"></div>
+                            </div>
+                        </div>
+
                         <!-- Featured Products -->
                         <div id="mkt-featured-container" class="w-full mb-10 px-1 md:px-2 hidden">
                             <div class="flex items-center justify-between mb-4">
@@ -4122,7 +4293,7 @@
                             <span class="text-blue-500 hover:underline cursor-pointer" id="view-mkt-total-ratings">(0 Verified Ratings)</span>
                         </div>
 
-                        <div class="mb-4">
+                       <div class="mb-4">
                             <div class="text-3xl font-black text-gray-900 dark:text-white mb-1 flex items-center gap-3">
                                 <span id="view-mkt-price">GHS --</span>
                                 <span id="view-mkt-discount-badge" class="hidden text-sm bg-orange-100 text-orange-600 px-2 py-1 rounded-md font-bold">-0%</span>
@@ -4726,8 +4897,8 @@
             if(window.renderAccountSettings && window.currentUserProfile) window.renderAccountSettings();
         });
 
-       // Marketplace Merchandising Config Listener
-        window.mktConfigCache = { featuredProducts: [], sponsoredProducts: [], featuredServices: [], promotion: {}, announcement: {} };
+      // Marketplace Merchandising Config Listener
+        window.mktConfigCache = { featuredProducts: [], sponsoredProducts: [], featuredServices: [], promotion: {}, announcement: {}, flashSale: {} };
         onSnapshot(doc(db, "system", "marketplace_config"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -4736,7 +4907,8 @@
                     sponsoredProducts: data.sponsoredProducts || [],
                     featuredServices: data.featuredServices || [],
                     promotion: data.promotion || { active: false, title: "", subtitle: "", imageUrl: "", buttonText: "", buttonLink: "" },
-                    announcement: data.announcement || { active: false, title: "", message: "" }
+                    announcement: data.announcement || { active: false, title: "", message: "" },
+                    flashSale: data.flashSale || { active: false, title: "Flash Sale", endTime: "", products: [] }
                 };
             }
             if(!document.getElementById('section-marketplace').classList.contains('hidden')){
@@ -4936,7 +5108,7 @@
             });
         });
 
-        onSnapshot(doc(db, "system", "deadlines"), (snapshot) => {
+       onSnapshot(doc(db, "system", "deadlines"), (snapshot) => {
             if(snapshot.exists()) {
                 const data = snapshot.data();
                 const target = new Date(data.targetDate).getTime();
@@ -4954,31 +5126,7 @@
             }
         });
 
-        onSnapshot(collection(db, "slideshow"), (snapshot) => {
-            window.slideshowData = [];
-            const adminList = document.getElementById('admin-flyer-list');
-            if(adminList) adminList.innerHTML = '';
-
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                window.slideshowData.push({ id: doc.id, ...data });
-
-                if(adminList) {
-                    adminList.innerHTML += `
-                        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-2 mb-2">
-                            <div class="flex items-center gap-3 truncate pr-2 w-full">
-                                <img src="${data.url}" class="w-10 h-10 object-cover rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-                                <a href="${data.url}" target="_blank" class="truncate text-blue-500 hover:underline flex-grow text-xs">${data.url}</a>
-                            </div>
-                            <button onclick="deleteFlyer('${doc.id}')" class="text-red-500 hover:text-red-700 shrink-0 px-2 bg-red-50 dark:bg-red-900/20 rounded-lg py-1.5"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    `;
-                }
-            });
-            window.renderSlideshow();
-        });
-
-        // LANDING SLIDESHOW LISTENER REMOVED - REPLACED BY DISCOVERY GALLERY ENGINE
+        // DEPRECATED SLIDESHOW LISTENER REMOVED - SYSTEM NOW USES PORTAL_FLYERS COLLECTION
     </script>
 
    <script>
@@ -5332,10 +5480,12 @@
             document.getElementById('section-settings')?.classList.add('hidden');
             document.getElementById('slideshow-panel').classList.add('hidden');
             
-            if(v === 'dashboard') { 
+           if(v === 'dashboard') { 
                 document.getElementById('section-main-search').classList.remove('hidden'); 
-                if(window.slideshowData && window.slideshowData.length > 0) document.getElementById('slideshow-panel').classList.remove('hidden');
-            } 
+                if(document.getElementById('slideshow-container') && document.getElementById('slideshow-container').children.length > 0) {
+                    document.getElementById('slideshow-panel').classList.remove('hidden');
+                }
+            }
             else if(v === 'food-bolt') { 
                 document.getElementById('section-food-bolt').classList.remove('hidden'); 
             }
@@ -6955,34 +7105,7 @@ RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
             document.getElementById('quote-modal').classList.remove('hidden');
             window.hasShownQuote = true;
         };
-        window.closeQuoteModal = function() { document.getElementById('quote-modal').classList.add('hidden'); };
-
-        window.slideshowData = []; window.currentSlideIndex = 0; window.slideIntervalThread = null;
-        window.renderSlideshow = function() {
-            const container = document.getElementById('slideshow-container'); const indicators = document.getElementById('slideshow-indicators'); const panel = document.getElementById('slideshow-panel');
-            if (!window.slideshowData || window.slideshowData.length === 0) { panel.classList.add('hidden'); return; }
-            if(!document.getElementById('section-main-search').classList.contains('hidden')) panel.classList.remove('hidden');
-            container.innerHTML = ''; indicators.innerHTML = '';
-            window.slideshowData.forEach((slide, index) => {
-                const img = document.createElement('img'); img.src = slide.url; img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`; img.id = `slide-img-${index}`; container.appendChild(img);
-                const dot = document.createElement('div'); dot.className = `w-1.5 h-1.5 rounded-full transition-all duration-500 ${index === 0 ? 'bg-white w-4' : 'bg-white/40'}`; dot.id = `slide-dot-${index}`; indicators.appendChild(dot);
-            });
-            window.currentSlideIndex = 0; if (window.slideIntervalThread) clearInterval(window.slideIntervalThread); window.slideIntervalThread = setInterval(window.advanceSlide, 4000); 
-        };
-
-        window.advanceSlide = function() {
-            if (!window.slideshowData || window.slideshowData.length <= 1) return;
-            const prevIndex = window.currentSlideIndex; window.currentSlideIndex = (window.currentSlideIndex + 1) % window.slideshowData.length;
-            document.getElementById(`slide-img-${prevIndex}`).classList.replace('opacity-100', 'opacity-0'); document.getElementById(`slide-dot-${prevIndex}`).classList.replace('bg-white', 'bg-white/40'); document.getElementById(`slide-dot-${prevIndex}`).classList.remove('w-4');
-            document.getElementById(`slide-img-${window.currentSlideIndex}`).classList.replace('opacity-0', 'opacity-100'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.replace('bg-white/40', 'bg-white'); document.getElementById(`slide-dot-${window.currentSlideIndex}`).classList.add('w-4');
-        };
-
-        window.handleAddFlyer = async function(e) { e.preventDefault(); const url = document.getElementById('admin-flyer-url').value.trim(); if(!url) return; try { await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDb, "slideshow"), { url: url, timestamp: new Date().getTime() }); window.showToast("Flyer Added Successfully!", "success"); document.getElementById('admin-flyer-url').value = ''; } catch(error) { window.showToast("Failed to add flyer.", "error"); } };
-        window.deleteFlyer = async function(id) { if(confirm("Delete this flyer?")) { try { await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDb, "slideshow", id)); window.showToast("Flyer Removed", "success"); } catch(e) { window.showToast("Failed", "error"); } } };
-
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', () => {
-        });
+       window.closeQuoteModal = function() { document.getElementById('quote-modal').classList.add('hidden'); };
 
       window.renderMaterialsGrid = function(items) {
             const grid = document.getElementById('smart-materials-grid'); 
@@ -8760,7 +8883,7 @@ RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
             }
         };
 
-  window.buildMktCard = function(item, isFeatured) {
+window.buildMktCard = function(item, isFeatured) {
             const targetImg = (item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl;
             const optimizedThumb = targetImg ? targetImg.replace('/upload/', '/upload/w_400,f_webp,q_auto/') : '';
             
@@ -8770,129 +8893,179 @@ RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
 
             const widthClass = isFeatured ? 'w-[160px] md:w-[180px] shrink-0' : 'w-full';
             const userEmail = window.currentUserProfile ? window.currentUserProfile.email : null;
-            const heartClass = (userEmail && (item.likes || []).includes(userEmail)) ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-400 hover:text-red-500";
             
+            const likesCount = (item.likes && item.likes.length > 0) ? item.likes.length : '';
+            const heartClass = (userEmail && (item.likes || []).includes(userEmail)) ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart text-gray-500 group-hover:text-red-500 transition-colors";
+            const heartBtnContent = likesCount ? `<i class="${heartClass}"></i> <span class="text-[9px] font-bold ml-0.5">${likesCount}</span>` : `<i class="${heartClass}"></i>`;
+            
+            const viewsCount = item.viewedBy?.length > 0 ? item.viewedBy.length : (item.views || 0);
+
             const onClickAction = item.type === 'Service' ? `openServiceProfile('${item.id}')` : (item.type === 'Request' ? `openRequestProfile('${item.id}')` : `openMarketplaceDetails('${item.id}')`);
 
             // ----------------------------------------------------
-            // REQUEST CARD (Jumia 'Essentials / Category' Style)
+            // REQUEST CARD
             // ----------------------------------------------------
             if (item.type === 'Request') {
-                // Generate a consistent pseudo-random gradient background for requests
-                const gradients = [
-                    'from-[#ff9a44] to-[#fc6076]', // Orange-Red
-                    'from-[#00c6ff] to-[#0072ff]', // Cyan-Blue
-                    'from-[#f83600] to-[#f9d423]', // Sunset
-                    'from-[#a18cd1] to-[#fbc2eb]', // Purple-Pink
-                    'from-[#0fd850] to-[#f9f047]'  // Green-Yellow
-                ];
-                const gradIndex = (item.title.length + (item.category ? item.category.length : 0)) % gradients.length;
-                const bgGradient = gradients[gradIndex];
-                
                 const displayPrice = item.budgetType === 'Fixed Budget' ? `GH₵ ${Number(item.price).toLocaleString()}` : (item.budgetType || 'Negotiable');
                 const urgencyText = item.urgency || 'Open';
+                
+                let urgencyColor = "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400 border-blue-100 dark:border-blue-800/50";
+                if(item.urgency === 'Urgent' || item.urgency === 'Very Urgent') {
+                    urgencyColor = "text-orange-600 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-400 border-orange-100 dark:border-orange-800/50";
+                }
+
+                const requesterName = item.sellerName ? item.sellerName.split(' ')[0] : 'Student';
+                const deadlineHtml = item.deadline ? `<div class="flex items-center gap-1 text-[9px] text-gray-500 mt-1"><i class="fa-regular fa-clock"></i> ${item.deadline}</div>` : '';
 
                 return `
-                <div class="rounded-2xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-lg transition-all duration-400 hover:-translate-y-1 relative flex flex-col ${widthClass}" onclick="if(!window.isDraggingCard) ${onClickAction}">
-                    <div class="bg-gradient-to-br ${bgGradient} p-4 flex-grow flex flex-col items-center justify-center min-h-[145px] relative overflow-hidden">
-                        <!-- Decorative subtle shape overlay -->
-                        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/20 rounded-full blur-2xl"></div>
-                        <div class="absolute top-2 left-2 text-white text-[10px] font-bold drop-shadow-sm flex items-center gap-1"><i class="fa-solid fa-bullhorn"></i> Request</div>
-                        
-                        <div class="w-14 h-14 bg-white/30 backdrop-blur-md rounded-2xl flex items-center justify-center mb-3 mt-4 shadow-inner border border-white/40 group-hover:scale-110 transition-transform duration-500">
-                            <i class="fa-solid fa-handshake-angle text-2xl text-white drop-shadow-md"></i>
+                <div class="bg-white dark:bg-[#111827] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all duration-300 flex flex-col group cursor-pointer relative ${widthClass}" onclick="if(!window.isDraggingCard) ${onClickAction}">
+                    <div class="p-4 flex flex-col h-full bg-gray-50/50 dark:bg-gray-800/20">
+                        <div class="flex justify-between items-start mb-2 shrink-0">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1"><i class="fa-solid fa-bullhorn text-blue-500"></i> Request</span>
+                            ${item.urgency ? `<span class="text-[9px] px-2 py-0.5 rounded-md font-bold shadow-sm border whitespace-nowrap ${urgencyColor}">${urgencyText}</span>` : ''}
                         </div>
-                        <h4 class="text-white font-black text-center text-[13px] md:text-[14px] leading-tight line-clamp-2 drop-shadow-md px-1 z-10 w-full">${item.title}</h4>
-                    </div>
-                    <div class="bg-white dark:bg-[#1A1A1C] p-2.5 flex items-center justify-between border-t border-white/20 dark:border-gray-800 z-10">
-                        <span class="text-[10px] font-black text-gray-800 dark:text-white truncate max-w-[60%]">${displayPrice}</span>
-                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[9px] px-2.5 py-1 rounded-full font-bold shadow-sm whitespace-nowrap">${urgencyText} <i class="fa-solid fa-arrow-right text-[8px] ml-0.5"></i></span>
+                        <h4 class="font-bold text-gray-900 dark:text-white text-[13px] md:text-[14px] leading-snug line-clamp-2 mb-1 shrink-0">${item.title}</h4>
+                        ${item.description ? `<p class="text-[11px] text-gray-500 line-clamp-2 mb-2 flex-grow">${item.description}</p>` : '<div class="flex-grow"></div>'}
+                        
+                        <div class="flex flex-col gap-1 mt-auto mb-3 shrink-0">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[13px] font-black text-blue-600 dark:text-blue-400 truncate">${displayPrice}</span>
+                                ${viewsCount > 0 ? `<span class="text-[9px] text-gray-400 flex items-center gap-1"><i class="fa-regular fa-eye"></i> ${viewsCount}</span>` : ''}
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="text-[10px] text-gray-500 truncate flex items-center gap-1"><i class="fa-regular fa-user"></i> ${requesterName}</div>
+                                ${item.location ? `<div class="text-[10px] text-gray-500 truncate flex items-center gap-1"><i class="fa-solid fa-location-dot"></i> ${item.location}</div>` : ''}
+                            </div>
+                            ${deadlineHtml}
+                        </div>
+                        
+                        <div class="w-full bg-white dark:bg-[#1A1A1C] border border-blue-100 dark:border-blue-900/30 text-blue-600 dark:text-blue-400 text-center py-2 rounded-lg text-xs font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0 shadow-sm">
+                            View Request <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </div>
                     </div>
                 </div>`;
             }
 
-            // ----------------------------------------------------
-            // PRODUCT & SERVICE CARD (Jumia 'Flash Sales' Style)
+           // ----------------------------------------------------
+            // PRODUCT & SERVICE CARD
             // ----------------------------------------------------
             
-            // Image Area
+            const imageCountHtml = (item.imageUrls && item.imageUrls.length > 1) ? `<span class="absolute bottom-2 right-2 bg-black/50 dark:bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm backdrop-blur-md flex items-center gap-1 z-20"><i class="fa-regular fa-images"></i>${item.imageUrls.length}</span>` : '';
+
             let imgHtml = '';
             if (targetImg) {
-                imgHtml = `<img src="${optimizedThumb}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"><i class="fa-solid fa-image text-2xl text-gray-300"></i></div>`;
+                // Modified: Using object-contain p-2 to prevent cropping and create professional e-com look
+                imgHtml = `<img src="${optimizedThumb}" loading="lazy" class="absolute inset-0 w-full h-full object-contain p-2 md:p-3 group-hover:scale-105 transition-transform duration-500 ease-out z-10" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden')"><div class="hidden absolute inset-0 w-full h-full flex flex-col items-center justify-center z-10"><i class="fa-solid fa-image text-2xl text-gray-300 dark:text-gray-600"></i><span class="text-[9px] text-gray-400 mt-1">Image Error</span></div>`;
             } else if (item.type === 'Service') {
-                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-blue-50 dark:bg-[#131314]"><i class="fa-solid fa-briefcase text-4xl text-blue-200 dark:text-blue-900/50"></i></div>`;
+                imgHtml = `<div class="absolute inset-0 w-full h-full flex flex-col items-center justify-center z-10"><i class="fa-solid fa-briefcase text-3xl text-blue-200 dark:text-blue-900/50"></i></div>`;
             } else {
-                imgHtml = `<div class="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-[#131314]"><i class="fa-solid fa-image text-4xl text-gray-200 dark:text-gray-800"></i></div>`;
+                imgHtml = `<div class="absolute inset-0 w-full h-full flex flex-col items-center justify-center z-10"><i class="fa-solid fa-image text-3xl text-gray-200 dark:text-gray-700"></i></div>`;
             }
 
-            // Discount & Verification Badges
-            let discountHtml = ''; let oldPriceHtml = '';
+            let badgeHtml = '';
+            if (isFeatured) {
+                badgeHtml += `<span class="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wider mb-1 flex items-center w-max"><i class="fa-solid fa-bolt mr-1"></i> Featured</span>`;
+            }
+            if (item.condition === 'Brand New') {
+                badgeHtml += `<span class="bg-green-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wider mb-1 flex items-center w-max">New</span>`;
+            }
+
+         let oldPriceHtml = '';
             if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
                 const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
-                discountHtml = `<div class="absolute top-2 right-2 z-20"><span class="px-1.5 py-0.5 text-[10px] font-black rounded text-[#071827] dark:text-[#f8f9fa] bg-[#25D366] shadow-sm">-${discount}%</span></div>`;
-                oldPriceHtml = `<span class="line-through text-gray-400 text-[10px] font-medium ml-1">GH₵ ${item.oldPrice.toLocaleString()}</span>`;
+                const discountHtml = `<span class="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-[10px] font-black px-1.5 py-0.5 rounded ml-2 shadow-sm">-${discount}%</span>`;
+                oldPriceHtml = `<div class="w-full flex items-center mt-0.5"><span class="line-through text-gray-400 text-[11px] font-medium">GH₵ ${item.oldPrice.toLocaleString()}</span>${discountHtml}</div>`;
             }
 
-            let verifiedBadgeHtml = '';
-            if (item.verified) {
-                verifiedBadgeHtml = `<div class="absolute top-2 left-2 z-20"><span class="w-5 h-5 flex items-center justify-center bg-blue-500 text-white rounded-full shadow-md text-[10px]" title="Verified Seller"><i class="fa-solid fa-check"></i></span></div>`;
-            }
-
-            // Jumia "Items in stock" themed Bar
+            // Modified: Moved out of image area to prevent overlapping content
             let stockBarHtml = '';
             if (item.type === 'Service') {
-                stockBarHtml = `<div class="absolute bottom-0 left-0 right-0 bg-[#fff5e1] dark:bg-[#4a3514] text-[#d97706] dark:text-[#fcd34d] text-[10px] font-bold text-center py-1 border-t border-[#fde68a] dark:border-[#78350f]">Available to book</div>`;
+                if (item.availability) {
+                    stockBarHtml = `<span class="text-[9px] font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30 px-1.5 py-0.5 rounded w-max flex items-center gap-1 mb-1.5 border border-teal-100 dark:border-teal-800/50"><i class="fa-regular fa-calendar-check"></i> ${item.availability}</span>`;
+                }
             } else {
-                const stockLeft = item.stock || 1;
-                stockBarHtml = `<div class="absolute bottom-0 left-0 right-0 bg-[#fff5e1] dark:bg-[#4a3514] text-[#d97706] dark:text-[#fcd34d] text-[10px] font-bold text-center py-1 border-t border-[#fde68a] dark:border-[#78350f]">${stockLeft} item${stockLeft>1?'s':''} in stock</div>`;
+                const stockLeft = item.stock !== undefined ? Number(item.stock) : 1;
+                if (stockLeft <= 0) {
+                    stockBarHtml = `<span class="text-[9px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded w-max flex items-center gap-1 mb-1.5 border border-red-100 dark:border-red-800/50"><i class="fa-solid fa-xmark"></i> Out of stock</span>`;
+                } else if (stockLeft <= 3) {
+                    stockBarHtml = `<span class="text-[9px] font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-1.5 py-0.5 rounded w-max flex items-center gap-1 mb-1.5 border border-orange-100 dark:border-orange-800/50"><i class="fa-solid fa-fire"></i> ${stockLeft} left</span>`;
+                } else {
+                    stockBarHtml = `<span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded w-max flex items-center gap-1 mb-1.5 border border-gray-200 dark:border-gray-700"><i class="fa-solid fa-check"></i> In stock</span>`;
+                }
             }
 
-            // Pricing Format
-            const displayPrice = item.price === 0 ? 'Negotiable' : `GH₵ ${Number(item.price).toLocaleString()}`;
+            let metricsHtml = [];
+            if (validRatingsCount > 0) {
+                metricsHtml.push(`<div class="flex items-center gap-0.5 text-[10px] text-yellow-500 font-bold"><i class="fa-solid fa-star"></i> ${avgRating} <span class="text-gray-400 font-medium ml-0.5">(${validRatingsCount})</span></div>`);
+            }
+            if (viewsCount > 0) {
+                metricsHtml.push(`<div class="flex items-center gap-1 text-[9px] text-gray-400 font-medium" title="${viewsCount} Views"><i class="fa-regular fa-eye"></i> ${viewsCount}</div>`);
+            }
+            const metricsRow = metricsHtml.length > 0 ? `<div class="flex items-center gap-2 mb-1">${metricsHtml.join('<span class="text-gray-300 dark:text-gray-700 text-[8px]">•</span>')}</div>` : '';
+
+            let displayPrice = '';
+            if (item.price === 0 || item.priceType === 'Negotiable') {
+                displayPrice = `<span class="text-[13px] md:text-[15px] font-black text-blue-600 dark:text-blue-400 tracking-tight">Negotiable</span>`;
+            } else {
+                const perType = item.priceType && item.priceType !== 'Fixed Price' ? `<span class="text-[8px] text-gray-400 font-bold tracking-wider ml-0.5">/${item.priceType.replace('Rate', '').trim().substring(0,3).toUpperCase()}</span>` : '';
+                displayPrice = `<span class="text-[15px] md:text-[17px] font-black text-gray-900 dark:text-white tracking-tight">GH₵ ${Number(item.price).toLocaleString()}</span>${perType}`;
+            }
             
+            const negBadge = item.negotiable === 'Yes' ? `<span class="text-[8px] font-bold text-gray-400 border border-gray-200 dark:border-gray-700 rounded px-1 ml-1 align-middle">NEG</span>` : '';
+            const usedBadge = item.condition === 'Used' ? `<span class="text-[8px] font-bold text-gray-500 border border-gray-200 dark:border-gray-700 rounded px-1 ml-1 align-middle">USED</span>` : '';
+
+            const catText = item.category ? item.category : (item.type || '');
+            const categoryRow = `<div class="text-[9px] font-bold text-gray-400 uppercase tracking-wider truncate mb-1">${catText}</div>`;
+
+            const locText = item.location || item.locationDetails;
+            const locHtml = locText ? `<div class="flex items-center gap-1 text-[9px] text-gray-500 truncate mt-1" title="${locText}"><i class="fa-solid fa-location-dot text-gray-400 shrink-0"></i><span class="truncate">${locText}</span></div>` : '';
+
             return `
-                <div class="bg-white dark:bg-[#1A1A1C] rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer relative ${widthClass}" onclick="if(!window.isDraggingCard) ${onClickAction}">
-                    
-                    <!-- Top Image & Badges Section -->
-                    <div class="relative h-[140px] md:h-[160px] overflow-hidden shrink-0 bg-gray-50 dark:bg-[#131314] pointer-events-none">
-                        ${verifiedBadgeHtml}
-                        ${discountHtml}
+                <div class="bg-white dark:bg-[#111827] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all duration-300 flex flex-col group cursor-pointer relative ${widthClass}" onclick="if(!window.isDraggingCard) ${onClickAction}">
+                    <!-- Image Section (Dedicated Professional Container) -->
+                    <div class="relative h-[150px] md:h-[170px] w-full overflow-hidden shrink-0 bg-[#F8F9FA] dark:bg-[#0B1120] pointer-events-none border-b border-gray-100 dark:border-gray-800/60">
+                        <div class="absolute top-2 left-2 z-20 flex flex-col gap-1">
+                            ${badgeHtml}
+                        </div>
+                        <div class="absolute top-2 right-2 z-20 flex items-center gap-1.5">
+                            ${item.type !== 'Request' ? `<button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="w-7 h-7 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition pointer-events-auto border border-gray-200/50 dark:border-gray-700/50 text-[11px] group/heart text-gray-500">${heartBtnContent}</button>` : ''}
+                        </div>
                         ${imgHtml}
-                        ${stockBarHtml}
-                        ${item.type !== 'Request' ? `<button onclick="event.stopPropagation(); window.currentMarketplaceItemId='${item.id}'; window.toggleMarketplaceLike();" class="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-sm z-20 hover:scale-110 transition pointer-events-auto border border-gray-200 dark:border-gray-700 ${item.oldPrice && item.oldPrice > item.price ? 'mt-6' : ''}"><i class="${heartClass} text-[11px]"></i></button>` : ''}
+                        ${imageCountHtml}
                     </div>
                     
-                    <!-- Bottom Information Section -->
-                    <div class="p-3 flex flex-col flex-grow min-w-0 pointer-events-none bg-white dark:bg-[#1A1A1C]">
-                        <h4 class="font-normal text-gray-800 dark:text-gray-200 text-[11px] md:text-[13px] line-clamp-2 leading-snug mb-1.5">${item.title}</h4>
+                    <!-- Content Section -->
+                    <div class="p-3 flex flex-col flex-grow min-w-0 pointer-events-none bg-white dark:bg-[#111827]">
+                        ${stockBarHtml}
+                        ${categoryRow}
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-[12px] md:text-[13px] line-clamp-2 leading-snug mb-1.5">${item.title}</h4>
                         
-                        <div class="flex items-center gap-1 mb-2 h-3">
-                            <div class="flex text-yellow-400 text-[9px]">
-                                ${[1,2,3,4,5].map(i => i <= Math.round(avgRating) ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star text-gray-300 dark:text-gray-600"></i>').join('')}
+                        ${metricsRow}
+                        
+                       <div class="flex flex-col mb-2 mt-auto pt-1">
+                            <div class="flex items-center flex-wrap gap-0.5">
+                                ${displayPrice}
+                                ${negBadge}
+                                ${usedBadge}
                             </div>
-                            <span class="text-[9px] text-gray-500 font-medium">(${validRatingsCount})</span>
+                            ${oldPriceHtml}
                         </div>
                         
-                        <div class="mt-auto">
-                            <div class="text-[14px] md:text-[15px] font-black text-gray-900 dark:text-white leading-none mb-1">
-                                ${displayPrice}
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-800/50 flex flex-col">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-gray-400 font-medium truncate">
+                                    <i class="fa-regular fa-user text-gray-400"></i> <span class="truncate">${item.sellerName ? item.sellerName.split(' ')[0] : 'Provider'}</span>
+                                    ${item.verified ? '<i class="fa-solid fa-circle-check text-blue-500 text-[9px]" title="Verified Seller"></i>' : ''}
+                                </div>
                             </div>
-                            <div class="h-3 mb-1">
-                                ${oldPriceHtml}
-                            </div>
-                            <!-- Jumia style seller identifier or official mark -->
-                            ${item.type === 'Service' ? 
-                              `<span class="text-[9px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider block mt-2 border-t border-gray-100 dark:border-gray-800 pt-2"><i class="fa-solid fa-briefcase mr-1"></i> ${item.category || 'Professional'}</span>` : 
-                              (item.listingType === 'external' ? 
-                              `<span class="text-[9px] text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider block mt-2 border-t border-gray-100 dark:border-gray-800 pt-2"><i class="fa-solid fa-link mr-1"></i> ${item.storeName || 'External Store'}</span>` : 
-                              `<span class="text-[9px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider block mt-2 border-t border-gray-100 dark:border-gray-800 pt-2"><i class="fa-regular fa-user mr-1"></i> ${item.sellerName ? item.sellerName.split(' ')[0] : 'Seller'}</span>`)}
+                            ${locHtml}
                         </div>
                     </div>
                 </div>
             `;
         };
 
-       window.renderMarketplace = function() {
+     window.renderMarketplace = function() {
             const categorizedContent = document.getElementById('mkt-categorized-content');
             const unifiedResults = document.getElementById('mkt-unified-results');
             const unifiedYield = document.getElementById('mkt-unified-yield');
@@ -8990,7 +9163,63 @@ RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
             const services = data.filter(i => i.type === 'Service');
             const requests = data.filter(i => i.type === 'Request');
 
-            const config = window.mktConfigCache || { featuredProducts: [], sponsoredProducts: [], featuredServices: [], promotion: {}, announcement: {} };
+           const config = window.mktConfigCache || { featuredProducts: [], sponsoredProducts: [], featuredServices: [], promotion: {}, announcement: {}, flashSale: {} };
+
+            // 0. Flash Sale (Timer + Carousel)
+            const fsContainer = document.getElementById('mkt-flashsale-container');
+            const fsScroll = document.getElementById('mkt-flashsale-scroll');
+            const fsConfig = config.flashSale || {};
+            
+            let isFsActive = fsConfig.active && fsConfig.endTime;
+            if (isFsActive) {
+                const diffCheck = new Date(fsConfig.endTime).getTime() - Date.now();
+                if (diffCheck <= 0) isFsActive = false; // Sale expired
+            }
+
+            if (isFsActive && fsConfig.products && fsConfig.products.length > 0) {
+                fsContainer.classList.remove('hidden');
+                document.getElementById('mkt-fs-title').innerText = fsConfig.title || "Flash Sale";
+                fsScroll.innerHTML = '';
+
+               // Safely clone items and apply sale prices without mutating the main cache
+                fsConfig.products.forEach(fsItem => {
+                    const origItem = products.find(p => p.id === fsItem.id);
+                    if (origItem) {
+                        const clonedItem = { ...origItem };
+                        // Force the existing discount logic inside buildMktCard to engage
+                        clonedItem.oldPrice = clonedItem.price; 
+                        clonedItem.price = Number(fsItem.salePrice) || clonedItem.price;
+                        fsScroll.innerHTML += window.buildMktCard(clonedItem, true); // true = fixed width
+                    }
+                });
+                setTimeout(() => window.attachMouseScroll('mkt-flashsale-scroll'), 50);
+
+                // Safe Countdown Timer Thread
+                if(window.mktFlashSaleTimer) clearInterval(window.mktFlashSaleTimer);
+                window.mktFlashSaleTimer = setInterval(() => {
+                    const diff = new Date(fsConfig.endTime).getTime() - Date.now();
+                    const cdEl = document.getElementById('mkt-fs-countdown');
+                    if(diff <= 0) {
+                        clearInterval(window.mktFlashSaleTimer);
+                        if(cdEl) cdEl.innerText = "Sale Ended";
+                        // Auto-refresh UI to hide the expired sale section seamlessly
+                        window.renderMarketplace(); 
+                    } else if(cdEl) {
+                        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const s = Math.floor((diff % (1000 * 60)) / 1000);
+                        
+                        let timeString = "";
+                        if(d > 0) timeString += `${d}d `;
+                        timeString += `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+                        cdEl.innerText = `Ends in ${timeString}`;
+                    }
+                }, 1000);
+            } else {
+                fsContainer.classList.add('hidden');
+                if(window.mktFlashSaleTimer) clearInterval(window.mktFlashSaleTimer);
+            }
 
             // 1. Featured Products (Carousel)
             let featuredData = (config.featuredProducts || []).map(id => products.find(p => p.id === id)).filter(Boolean);
@@ -9197,7 +9426,7 @@ RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
             window.renderMarketplace();
         };
 
-        window.openMarketplaceDetails = function(id) {
+       window.openMarketplaceDetails = function(id) {
             const item = window.marketplaceCache.find(i => i.id === id);
             if(!item) return;
 
@@ -9208,15 +9437,32 @@ RULE 4: CONCISENESS. Keep answers student-friendly, direct, and academic.`;
             }
             document.getElementById('view-mkt-brand').innerText = item.brand || item.type;
             
+            // --- DYNAMIC FLASH SALE PRICE ENGINE ---
+            let displayPrice = item.price;
+            let oldPrice = item.oldPrice || null;
+            
+            const config = window.mktConfigCache || {};
+            const fsConfig = config.flashSale || {};
+            const isFsActive = fsConfig.active && fsConfig.endTime && (new Date(fsConfig.endTime).getTime() - Date.now() > 0);
+            
+            // If item is in an active flash sale, temporarily apply the promo price for the viewer
+            if (isFsActive && fsConfig.products) {
+                const fsItem = fsConfig.products.find(p => p.id === id);
+                if (fsItem && fsItem.salePrice < displayPrice) {
+                    oldPrice = displayPrice; // Store normal price as the old price
+                    displayPrice = Number(fsItem.salePrice); // Apply promotional price
+                }
+            }
+
             // Jumia Price Engine logic
-            document.getElementById('view-mkt-price').innerText = item.price === 0 ? 'Negotiable' : `GHS ${item.price.toLocaleString()}`;
+            document.getElementById('view-mkt-price').innerText = displayPrice === 0 ? 'Negotiable' : `GH₵ ${displayPrice.toLocaleString()}`;
             
             const oldPriceContainer = document.getElementById('view-mkt-old-price-container');
             const discountBadge = document.getElementById('view-mkt-discount-badge');
             
-            if (item.oldPrice && item.oldPrice > item.price && item.price > 0) {
-                const discount = Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100);
-                oldPriceContainer.innerText = `GHS ${item.oldPrice.toLocaleString()}`;
+            if (oldPrice && oldPrice > displayPrice && displayPrice > 0) {
+                const discount = Math.round(((oldPrice - displayPrice) / oldPrice) * 100);
+                oldPriceContainer.innerText = `GH₵ ${oldPrice.toLocaleString()}`;
                 oldPriceContainer.classList.remove('hidden');
                 discountBadge.innerText = `-${discount}%`;
                 discountBadge.classList.remove('hidden');
@@ -10035,7 +10281,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
         };
 
         // --- MARKETPLACE MERCHANDISING ADMIN LOGIC ---
-        window.tempAdminMktConfig = { featuredProducts: [], sponsoredProducts: [], featuredServices: [] };
+       window.tempAdminMktConfig = { featuredProducts: [], sponsoredProducts: [], featuredServices: [], flashSale: { active: false, title: "", endTime: "", products: [] } };
 
         window.renderAdminMerchArrays = function() {
             if(!window.isAdmin) return;
@@ -10046,6 +10292,7 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     featuredProducts: [...(c.featuredProducts || [])],
                     sponsoredProducts: [...(c.sponsoredProducts || [])],
                     featuredServices: [...(c.featuredServices || [])],
+                    flashSale: c.flashSale ? JSON.parse(JSON.stringify(c.flashSale)) : { active: false, title: "", endTime: "", products: [] },
                     _loaded: true
                 };
                 
@@ -10057,11 +10304,58 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                     document.getElementById('admin-mkt-promo-btn').value = c.promotion.buttonText || "";
                     document.getElementById('admin-mkt-promo-link').value = c.promotion.buttonLink || "";
                 }
-               if(c.announcement) {
+              if(c.announcement) {
                     document.getElementById('admin-mkt-ann-active').checked = c.announcement.active || false;
                     document.getElementById('admin-mkt-ann-title').value = c.announcement.title || "";
                     document.getElementById('admin-mkt-ann-msg').value = c.announcement.message || "";
                     document.getElementById('admin-mkt-ann-img').value = c.announcement.imageUrl || "";
+                }
+               if(c.flashSale) {
+                    document.getElementById('admin-fs-active').checked = c.flashSale.active || false;
+                    document.getElementById('admin-fs-title').value = c.flashSale.title || "Flash Sale";
+                    document.getElementById('admin-fs-end').value = c.flashSale.endTime || "";
+               }
+            }
+
+           // Render Flash Sale Products
+            const fsContainer = document.getElementById('admin-merch-flash-sale');
+            if (fsContainer) {
+                fsContainer.innerHTML = '';
+                const fsArr = window.tempAdminMktConfig.flashSale.products;
+                if (fsArr.length === 0) {
+                    fsContainer.innerHTML = '<p class="text-[10px] text-gray-500 italic py-1">No products added to Flash Sale.</p>';
+                } else {
+                    fsArr.forEach((fsItem, idx) => {
+                        const itemData = (window.marketplaceCache || []).find(i => i.id === fsItem.id);
+                        const title = itemData ? itemData.title : `Deleted Item`;
+                        const origPrice = itemData ? itemData.price : 0;
+                        const discount = (origPrice > 0 && fsItem.salePrice < origPrice) ? Math.round(((origPrice - fsItem.salePrice) / origPrice) * 100) : 0;
+                        
+                        const targetImg = itemData && ((itemData.imageUrls && itemData.imageUrls.length > 0) ? itemData.imageUrls[0] : itemData.imageUrl);
+                        const thumb = targetImg ? targetImg.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/') : '';
+                        const imgHtml = thumb ? `<img src="${thumb}" class="w-10 h-10 rounded-md object-cover border border-gray-200 dark:border-gray-700 shrink-0">` : `<div class="w-10 h-10 rounded-md bg-gray-200 dark:bg-gray-700 shrink-0 flex items-center justify-center"><i class="fa-solid fa-image text-gray-400 text-[10px]"></i></div>`;
+                        
+                        fsContainer.innerHTML += `
+                            <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-900 p-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mb-2">
+                                <div class="flex items-center gap-3 overflow-hidden flex-grow pr-2">
+                                    ${imgHtml}
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="text-[11px] font-bold text-gray-800 dark:text-white truncate">${title}</span>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[9px] text-gray-500 line-through">GH₵${origPrice}</span>
+                                            <button onclick="adminUpdateFlashSalePrice(${idx})" class="text-[10px] font-black text-red-600 bg-red-100 dark:bg-red-900/40 px-1.5 py-0.5 rounded shadow-sm hover:opacity-80 transition">GH₵${fsItem.salePrice} <i class="fa-solid fa-pen ml-1 text-[8px]"></i></button>
+                                            ${discount > 0 ? `<span class="text-[8px] font-bold text-white bg-red-500 px-1 rounded">-${discount}%</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-1 shrink-0 pl-2">
+                                    <button onclick="adminMoveFlashSaleItem(${idx}, -1)" class="w-6 h-6 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 transition"><i class="fa-solid fa-arrow-up text-[8px]"></i></button>
+                                    <button onclick="adminMoveFlashSaleItem(${idx}, 1)" class="w-6 h-6 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 transition"><i class="fa-solid fa-arrow-down text-[8px]"></i></button>
+                                    <button onclick="adminRemoveFlashSaleItem(${idx})" class="w-6 h-6 bg-red-50 text-red-500 dark:bg-red-900/30 rounded border border-red-100 dark:border-red-900/50 flex items-center justify-center hover:bg-red-100 transition ml-0 sm:ml-1"><i class="fa-solid fa-xmark text-[10px]"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
                 }
             }
 
@@ -10079,13 +10373,20 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
                 } else {
                     arr.forEach((id, idx) => {
                         const item = (window.marketplaceCache || []).find(i => i.id === id);
-                        const title = item ? item.title : `Unknown ID: ${id}`;
+                        const title = item ? item.title : `Deleted Item`;
+                        
+                        const targetImg = item && ((item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl);
+                        const thumb = targetImg ? targetImg.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/') : '';
+                        const imgHtml = thumb ? `<img src="${thumb}" class="w-8 h-8 rounded-md object-cover border border-gray-200 dark:border-gray-700 shrink-0">` : `<div class="w-8 h-8 rounded-md bg-gray-200 dark:bg-gray-700 shrink-0 flex items-center justify-center"><i class="fa-solid fa-box text-gray-400 text-[10px]"></i></div>`;
                         
                         container.innerHTML += `
                             <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-2 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-2">
-                                <div class="flex flex-col min-w-0 pr-2 flex-grow">
-                                    <span class="text-xs font-bold text-gray-800 dark:text-white truncate">${title}</span>
-                                    <span class="text-[9px] text-gray-400 font-mono truncate border border-gray-200 dark:border-gray-700 rounded px-1 mt-1 inline-block w-max bg-gray-50 dark:bg-gray-900">${id}</span>
+                                <div class="flex items-center gap-3 overflow-hidden flex-grow pr-2">
+                                    ${imgHtml}
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="text-xs font-bold text-gray-800 dark:text-white truncate">${title}</span>
+                                        <span class="text-[9px] text-gray-500 truncate mt-0.5">GH₵ ${item ? item.price : 0}</span>
+                                    </div>
                                 </div>
                                 <div class="flex gap-1 shrink-0">
                                     <button onclick="adminMoveMerchItem('${listName}', ${idx}, -1)" class="w-7 h-7 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-arrow-up text-[10px]"></i></button>
@@ -10121,12 +10422,266 @@ window.recordMarketplaceView = async function(id, userEmail, viewedByArr) {
             window.renderAdminMerchArrays();
         };
 
+      // DYNAMIC VISUAL PRODUCT PICKER (For Flash Sales)
+        window.adminAddFlashSaleItem = function() {
+            const existing = document.getElementById('admin-dynamic-picker');
+            if(existing) existing.remove();
+
+            const items = (window.marketplaceCache || []).filter(i => i.type === 'Product' || !i.type);
+
+            const overlay = document.createElement('div');
+            overlay.id = 'admin-dynamic-picker';
+            overlay.className = 'fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex justify-center items-center p-4';
+            
+            let listHtml = '';
+            items.forEach(p => {
+                const targetImg = (p.imageUrls && p.imageUrls.length > 0) ? p.imageUrls[0] : p.imageUrl;
+                const thumb = targetImg ? targetImg.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/') : '';
+                const imgHtml = thumb ? `<img src="${thumb}" class="w-10 h-10 rounded object-cover border border-gray-200 shrink-0">` : `<div class="w-10 h-10 rounded bg-gray-200 shrink-0 flex items-center justify-center"><i class="fa-solid fa-box text-gray-400"></i></div>`;
+                
+                const safeTitle = p.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
+                listHtml += `
+                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition" 
+                         onclick="document.getElementById('admin-dynamic-picker').remove(); window.adminSelectFsProduct('${p.id}', ${p.price || 0}, '${safeTitle}');">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            ${imgHtml}
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-xs font-bold text-gray-800 truncate">${p.title}</span>
+                                <span class="text-[10px] text-gray-500 truncate">Original: GH₵ ${p.price || 0}</span>
+                            </div>
+                        </div>
+                        <button class="shrink-0 text-[10px] font-bold bg-red-100 text-red-600 px-3 py-1.5 rounded">Set Sale Price</button>
+                    </div>
+                `;
+            });
+
+            overlay.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
+                    <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                        <h3 class="font-bold text-sm text-gray-800"><i class="fa-solid fa-bolt text-red-500 mr-2"></i>Select Flash Sale Product</h3>
+                        <button onclick="document.getElementById('admin-dynamic-picker').remove()" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="p-2 border-b border-gray-200">
+                        <input type="text" id="admin-picker-search" placeholder="Search products by name..." class="w-full px-3 py-2 bg-gray-100 rounded-lg text-xs outline-none focus:ring-2 focus:ring-red-200" onkeyup="
+                            const q = this.value.toLowerCase();
+                            const rows = document.getElementById('admin-picker-list').children;
+                            for(let r of rows) {
+                                r.style.display = r.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+                            }
+                        ">
+                    </div>
+                    <div id="admin-picker-list" class="overflow-y-auto flex-grow bg-white custom-scrollbar">
+                        ${listHtml || '<p class="text-xs text-gray-500 p-6 text-center">No products available.</p>'}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        };
+        
+       // REAL-TIME DISCOUNT CALCULATOR MODAL
+        window.adminFsActiveItem = null;
+
+        window.openFsPriceModal = function(id, origPrice, title, isEdit = false, editIdx = -1, currentSalePrice = '') {
+            const existing = document.getElementById('admin-fs-price-modal');
+            if(existing) existing.remove();
+
+            window.adminFsActiveItem = { id, origPrice, title, isEdit, editIdx };
+
+            const modalHtml = `
+                <div id="admin-fs-price-modal" class="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col border border-gray-200 dark:border-gray-800">
+                        <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-[#1A1A1C]">
+                            <h3 class="font-bold text-sm text-gray-800 dark:text-white"><i class="fa-solid fa-tag text-red-500 mr-2"></i>Set Flash Sale Price</h3>
+                            <button onclick="document.getElementById('admin-fs-price-modal').remove()" class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 hover:text-red-500 transition shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="p-6 space-y-5">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Selected Product</span>
+                                <span class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-snug">${title}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center bg-gray-50 dark:bg-[#131314] p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-inner">
+                                <span class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Normal Price</span>
+                                <span class="text-sm font-black text-gray-900 dark:text-white">GH₵ ${Number(origPrice).toLocaleString()}</span>
+                            </div>
+                            
+                            <div>
+                                <label class="text-[10px] font-black text-red-600 dark:text-red-500 uppercase tracking-wider block mb-2">Flash Sale Price (GH₵)</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <span class="text-red-400 font-bold">GH₵</span>
+                                    </div>
+                                    <input type="number" id="fs-price-input" value="${currentSalePrice}" class="w-full pl-12 pr-20 py-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/50 rounded-xl text-xl font-black text-red-600 dark:text-red-400 outline-none focus:ring-2 focus:ring-red-500 shadow-sm transition-all" 
+                                    onkeyup="
+                                        const val = Number(this.value);
+                                        const orig = ${Number(origPrice)};
+                                        const badge = document.getElementById('fs-discount-badge');
+                                        if(val > 0 && val < orig) {
+                                            const pct = Math.round(((orig - val) / orig) * 100);
+                                            badge.innerText = '-' + pct + '% OFF';
+                                            badge.classList.remove('hidden');
+                                            badge.className = 'absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg shadow-sm';
+                                        } else {
+                                            badge.classList.add('hidden');
+                                        }
+                                    ">
+                                    <span id="fs-discount-badge" class="hidden absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg shadow-sm"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#1A1A1C] flex gap-3">
+                            <button onclick="document.getElementById('admin-fs-price-modal').remove()" class="w-1/3 py-3 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition shadow-sm hover:bg-gray-50">Cancel</button>
+                            <button onclick="window.confirmFsPrice()" class="flex-grow py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition shadow-md">Confirm Sale Price</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Trigger calculation immediately if editing
+            if(currentSalePrice) {
+                document.getElementById('fs-price-input').dispatchEvent(new Event('keyup'));
+            }
+            setTimeout(() => document.getElementById('fs-price-input').focus(), 100);
+        };
+
+        window.confirmFsPrice = function() {
+            const val = Number(document.getElementById('fs-price-input').value);
+            const active = window.adminFsActiveItem;
+            
+            if(isNaN(val) || val <= 0) { window.showToast('Enter a valid price greater than 0', 'error'); return; }
+            if(val >= active.origPrice) { window.showToast('Sale price must be strictly lower than normal price', 'error'); return; }
+            
+            if(active.isEdit) {
+                window.tempAdminMktConfig.flashSale.products[active.editIdx].salePrice = val;
+            } else {
+                // Prevent duplicate entries of the same item
+                const exists = window.tempAdminMktConfig.flashSale.products.findIndex(p => p.id === active.id);
+                if(exists > -1) {
+                    window.tempAdminMktConfig.flashSale.products[exists].salePrice = val;
+                } else {
+                    window.tempAdminMktConfig.flashSale.products.push({ id: active.id, salePrice: val });
+                }
+            }
+            
+            window.renderAdminMerchArrays();
+            document.getElementById('admin-fs-price-modal').remove();
+            
+            const picker = document.getElementById('admin-dynamic-picker');
+            if(picker) picker.remove();
+            
+            window.showToast(active.isEdit ? 'Flash Sale price updated!' : 'Product added to Flash Sale!', 'success');
+        };
+
+        window.adminSelectFsProduct = function(id, originalPrice, title) {
+            window.openFsPriceModal(id, originalPrice, title);
+        };
+
+        window.adminUpdateFlashSalePrice = function(idx) {
+            const fsItem = window.tempAdminMktConfig.flashSale.products[idx];
+            const itemData = (window.marketplaceCache || []).find(i => i.id === fsItem.id);
+            if(itemData) {
+                window.openFsPriceModal(fsItem.id, itemData.price, itemData.title, true, idx, fsItem.salePrice);
+            }
+        };
+
+        window.adminMoveFlashSaleItem = function(idx, dir) {
+            const arr = window.tempAdminMktConfig.flashSale.products;
+            if (idx + dir < 0 || idx + dir >= arr.length) return;
+            const temp = arr[idx];
+            arr[idx] = arr[idx + dir];
+            arr[idx + dir] = temp;
+            window.renderAdminMerchArrays();
+        };
+
+        window.adminRemoveFlashSaleItem = function(idx) {
+            window.tempAdminMktConfig.flashSale.products.splice(idx, 1);
+            window.renderAdminMerchArrays();
+        };
+
+        // DYNAMIC VISUAL PRODUCT PICKER (For Standard Merchandising)
+        window.adminAddMerchItem = function(listName) {
+            const existing = document.getElementById('admin-dynamic-picker');
+            if(existing) existing.remove();
+
+            const isService = listName === 'featuredServices';
+            const items = (window.marketplaceCache || []).filter(i => isService ? i.type === 'Service' : (i.type === 'Product' || !i.type));
+
+            const overlay = document.createElement('div');
+            overlay.id = 'admin-dynamic-picker';
+            overlay.className = 'fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex justify-center items-center p-4';
+            
+            let listHtml = '';
+            items.forEach(p => {
+                const targetImg = (p.imageUrls && p.imageUrls.length > 0) ? p.imageUrls[0] : p.imageUrl;
+                const thumb = targetImg ? targetImg.replace('/upload/', '/upload/w_100,f_webp,q_auto,c_fill/') : '';
+                const imgHtml = thumb ? `<img src="${thumb}" class="w-10 h-10 rounded object-cover border border-gray-200 shrink-0">` : `<div class="w-10 h-10 rounded bg-gray-200 shrink-0 flex items-center justify-center"><i class="fa-solid fa-box text-gray-400"></i></div>`;
+                
+                listHtml += `
+                    <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition" 
+                         onclick="window.tempAdminMktConfig['${listName}'].push('${p.id}'); window.renderAdminMerchArrays(); document.getElementById('admin-dynamic-picker').remove(); window.showToast('Item selected!', 'success');">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            ${imgHtml}
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-xs font-bold text-gray-800 truncate">${p.title}</span>
+                                <span class="text-[10px] text-gray-500 truncate">GH₵ ${p.price || 0}</span>
+                            </div>
+                        </div>
+                        <button class="shrink-0 text-[10px] font-bold bg-blue-100 text-blue-600 px-3 py-1.5 rounded">Select</button>
+                    </div>
+                `;
+            });
+
+            overlay.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
+                    <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                        <h3 class="font-bold text-sm text-gray-800">Select ${isService ? 'Service' : 'Product'}</h3>
+                        <button onclick="document.getElementById('admin-dynamic-picker').remove()" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="p-2 border-b border-gray-200">
+                        <input type="text" id="admin-picker-search" placeholder="Search by name..." class="w-full px-3 py-2 bg-gray-100 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-200" onkeyup="
+                            const q = this.value.toLowerCase();
+                            const rows = document.getElementById('admin-picker-list').children;
+                            for(let r of rows) {
+                                r.style.display = r.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+                            }
+                        ">
+                    </div>
+                    <div id="admin-picker-list" class="overflow-y-auto flex-grow bg-white custom-scrollbar">
+                        ${listHtml || '<p class="text-xs text-gray-500 p-6 text-center">No items available.</p>'}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        };
+
+        window.adminMoveMerchItem = function(listName, idx, dir) {
+            const arr = window.tempAdminMktConfig[listName];
+            if (idx + dir < 0 || idx + dir >= arr.length) return;
+            const temp = arr[idx];
+            arr[idx] = arr[idx + dir];
+            arr[idx + dir] = temp;
+            window.renderAdminMerchArrays();
+        };
+
+        window.adminRemoveMerchItem = function(listName, idx) {
+            window.tempAdminMktConfig[listName].splice(idx, 1);
+            window.renderAdminMerchArrays();
+        };
+
         window.saveAdminMktMerchandising = async function() {
             if(!window.isAdmin) return;
             const config = {
                 featuredProducts: window.tempAdminMktConfig.featuredProducts,
                 sponsoredProducts: window.tempAdminMktConfig.sponsoredProducts,
                 featuredServices: window.tempAdminMktConfig.featuredServices,
+                flashSale: {
+                    active: document.getElementById('admin-fs-active').checked,
+                    title: document.getElementById('admin-fs-title').value.trim(),
+                    endTime: document.getElementById('admin-fs-end').value,
+                    products: window.tempAdminMktConfig.flashSale.products
+                },
                 promotion: {
                     active: document.getElementById('admin-mkt-promo-active').checked,
                     title: document.getElementById('admin-mkt-promo-title').value.trim(),
