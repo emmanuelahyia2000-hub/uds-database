@@ -745,18 +745,44 @@
                         transform: scale(1.15);
                     }
                 </style>
-              <!-- Upgraded Compact Cloud Archive Media Strip -->
+             <!-- Upgraded Compact Cloud Archive Media Strip -->
                 <div id="slideshow-panel" class="w-full max-w-4xl mb-8 relative rounded-3xl overflow-hidden shadow-xl hidden flex-col mx-auto transition-all duration-300 border border-gray-200/80 dark:border-gray-700/50 bg-gray-900">
-                    <!-- Media Area (Premium Apple-TV Style Contain) -->
-                    <div class="relative w-full h-56 md:h-72 flex items-center justify-center overflow-hidden bg-black">
+                    <style>
+                        /* PC Fullscreen Expansion Logic: Only activates when the user clicks the Fullscreen button */
+                        #slideshow-panel:fullscreen #media-area-container { height: 100vh !important; max-height: none !important; }
+                        #slideshow-panel:-webkit-full-screen #media-area-container { height: 100vh !important; max-height: none !important; }
+                        #slideshow-panel:-moz-full-screen #media-area-container { height: 100vh !important; max-height: none !important; }
+                        #slideshow-panel:-ms-fullscreen #media-area-container { height: 100vh !important; max-height: none !important; }
+                    </style>
+                    
+                    <!-- Floating Exit Fullscreen Button for Students -->
+                    <button id="media-exit-fullscreen-btn" onclick="exitMediaFullscreenAndScrollToSlides(event)" class="hidden fixed top-4 left-4 z-[999999] bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl backdrop-blur-lg flex items-center gap-2 transition-all border border-white/20">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Slides Search
+                    </button>
+
+                    <!-- Media Area (Compact on Mobile, Responsive Contain) -->
+                    <div id="media-area-container" class="relative w-full h-44 sm:h-56 md:h-72 flex items-center justify-center overflow-hidden bg-black transition-all duration-300">
                         <div id="slideshow-container" class="w-full h-full flex transition-transform duration-700 ease-in-out"></div>
                         <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent pointer-events-none z-0 opacity-80"></div>
                         <div id="slideshow-indicators" class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 z-10"></div>
                         
-                        <!-- Global Audio Control (visible if video) -->
-                        <button id="media-audio-toggle" onclick="toggleMediaAudio(event)" class="absolute top-3 right-3 z-20 bg-black/50 hover:bg-black/80 text-white w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-all hidden border border-white/10 shadow-lg" title="Toggle Audio">
-                            <i id="media-audio-icon" class="fa-solid fa-volume-xmark text-sm"></i>
+                        <!-- Manual Slide Navigation Arrows -->
+                        <button onclick="prevPortalSlide(event)" class="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-all border border-white/10 shadow-lg" title="Previous Media">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
                         </button>
+                        <button onclick="nextPortalSlide(event)" class="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-all border border-white/10 shadow-lg" title="Next Media">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+
+                        <!-- Top Controls: Fullscreen Expand & Global Audio Toggle -->
+                        <div class="absolute top-3 right-3 z-20 flex items-center gap-2">
+                            <button id="media-fullscreen-toggle" onclick="toggleMediaFullscreen(event)" class="bg-black/50 hover:bg-black/80 text-white w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-all border border-white/10 shadow-lg" title="Toggle Fullscreen">
+                                <i class="fa-solid fa-expand text-xs"></i>
+                            </button>
+                            <button id="media-audio-toggle" onclick="toggleMediaAudio(event)" class="bg-black/50 hover:bg-black/80 text-white w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-all hidden border border-white/10 shadow-lg" title="Toggle Audio">
+                                <i id="media-audio-icon" class="fa-solid fa-volume-xmark text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Horizontal Announcement Ticker -->
@@ -1089,11 +1115,11 @@
                                 }
                             };
 
-                            let portalSlideIndex = 0;
+                           let portalSlideIndex = 0;
                             let portalSlideInterval = null;
 
                             window.toggleMediaAudio = function(event) {
-                                event.stopPropagation();
+                                if (event) event.stopPropagation();
                                 const container = document.getElementById('slideshow-container');
                                 if (!container || !container.children[portalSlideIndex]) return;
                                 
@@ -1104,11 +1130,146 @@
                                     const icon = document.getElementById('media-audio-icon');
                                     if (video.muted) {
                                         icon.className = 'fa-solid fa-volume-xmark text-xs';
+                                        restartPortalSlideTimer();
                                     } else {
                                         icon.className = 'fa-solid fa-volume-high text-xs';
+                                        // Stop auto-scrolling while user listens to video audio
+                                        if (portalSlideInterval) {
+                                            clearInterval(portalSlideInterval);
+                                            portalSlideInterval = null;
+                                        }
                                     }
                                 }
                             };
+
+                            window.toggleMediaFullscreen = function(event) {
+                                if (event) event.stopPropagation();
+                                const panel = document.getElementById('slideshow-panel');
+                                const exitBtn = document.getElementById('media-exit-fullscreen-btn');
+                                if (!panel) return;
+
+                                if (!document.fullscreenElement) {
+                                    if (panel.requestFullscreen) {
+                                        panel.requestFullscreen();
+                                    } else if (panel.webkitRequestFullscreen) {
+                                        panel.webkitRequestFullscreen();
+                                    }
+                                    if (exitBtn) exitBtn.classList.remove('hidden');
+                                } else {
+                                    if (document.exitFullscreen) {
+                                        document.exitFullscreen();
+                                    } else if (document.webkitExitFullscreen) {
+                                        document.webkitExitFullscreen();
+                                    }
+                                    if (exitBtn) exitBtn.classList.add('hidden');
+                                }
+                            };
+
+                            window.exitMediaFullscreenAndScrollToSlides = function(event) {
+                                if (event) event.stopPropagation();
+                                const exitBtn = document.getElementById('media-exit-fullscreen-btn');
+                                if (document.fullscreenElement) {
+                                    if (document.exitFullscreen) {
+                                        document.exitFullscreen();
+                                    } else if (document.webkitExitFullscreen) {
+                                        document.webkitExitFullscreen();
+                                    }
+                                }
+                                if (exitBtn) exitBtn.classList.add('hidden');
+
+                                // Smooth scroll straight to slides search area & focus search bar
+                                const searchArea = document.getElementById('section-main-search') || document.getElementById('ai-search-bar');
+                                if (searchArea) {
+                                    searchArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    const searchInput = document.getElementById('ai-search-bar');
+                                    if (searchInput) searchInput.focus();
+                                }
+                            };
+
+                            document.addEventListener('fullscreenchange', () => {
+                                const exitBtn = document.getElementById('media-exit-fullscreen-btn');
+                                const icon = document.querySelector('#media-fullscreen-toggle i');
+                                if (!document.fullscreenElement) {
+                                    if (exitBtn) exitBtn.classList.add('hidden');
+                                    if (icon) icon.className = 'fa-solid fa-expand text-xs';
+                                } else {
+                                    if (exitBtn) exitBtn.classList.remove('hidden');
+                                    if (icon) icon.className = 'fa-solid fa-compress text-xs';
+                                }
+                            });
+
+                            window.nextPortalSlide = function(event) {
+                                if (event) event.stopPropagation();
+                                if (activeMediaItems.length <= 1) return;
+
+                                const container = document.getElementById('slideshow-container');
+                                if (container && container.children[portalSlideIndex]) {
+                                    const oldVid = container.children[portalSlideIndex].querySelector('video');
+                                    if (oldVid) oldVid.pause();
+                                }
+
+                                portalSlideIndex = (portalSlideIndex + 1) % activeMediaItems.length;
+                                updatePortalSlidePosition(activeMediaItems.length);
+                                updateMediaTicker();
+                                updateAudioControlVisibility();
+
+                                if (container && container.children[portalSlideIndex]) {
+                                    const newVid = container.children[portalSlideIndex].querySelector('video');
+                                    if (newVid) {
+                                        newVid.muted = true;
+                                        newVid.play().catch(e => console.log(e));
+                                        const icon = document.getElementById('media-audio-icon');
+                                        if (icon) icon.className = 'fa-solid fa-volume-xmark text-xs';
+                                    }
+                                }
+                            };
+
+                            window.prevPortalSlide = function(event) {
+                                if (event) event.stopPropagation();
+                                if (activeMediaItems.length <= 1) return;
+
+                                const container = document.getElementById('slideshow-container');
+                                if (container && container.children[portalSlideIndex]) {
+                                    const oldVid = container.children[portalSlideIndex].querySelector('video');
+                                    if (oldVid) oldVid.pause();
+                                }
+
+                                portalSlideIndex = (portalSlideIndex - 1 + activeMediaItems.length) % activeMediaItems.length;
+                                updatePortalSlidePosition(activeMediaItems.length);
+                                updateMediaTicker();
+                                updateAudioControlVisibility();
+
+                                if (container && container.children[portalSlideIndex]) {
+                                    const newVid = container.children[portalSlideIndex].querySelector('video');
+                                    if (newVid) {
+                                        newVid.muted = true;
+                                        newVid.play().catch(e => console.log(e));
+                                        const icon = document.getElementById('media-audio-icon');
+                                        if (icon) icon.className = 'fa-solid fa-volume-xmark text-xs';
+                                    }
+                                }
+                            };
+
+                            function restartPortalSlideTimer() {
+                                if (portalSlideInterval) clearInterval(portalSlideInterval);
+                                if (activeMediaItems.length <= 1) return;
+
+                                portalSlideInterval = setInterval(() => {
+                                    const container = document.getElementById('slideshow-container');
+                                    if (!container) return;
+
+                                    // Check if active video has speaker turned on
+                                    const activeSlide = container.children[portalSlideIndex];
+                                    if (activeSlide) {
+                                        const vid = activeSlide.querySelector('video');
+                                        if (vid && !vid.muted) {
+                                            return; // Do not auto-scroll while audio is unmuted
+                                        }
+                                    }
+
+                                    window.nextPortalSlide();
+                                }, 18000);
+                            }
 
                             function updateAudioControlVisibility() {
                                 const audioBtn = document.getElementById('media-audio-toggle');
@@ -1117,7 +1278,7 @@
                                 if (activeMediaItems.length > 0 && activeMediaItems[portalSlideIndex].type === 'video') {
                                     audioBtn.classList.remove('hidden');
                                     const container = document.getElementById('slideshow-container');
-                                    const video = container.children[portalSlideIndex].querySelector('video');
+                                    const video = container.children[portalSlideIndex] ? container.children[portalSlideIndex].querySelector('video') : null;
                                     const icon = document.getElementById('media-audio-icon');
                                     if(video && icon) {
                                         icon.className = video.muted ? 'fa-solid fa-volume-xmark text-xs' : 'fa-solid fa-volume-high text-xs';
@@ -1198,32 +1359,7 @@
                                 updateMediaTicker();
                                 updateAudioControlVisibility();
 
-                                if (activeMediaItems.length > 1) {
-                                    portalSlideInterval = setInterval(() => {
-                                        const oldSlide = container.children[portalSlideIndex];
-                                        if (oldSlide) {
-                                            const oldVid = oldSlide.querySelector('video');
-                                            if (oldVid) oldVid.pause();
-                                        }
-
-                                        portalSlideIndex = (portalSlideIndex + 1) % activeMediaItems.length;
-                                        updatePortalSlidePosition(activeMediaItems.length);
-                                        updateMediaTicker();
-                                        updateAudioControlVisibility();
-
-                                        const newSlide = container.children[portalSlideIndex];
-                                        if (newSlide) {
-                                            const newVid = newSlide.querySelector('video');
-                                            if (newVid) {
-                                                // Hard reset video sound during rotation to prevent sudden noise
-                                                newVid.muted = true;
-                                                newVid.play().catch(e => console.log(e));
-                                                const icon = document.getElementById('media-audio-icon');
-                                                if(icon) icon.className = 'fa-solid fa-volume-xmark text-xs';
-                                            }
-                                        }
-                                   }, 18000); // Elegant, slow 18-second rotation to allow video watching and text reading
-                                }
+                               restartPortalSlideTimer();
                             }
 
                             function updateMediaTicker() {
