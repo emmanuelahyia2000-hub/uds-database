@@ -3426,10 +3426,7 @@
                     <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-          <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
-                <button onclick="toggleRelatedVideosPanel()" id="btn-toggle-videos" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-full transition-all font-bold text-sm shadow-sm">
-                    <i class="fa-solid fa-photo-film text-lg md:mr-2"></i> <span class="hidden md:inline">Learning Videos</span>
-                </button>
+            <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
@@ -3487,31 +3484,6 @@
                         <button onclick="sendPrivateClassMessage()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
-                   </div>
-                </div>
-            </div>
-
-           <!-- RELATED LEARNING VIDEOS PANEL -->
-            <div id="related-videos-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-transparent flex flex-col transition-all duration-300 overflow-hidden relative z-40">
-                <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-purple-50 dark:bg-purple-950/20 shrink-0">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center">
-                            <i class="fa-solid fa-play"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Related Videos</h3>
-                            <p id="related-videos-subtitle" class="text-[10px] text-purple-500 font-medium truncate w-40">Loading context...</p>
-                        </div>
-                    </div>
-                    <button onclick="toggleRelatedVideosPanel()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                
-                <div class="flex-grow overflow-y-auto bg-gray-50 dark:bg-[#131314] p-4 flex flex-col gap-4 custom-scrollbar" id="related-videos-feed">
-                    <div class="text-center py-10">
-                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-purple-500 mb-3"></i>
-                        <p class="text-xs text-gray-500">Analyzing document and discovering content...</p>
                     </div>
                 </div>
             </div>
@@ -3615,120 +3587,9 @@
                             </div>
                         </div>
                     `;
-                   input.value = '';
+                    input.value = '';
                     feed.scrollTop = feed.scrollHeight;
                 }
-
-                // --- RELATED LEARNING VIDEOS ENGINE ---
-                window.toggleRelatedVideosPanel = function(forceOpen = false) {
-                    const panel = document.getElementById('related-videos-panel');
-                    const studyPanel = document.getElementById('study-class-panel');
-                    
-                    if (studyPanel && !studyPanel.classList.contains('w-0')) {
-                        studyPanel.classList.add('w-0');
-                        studyPanel.classList.remove('w-80', 'md:w-96');
-                    }
-
-                    if (panel.classList.contains('w-0') || forceOpen === true) {
-                        panel.classList.remove('w-0', 'border-transparent');
-                        panel.classList.add('w-80', 'md:w-[400px]', 'border-l');
-                    } else if (!forceOpen) {
-                        panel.classList.add('w-0', 'border-transparent');
-                        panel.classList.remove('w-80', 'md:w-[400px]', 'border-l');
-                        window.stopRelatedVideoPlayback();
-                    }
-                };
-
-                window.stopRelatedVideoPlayback = function() {
-                    document.querySelectorAll('.related-video-iframe').forEach(iframe => {
-                        const src = iframe.src;
-                        iframe.src = '';
-                        iframe.src = src; // Resets the iframe stopping the video cleanly
-                    });
-                };
-
-                window.fetchRelatedVideos = function(docTitle, fileId) {
-                    const feed = document.getElementById('related-videos-feed');
-                    const sub = document.getElementById('related-videos-subtitle');
-                    if(!feed || !sub) return;
-
-                    // Auto-open panel on desktop so students discover it immediately
-                    if (window.innerWidth >= 1024) {
-                        window.toggleRelatedVideosPanel(true);
-                    }
-
-                    feed.innerHTML = `
-                        <div class="text-center py-10">
-                            <i class="fa-solid fa-circle-notch fa-spin text-2xl text-purple-500 mb-3"></i>
-                            <p class="text-xs text-gray-500 font-medium mt-2">Analyzing document context...</p>
-                        </div>
-                    `;
-
-                    // 1. Build Context
-                    let baseQuery = docTitle.replace(/\.(pdf|doc|docx|ppt|pptx)$/i, '').replace(/[-_]/g, ' ').trim();
-                    let conceptQuery = "";
-                    
-                    if (fileId && window.globalDocumentIndexCache) {
-                        const indexedDoc = window.globalDocumentIndexCache.find(d => d.documentId === fileId);
-                        if (indexedDoc && indexedDoc.concepts && indexedDoc.concepts.length > 0) {
-                            conceptQuery = indexedDoc.concepts.slice(0, 3).join(' ');
-                        }
-                    }
-                    
-                    // 2. Generate Safe, Reliable Fallback URLs
-                    // We use YouTube's native embed search which automatically handles playability and fallbacks.
-                    const finalQuery = (baseQuery + " " + conceptQuery).trim();
-                    sub.innerText = `Context: ${finalQuery.substring(0, 25)}...`;
-
-                    const mitQuery = encodeURIComponent(`MIT OpenCourseWare ${finalQuery}`);
-                    const ytQuery = encodeURIComponent(`${finalQuery} educational lecture`);
-                    
-                    const mitUrl = `https://ocw.mit.edu/search/?q=${encodeURIComponent(finalQuery)}`;
-                    const openLearnUrl = `https://www.open.edu/openlearn/search-results?q=${encodeURIComponent(finalQuery)}`;
-
-                    setTimeout(() => {
-                        feed.innerHTML = `
-                            <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/30 shrink-0 mb-2">
-                                <p class="text-[11px] text-blue-800 dark:text-blue-300 font-medium leading-relaxed">
-                                    <i class="fa-solid fa-lightbulb text-yellow-500 mr-1"></i> Based on this document, we've found relevant educational playlists from trusted institutions.
-                                </p>
-                            </div>
-
-                            <!-- Priority 1: MIT OCW Video Search -->
-                            <div class="mb-4">
-                                <h4 class="text-xs font-bold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-building-columns text-red-600"></i> MIT OpenCourseWare</h4>
-                                <div class="w-full rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-black aspect-video relative">
-                                    <iframe class="related-video-iframe absolute inset-0 w-full h-full border-0" src="https://www.youtube.com/embed?listType=search&list=${mitQuery}" allowfullscreen></iframe>
-                                </div>
-                                <div class="mt-2 text-right">
-                                    <a href="${mitUrl}" target="_blank" class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline font-medium">Search Official MIT Portal <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
-                                </div>
-                            </div>
-
-                            <!-- Priority 2: General YouTube Education -->
-                            <div class="mb-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                                <h4 class="text-xs font-bold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-1.5"><i class="fa-brands fa-youtube text-red-500"></i> Educational Lectures</h4>
-                                <div class="w-full rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-black aspect-video relative">
-                                    <iframe class="related-video-iframe absolute inset-0 w-full h-full border-0" src="https://www.youtube.com/embed?listType=search&list=${ytQuery}" allowfullscreen></iframe>
-                                </div>
-                            </div>
-
-                            <!-- Priority 3: OpenLearn Fallback -->
-                            <div class="pt-4 border-t border-gray-100 dark:border-gray-800 pb-4">
-                                <h4 class="text-xs font-bold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-book-open-reader text-green-600"></i> The Open University</h4>
-                                <a href="${openLearnUrl}" target="_blank" class="flex items-center justify-between bg-green-50 dark:bg-green-900/10 p-3 rounded-xl border border-green-100 dark:border-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/20 transition shadow-sm">
-                                    <div>
-                                        <span class="block text-xs font-bold text-green-800 dark:text-green-400">Search OpenLearn Library</span>
-                                        <span class="block text-[10px] text-green-600 dark:text-green-500 mt-0.5">Free modules and course materials</span>
-                                    </div>
-                                    <div class="w-6 h-6 rounded-full bg-white dark:bg-green-900 flex items-center justify-center shadow-sm">
-                                        <i class="fa-solid fa-chevron-right text-green-500 text-[10px]"></i>
-                                    </div>
-                                </a>
-                            </div>
-                        `;
-                    }, 500);
-                };
             </script>
         </div>
     </div>
@@ -6643,13 +6504,9 @@
                 else if (!pdfFile && finalUrl.includes('/view')) finalUrl = finalUrl.replace('/view', '/preview');
             }
 
-           modal.classList.remove('hidden'); 
+            modal.classList.remove('hidden'); 
             document.body.style.overflow = 'hidden';
             iframe.src = finalUrl;
-            
-            // Trigger Related Videos Fetch automatically
-            window.fetchRelatedVideos(title, fileIdMatch ? fileIdMatch[1] : null);
-
             // Do not block the reader while Drive/Office prepares a preview. Show a fallback only if it is genuinely slow.
             window.documentPreviewFallback = setTimeout(() => loader.classList.remove('hidden'), 900);
         };
@@ -6800,20 +6657,11 @@
             document.getElementById('doc-reader-loader')?.classList.add('hidden');
         };
         
-      window.terminateDocViewer = function() { 
+       window.terminateDocViewer = function() { 
             if (window.documentPreviewFallback) clearTimeout(window.documentPreviewFallback);
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
-            
-            // Hide Related Videos Panel and stop playback
-            const videosPanel = document.getElementById('related-videos-panel');
-            if (videosPanel) {
-                videosPanel.classList.add('w-0');
-                videosPanel.classList.remove('w-80', 'md:w-[450px]');
-            }
-            if (window.stopRelatedVideoPlayback) window.stopRelatedVideoPlayback();
-
             if(window.speechSynthesis) window.speechSynthesis.cancel();
             if(window.resetTtsUi) window.resetTtsUi();
         };
