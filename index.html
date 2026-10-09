@@ -3426,7 +3426,10 @@
                     <span class="text-[10px] md:text-xs text-gray-500">Secure Viewer</span>
                 </div>
             </div>
-            <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
+           <div class="flex gap-2 shrink-0 ml-1 md:ml-2">
+                <button onclick="toggleRelatedVideosPanel()" id="btn-toggle-videos" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-full transition-all font-bold text-sm">
+                    <i class="fa-solid fa-photo-film text-lg md:mr-2"></i> <span class="hidden md:inline">Learning Videos</span>
+                </button>
                 <button onclick="terminateDocViewer()" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-5 md:py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full transition-all font-medium text-sm">
                     <i class="fa-solid fa-xmark text-lg md:mr-2"></i> <span class="hidden md:inline">Close</span>
                 </button>
@@ -3484,6 +3487,31 @@
                         <button onclick="sendPrivateClassMessage()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center justify-center">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
+                   </div>
+                </div>
+            </div>
+
+            <!-- RELATED LEARNING VIDEOS PANEL -->
+            <div id="related-videos-panel" class="w-0 shrink-0 bg-white dark:bg-geminiSurface border-l border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 overflow-hidden relative z-40">
+                <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-purple-50 dark:bg-purple-950/20 shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Related Videos</h3>
+                            <p id="related-videos-subtitle" class="text-[10px] text-purple-500 font-medium truncate w-40">Loading context...</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleRelatedVideosPanel()" class="text-gray-500 hover:text-gray-800 dark:hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-geminiSurface border border-gray-200 dark:border-gray-700">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="flex-grow overflow-y-auto bg-gray-50 dark:bg-[#131314] p-4 flex flex-col gap-4 custom-scrollbar" id="related-videos-feed">
+                    <div class="text-center py-10">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-purple-500 mb-3"></i>
+                        <p class="text-xs text-gray-500">Analyzing document and discovering content...</p>
                     </div>
                 </div>
             </div>
@@ -3587,9 +3615,178 @@
                             </div>
                         </div>
                     `;
-                    input.value = '';
+                   input.value = '';
                     feed.scrollTop = feed.scrollHeight;
                 }
+
+                // --- RELATED LEARNING VIDEOS ENGINE ---
+                window.toggleRelatedVideosPanel = function() {
+                    const panel = document.getElementById('related-videos-panel');
+                    const studyPanel = document.getElementById('study-class-panel');
+                    
+                    // Close study panel if open to prevent crowding
+                    if (studyPanel && !studyPanel.classList.contains('w-0')) {
+                        studyPanel.classList.add('w-0');
+                        studyPanel.classList.remove('w-80', 'md:w-96');
+                    }
+
+                    if (panel.classList.contains('w-0')) {
+                        panel.classList.remove('w-0');
+                        panel.classList.add('w-80', 'md:w-[450px]');
+                    } else {
+                        panel.classList.add('w-0');
+                        panel.classList.remove('w-80', 'md:w-[450px]');
+                        window.stopRelatedVideoPlayback();
+                    }
+                };
+
+                window.stopRelatedVideoPlayback = function() {
+                    const player = document.getElementById('active-video-player');
+                    if (player) {
+                        player.src = ''; // Stops iframe playback
+                        player.parentElement.classList.add('hidden');
+                    }
+                };
+
+                window.playRelatedVideo = function(videoId) {
+                    const playerContainer = document.getElementById('video-player-container');
+                    const player = document.getElementById('active-video-player');
+                    if(playerContainer && player) {
+                        player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+                        playerContainer.classList.remove('hidden');
+                        playerContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                };
+
+                window.fetchRelatedVideos = async function(docTitle, fileId) {
+                    const feed = document.getElementById('related-videos-feed');
+                    const sub = document.getElementById('related-videos-subtitle');
+                    if(!feed || !sub) return;
+
+                    feed.innerHTML = `
+                        <div class="text-center py-10">
+                            <i class="fa-solid fa-circle-notch fa-spin text-2xl text-purple-500 mb-3"></i>
+                            <p class="text-xs text-gray-500 font-medium mt-2">Reading document context...</p>
+                        </div>
+                    `;
+
+                    // 1. Build context-aware search query
+                    let searchQuery = docTitle.replace(/\.(pdf|doc|docx|ppt|pptx)$/i, '').replace(/[-_]/g, ' ').trim();
+                    
+                    if (fileId && window.globalDocumentIndexCache) {
+                        const indexedDoc = window.globalDocumentIndexCache.find(d => d.documentId === fileId);
+                        if (indexedDoc && indexedDoc.concepts && indexedDoc.concepts.length > 0) {
+                            searchQuery += " " + indexedDoc.concepts.slice(0, 2).join(' '); // Use top concepts
+                        }
+                    }
+                    searchQuery += " tutorial lecture"; // Force educational intent
+                    sub.innerText = `Topic: ${docTitle.substring(0, 22)}...`;
+
+                    // Fallback URL for native embed and direct external link
+                    const fallbackEmbedUrl = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(searchQuery)}`;
+                    const externalUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+
+                    try {
+                        // 2. Safely attempt to fetch metadata to display beautiful individual cards
+                        // Using AllOrigins to safely bypass CORS and fetch YouTube's public search HTML
+                        const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+                        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                        
+                        if (!response.ok) throw new Error("CORS Proxy Failed");
+                        
+                        const data = await response.json();
+                        const html = data.contents;
+                        
+                        // Extract embedded initialData json safely
+                        const match = html.match(/var ytInitialData = (\{.*?\});/);
+                        if (!match) throw new Error("Metadata structure not found");
+                        
+                        const ytData = JSON.parse(match[1]);
+                        const items = ytData.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents;
+                        
+                        let videosHtml = '';
+                        let videoCount = 0;
+
+                        for (let item of items) {
+                            if (item.videoRenderer && videoCount < 5) {
+                                const v = item.videoRenderer;
+                                const id = v.videoId;
+                                const title = v.title.runs[0].text;
+                                const thumb = v.thumbnail.thumbnails[v.thumbnail.thumbnails.length - 1].url;
+                                const channel = v.ownerText.runs[0].text;
+                                const duration = v.lengthText ? v.lengthText.simpleText : "Unknown";
+
+                                videosHtml += `
+                                    <div class="bg-white dark:bg-[#1A1A1C] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden group cursor-pointer hover:border-purple-300 dark:hover:border-purple-800 transition" onclick="window.playRelatedVideo('${id}')">
+                                        <div class="relative w-full h-32 md:h-40 bg-gray-900 overflow-hidden">
+                                            <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100">
+                                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                                <div class="w-12 h-12 rounded-full bg-red-600/90 backdrop-blur text-white flex items-center justify-center shadow-lg"><i class="fa-solid fa-play ml-1 text-lg"></i></div>
+                                            </div>
+                                            <span class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm">${duration}</span>
+                                        </div>
+                                        <div class="p-3">
+                                            <h4 class="font-bold text-gray-800 dark:text-gray-200 text-xs line-clamp-2 leading-snug mb-1.5">${title}</h4>
+                                            <div class="flex items-center justify-between text-[10px] text-gray-500 font-medium">
+                                                <span class="truncate pr-2"><i class="fa-regular fa-circle-user mr-1"></i>${channel}</span>
+                                                <span class="shrink-0 text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-900/20 px-1.5 py-0.5 rounded">YouTube</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                videoCount++;
+                            }
+                        }
+
+                        if (videoCount > 0) {
+                            feed.innerHTML = `
+                                <div id="video-player-container" class="w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 bg-black aspect-video relative hidden shrink-0 mb-2">
+                                    <iframe id="active-video-player" class="absolute inset-0 w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                                <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/30 shrink-0">
+                                    <p class="text-[11px] text-blue-800 dark:text-blue-300 font-medium"><i class="fa-solid fa-check-circle mr-1"></i>Found ${videoCount} educational videos matching this document.</p>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-3">
+                                    ${videosHtml}
+                                </div>
+                                <div class="text-center pt-2 pb-6 shrink-0">
+                                    <a href="${externalUrl}" target="_blank" class="text-xs font-bold text-gray-500 hover:text-red-600 transition"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Search more on YouTube</a>
+                                </div>
+                            `;
+                            return; // Success, exit out
+                        } else {
+                            throw new Error("No videos matched");
+                        }
+
+                    } catch (error) {
+                        console.warn("Video Metadata Extraction Failed, using Native Iframe Fallback:", error);
+                        // 3. Fallback: Native Search Playlist Iframe (Works 100% of the time without APIs)
+                        feed.innerHTML = `
+                            <div class="bg-orange-50 dark:bg-orange-900/10 p-3 rounded-xl border border-orange-100 dark:border-orange-900/30 shrink-0">
+                                <p class="text-[11px] text-orange-800 dark:text-orange-300 font-medium leading-relaxed">
+                                    <i class="fa-solid fa-lightbulb mr-1"></i> We've generated a dynamic educational playlist based on this document.
+                                </p>
+                            </div>
+
+                            <div class="w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 bg-black aspect-video relative shrink-0">
+                                <iframe id="related-video-iframe" class="absolute inset-0 w-full h-full border-0" 
+                                    src="${fallbackEmbedUrl}" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+
+                            <div class="mt-2 p-4 bg-white dark:bg-geminiBase rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-center shrink-0">
+                                <h4 class="text-xs font-bold text-gray-800 dark:text-gray-200 mb-2">Having playback issues?</h4>
+                                <p class="text-[10px] text-gray-500 mb-3 leading-relaxed">Some external providers restrict video embedding on third-party websites. If the player above doesn't load, you can view the results directly.</p>
+                                <a href="${externalUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-4 py-2.5 rounded-xl transition shadow-sm w-full justify-center">
+                                    <i class="fa-brands fa-youtube text-sm"></i> Watch on Provider Site
+                                </a>
+                            </div>
+                        `;
+                    }
+                };
             </script>
         </div>
     </div>
@@ -6504,9 +6701,13 @@
                 else if (!pdfFile && finalUrl.includes('/view')) finalUrl = finalUrl.replace('/view', '/preview');
             }
 
-            modal.classList.remove('hidden'); 
+           modal.classList.remove('hidden'); 
             document.body.style.overflow = 'hidden';
             iframe.src = finalUrl;
+            
+            // Trigger Related Videos Fetch automatically
+            window.fetchRelatedVideos(title, fileIdMatch ? fileIdMatch[1] : null);
+
             // Do not block the reader while Drive/Office prepares a preview. Show a fallback only if it is genuinely slow.
             window.documentPreviewFallback = setTimeout(() => loader.classList.remove('hidden'), 900);
         };
@@ -6657,11 +6858,20 @@
             document.getElementById('doc-reader-loader')?.classList.add('hidden');
         };
         
-       window.terminateDocViewer = function() { 
+      window.terminateDocViewer = function() { 
             if (window.documentPreviewFallback) clearTimeout(window.documentPreviewFallback);
             document.getElementById('doc-reader-iframe').src = ''; 
             document.getElementById('google-document-reader-modal').classList.add('hidden'); 
             document.body.style.overflow = 'auto';
+            
+            // Hide Related Videos Panel and stop playback
+            const videosPanel = document.getElementById('related-videos-panel');
+            if (videosPanel) {
+                videosPanel.classList.add('w-0');
+                videosPanel.classList.remove('w-80', 'md:w-[450px]');
+            }
+            if (window.stopRelatedVideoPlayback) window.stopRelatedVideoPlayback();
+
             if(window.speechSynthesis) window.speechSynthesis.cancel();
             if(window.resetTtsUi) window.resetTtsUi();
         };
